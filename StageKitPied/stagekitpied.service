@@ -1,0 +1,12 @@
+[Unit]
+Description=Stage Kit Pied Xbox360 Stage Kit
+After=multi-user.target
+
+[Service]
+ExecStart=/opt/StageKitPied/skp
+StandardInput=/dev/null
+StandardOutput=append:/var/log/stagekitpied.log
+StandardError=inherit
+
+[Install]
+WantedBy=multi-user.target
