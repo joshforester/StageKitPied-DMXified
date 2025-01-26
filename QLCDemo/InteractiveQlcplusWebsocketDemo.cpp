@@ -1,18 +1,18 @@
-#include "websocket/connection_metadata.h"
-#include "websocket/websocket_endpoint.h"
-
 #include <cstdlib>
 #include <iostream>
 #include <map>
 #include <string>
 #include <sstream>
 
+#include "websocket/ConnectionMetadata.h"
+#include "websocket/WebsocketEndpoint.h"
+
 typedef std::string string;
 
 int main() {
     bool done = false;
     string input;
-    websocket_endpoint endpoint;
+    WebsocketEndpoint endpoint;
 
     while (!done) {
         std::cout << "Enter Command: ";
@@ -61,7 +61,7 @@ int main() {
         } else if (input.substr(0,4) == "show") {
             int id = atoi(input.substr(5).c_str());
 
-            connection_metadata::ptr metadata = endpoint.get_metadata(id);
+            ConnectionMetadata::ptr metadata = endpoint.get_metadata(id);
             if (metadata) {
                 std::cout << *metadata << std::endl;
             } else {
