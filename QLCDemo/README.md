@@ -17,6 +17,16 @@ Ensure QLCPlus is launched with the `--web` parameter.  For details, see the
 
 TODO.
 
+### XML Config Reader Demo (xcrd)
+
+#### XCRD
+
+None required.  If you are passing in a mapping file to test, that will need to be correct mapping file XML.
+
+#### Logging
+
+TODO.
+
 ## Deploying
 
 Programs included in the repo should run on an AARCH64 architecture, as can be deployed on Raspberry Pi 4B, for example.
@@ -26,7 +36,7 @@ Programs included in the repo should run on an AARCH64 architecture, as can be d
 Install the library dependencies:
 
 ```
-apt-get install libusb-1.0.0 libwebsocketpp-dev libboost-dev-all libssl-dev
+apt-get install libusb-1.0.0 libwebsocketpp-dev libboost-dev-all libssl-dev librapidxml-dev
 ```
 
 After that, should be able to build it with:
@@ -79,4 +89,16 @@ setSimpleDeskChannel(absoluteDmxAddress, value):
 
 ```
 CH|2|255
+```
+
+### XML Config Reader Demo (xcrd)
+
+```
+#> ./xcrd
+```
+
+This will run the demo using the included `demo_mapping.xml` file.  If you'd like to test out your own file, execute it as follows:
+
+```
+#> ./xcrd path/to/your/file.xml
 ```
