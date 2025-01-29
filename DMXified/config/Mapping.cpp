@@ -9,5 +9,5 @@ Mapping::Mapping(rapidxml::xml_node<>* node)
     }
 }
 
-Input& Mapping::getInput() { return input; }
-std::vector<Output>& Mapping::getOutputs() { return outputs; }
+const Input& Mapping::getInput() const { return input; }
+const std::vector<Output>& Mapping::getOutputs() const { return outputs; }

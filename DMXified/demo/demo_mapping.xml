@@ -120,20 +120,26 @@
 		</outputs>
 	</mapping>
 	<mapping>
+		<input type="stageKitInput" id="SK_STROBE_SPEED_4" priority="1" />
+		<outputs>
+			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
+				<widgetId>8</widgetId>
+				<value>1</value>
+			</output>
+			<output type="stageKitOutput" subtype="Handle_StrobeUpdate">
+				<value>4</value>
+			</output>
+		</outputs>
+	</mapping>
+	<mapping>
 		<input type="stageKitInput" id="SK_ALL_OFF" priority="1" />
 		<outputs>
 			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
-				<widgetId>7</widgetId>
+				<widgetId>9</widgetId>
 				<value>1</value>
 			</output>
 			<output type="stageKitOutput" subtype="Handle_LEDUpdate">
 				<value>SK_ALL_OFF</value>
-			</output>
-			<output type="stageKitOutput" subtype="Handle_StrobeUpdate">
-				<value>0</value>
-			</output>
-			<output type="stageKitOutput" subtype="Handle_FogUpdate">
-				<value>false</value>
 			</output>
 		</outputs>
 	</mapping>
@@ -147,6 +153,14 @@
 		<outputs>
 			<output type="stageKitOutput" subtype="Handle_FogUpdate">
 				<value>true</value>
+			</output>
+		</outputs>
+	</mapping>
+	<mapping>
+		<input type="fileExistsInput" id="footFogButtonOff" priority="100" />
+		<outputs>
+			<output type="stageKitOutput" subtype="Handle_FogUpdate">
+				<value>false</value>
 			</output>
 		</outputs>
 	</mapping>
@@ -165,6 +179,15 @@
 		<outputs>
 			<output type="qlcplusOutput" subtype="setFunctionStatus">
 				<functionId>27</functionId>
+				<status>1</status>
+			</output>
+		</outputs>
+	</mapping>
+	<mapping>
+		<input type="fileExistsInput" id="footSpazButtonOff" priority="100" />
+		<outputs>
+			<output type="qlcplusOutput" subtype="setFunctionStatus">
+				<functionId>28</functionId>
 				<status>1</status>
 			</output>
 		</outputs>

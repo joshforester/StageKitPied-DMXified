@@ -1,0 +1,273 @@
+Mapping file: demo_mapping.xml
+Event file: demo_events.txt
+------------------------------
+EventEngine : DEBUG : handleInputEvent called for inputId SK_LED_RED.
+EventEngine : DEBUG : Output qlcplusOutput:basicWidgetValueSet(1) determined to NOT be overridden.
+EventEngine : DEBUG : Output stageKitOutput:Handle_LEDUpdate(1) determined to NOT be overridden.
+
+Processing output qlcplusOutput:basicWidgetValueSet.
+EventEngine : DEBUG : Determined QlcplusProcessor should process.
+MockQlcpplusOutputProcessor.process called for output: qlcplusOutput:basicWidgetValueSet
+
+Processing output stageKitOutput:Handle_LEDUpdate.
+EventEngine : DEBUG : Determined StageKitProcessor should process.
+EventEngine : DEBUG : right_weight sent with input event; determined to be RB3 input.
+StageKitOutputProcessor : DEBUG : process called for output stageKitOutput:Handle_LEDUpdate.
+MockRpiLightsController : DEBUG : Mock processing output: Handle_LEDUpdate:SK_LED_RED
+------------------------------
+EventEngine : DEBUG : handleInputEvent called for inputId SK_FOG_ON.
+EventEngine : DEBUG : Output stageKitOutput:Handle_FogUpdate(1) determined to NOT be overridden.
+
+Processing output stageKitOutput:Handle_FogUpdate.
+EventEngine : DEBUG : Determined StageKitProcessor should process.
+EventEngine : DEBUG : right_weight sent with input event; determined to be RB3 input.
+StageKitOutputProcessor : DEBUG : process called for output stageKitOutput:Handle_FogUpdate.
+MockRpiLightsController : DEBUG : Mock processing output: Handle_FogUpdate:SK_FOG_ON
+------------------------------
+EventEngine : DEBUG : handleInputEvent called for inputId SK_FOG_OFF.
+EventEngine : DEBUG : Output stageKitOutput:Handle_FogUpdate(1) determined to NOT be overridden.
+
+Processing output stageKitOutput:Handle_FogUpdate.
+EventEngine : DEBUG : Determined StageKitProcessor should process.
+EventEngine : DEBUG : right_weight sent with input event; determined to be RB3 input.
+StageKitOutputProcessor : DEBUG : process called for output stageKitOutput:Handle_FogUpdate.
+MockRpiLightsController : DEBUG : Mock processing output: Handle_FogUpdate:SK_FOG_OFF
+------------------------------
+EventEngine : DEBUG : handleInputEvent called for inputId SK_FOG_OFF.
+EventEngine : DEBUG : Ignoring SK_FOG_OFF spam.
+------------------------------
+EventEngine : DEBUG : handleInputEvent called for inputId SK_FOG_OFF.
+EventEngine : DEBUG : Ignoring SK_FOG_OFF spam.
+------------------------------
+EventEngine : DEBUG : handleInputEvent called for inputId SK_LED_GREEN.
+EventEngine : DEBUG : Output qlcplusOutput:basicWidgetValueSet(1) determined to NOT be overridden.
+EventEngine : DEBUG : Output stageKitOutput:Handle_LEDUpdate(1) determined to NOT be overridden.
+
+Processing output qlcplusOutput:basicWidgetValueSet.
+EventEngine : DEBUG : Determined QlcplusProcessor should process.
+MockQlcpplusOutputProcessor.process called for output: qlcplusOutput:basicWidgetValueSet
+
+Processing output stageKitOutput:Handle_LEDUpdate.
+EventEngine : DEBUG : Determined StageKitProcessor should process.
+EventEngine : DEBUG : right_weight sent with input event; determined to be RB3 input.
+StageKitOutputProcessor : DEBUG : process called for output stageKitOutput:Handle_LEDUpdate.
+MockRpiLightsController : DEBUG : Mock processing output: Handle_LEDUpdate:SK_LED_GREEN
+------------------------------
+EventEngine : DEBUG : handleInputEvent called for inputId footFogButton.
+EventEngine : DEBUG : Output stageKitOutput:Handle_FogUpdate(100) determined to NOT be overridden.
+
+Processing output stageKitOutput:Handle_FogUpdate.
+EventEngine : DEBUG : Determined StageKitProcessor should process.
+EventEngine : DEBUG : right_weight NOT sent with input event; will need to determine event from config.
+StageKitOutputProcessor : DEBUG : process called for output stageKitOutput:Handle_FogUpdate.
+MockRpiLightsController : DEBUG : Mock processing output: Handle_FogUpdate:SK_FOG_ON
+EventEngine : DEBUG : Creating override stageKitOutput:Handle_FogUpdate(100).
+------------------------------
+EventEngine : DEBUG : handleInputEvent called for inputId SK_LED_BLUE.
+EventEngine : DEBUG : Output qlcplusOutput:basicWidgetValueSet(1) determined to NOT be overridden.
+EventEngine : DEBUG : Output stageKitOutput:Handle_LEDUpdate(1) determined to NOT be overridden.
+
+Processing output qlcplusOutput:basicWidgetValueSet.
+EventEngine : DEBUG : Determined QlcplusProcessor should process.
+MockQlcpplusOutputProcessor.process called for output: qlcplusOutput:basicWidgetValueSet
+
+Processing output stageKitOutput:Handle_LEDUpdate.
+EventEngine : DEBUG : Determined StageKitProcessor should process.
+EventEngine : DEBUG : right_weight sent with input event; determined to be RB3 input.
+StageKitOutputProcessor : DEBUG : process called for output stageKitOutput:Handle_LEDUpdate.
+MockRpiLightsController : DEBUG : Mock processing output: Handle_LEDUpdate:SK_LED_BLUE
+------------------------------
+EventEngine : DEBUG : handleInputEvent called for inputId SK_LED_YELLOW.
+EventEngine : DEBUG : Output qlcplusOutput:basicWidgetValueSet(1) determined to NOT be overridden.
+EventEngine : DEBUG : Output qlcplusOutput:setFunctionStatus(1) determined to NOT be overridden.
+EventEngine : DEBUG : Output qlcplusOutput:simpleDeskChannelSet(1) determined to NOT be overridden.
+EventEngine : DEBUG : Output stageKitOutput:Handle_LEDUpdate(1) determined to NOT be overridden.
+
+Processing output qlcplusOutput:basicWidgetValueSet.
+EventEngine : DEBUG : Determined QlcplusProcessor should process.
+MockQlcpplusOutputProcessor.process called for output: qlcplusOutput:basicWidgetValueSet
+
+Processing output qlcplusOutput:setFunctionStatus.
+EventEngine : DEBUG : Determined QlcplusProcessor should process.
+MockQlcpplusOutputProcessor.process called for output: qlcplusOutput:setFunctionStatus
+
+Processing output qlcplusOutput:simpleDeskChannelSet.
+EventEngine : DEBUG : Determined QlcplusProcessor should process.
+MockQlcpplusOutputProcessor.process called for output: qlcplusOutput:simpleDeskChannelSet
+
+Processing output stageKitOutput:Handle_LEDUpdate.
+EventEngine : DEBUG : Determined StageKitProcessor should process.
+EventEngine : DEBUG : right_weight sent with input event; determined to be RB3 input.
+StageKitOutputProcessor : DEBUG : process called for output stageKitOutput:Handle_LEDUpdate.
+MockRpiLightsController : DEBUG : Mock processing output: Handle_LEDUpdate:SK_LED_YELLOW
+------------------------------
+EventEngine : DEBUG : handleInputEvent called for inputId SK_FOG_OFF.
+EventEngine : DEBUG : Output stageKitOutput:Handle_FogUpdate(1) determined to be overridden.
+------------------------------
+EventEngine : DEBUG : handleInputEvent called for inputId SK_STROBE_SPEED_1.
+EventEngine : DEBUG : Output qlcplusOutput:basicWidgetValueSet(1) determined to NOT be overridden.
+EventEngine : DEBUG : Output stageKitOutput:Handle_StrobeUpdate(1) determined to NOT be overridden.
+
+Processing output qlcplusOutput:basicWidgetValueSet.
+EventEngine : DEBUG : Determined QlcplusProcessor should process.
+MockQlcpplusOutputProcessor.process called for output: qlcplusOutput:basicWidgetValueSet
+
+Processing output stageKitOutput:Handle_StrobeUpdate.
+EventEngine : DEBUG : Determined StageKitProcessor should process.
+EventEngine : DEBUG : right_weight sent with input event; determined to be RB3 input.
+StageKitOutputProcessor : DEBUG : process called for output stageKitOutput:Handle_StrobeUpdate.
+MockRpiLightsController : DEBUG : Mock processing output: Handle_StrobeUpdate:SK_STROBE_SPEED_1
+------------------------------
+EventEngine : DEBUG : handleInputEvent called for inputId SK_STROBE_OFF.
+EventEngine : DEBUG : Output qlcplusOutput:basicWidgetValueSet(1) determined to NOT be overridden.
+EventEngine : DEBUG : Output stageKitOutput:Handle_StrobeUpdate(1) determined to NOT be overridden.
+
+Processing output qlcplusOutput:basicWidgetValueSet.
+EventEngine : DEBUG : Determined QlcplusProcessor should process.
+MockQlcpplusOutputProcessor.process called for output: qlcplusOutput:basicWidgetValueSet
+
+Processing output stageKitOutput:Handle_StrobeUpdate.
+EventEngine : DEBUG : Determined StageKitProcessor should process.
+EventEngine : DEBUG : right_weight sent with input event; determined to be RB3 input.
+StageKitOutputProcessor : DEBUG : process called for output stageKitOutput:Handle_StrobeUpdate.
+MockRpiLightsController : DEBUG : Mock processing output: Handle_StrobeUpdate:SK_STROBE_OFF
+------------------------------
+EventEngine : DEBUG : handleInputEvent called for inputId footFogButtonOff.
+EventEngine : DEBUG : Determined to be a negation event.
+EventEngine : DEBUG : Output stageKitOutput:Handle_FogUpdate(100) determined to NOT be overridden.
+
+Processing output stageKitOutput:Handle_FogUpdate.
+EventEngine : DEBUG : Determined StageKitProcessor should process.
+EventEngine : DEBUG : right_weight NOT sent with input event; will need to determine event from config.
+StageKitOutputProcessor : DEBUG : process called for output stageKitOutput:Handle_FogUpdate.
+MockRpiLightsController : DEBUG : Mock processing output: Handle_FogUpdate:SK_FOG_OFF
+EventEngine : DEBUG : Clearing override stageKitOutput:Handle_FogUpdate(100).
+------------------------------
+EventEngine : DEBUG : handleInputEvent called for inputId SK_STROBE_SPEED_2.
+EventEngine : DEBUG : Output qlcplusOutput:basicWidgetValueSet(1) determined to NOT be overridden.
+EventEngine : DEBUG : Output stageKitOutput:Handle_StrobeUpdate(1) determined to NOT be overridden.
+
+Processing output qlcplusOutput:basicWidgetValueSet.
+EventEngine : DEBUG : Determined QlcplusProcessor should process.
+MockQlcpplusOutputProcessor.process called for output: qlcplusOutput:basicWidgetValueSet
+
+Processing output stageKitOutput:Handle_StrobeUpdate.
+EventEngine : DEBUG : Determined StageKitProcessor should process.
+EventEngine : DEBUG : right_weight sent with input event; determined to be RB3 input.
+StageKitOutputProcessor : DEBUG : process called for output stageKitOutput:Handle_StrobeUpdate.
+MockRpiLightsController : DEBUG : Mock processing output: Handle_StrobeUpdate:SK_STROBE_SPEED_2
+------------------------------
+EventEngine : DEBUG : handleInputEvent called for inputId footSpazButton.
+EventEngine : DEBUG : Output qlcplusOutput:setFunctionStatus(100) determined to NOT be overridden.
+
+Processing output qlcplusOutput:setFunctionStatus.
+EventEngine : DEBUG : Determined QlcplusProcessor should process.
+MockQlcpplusOutputProcessor.process called for output: qlcplusOutput:setFunctionStatus
+
+EventEngine : DEBUG : Creating override stageKitOutput:Handle_LEDUpdate(100).
+EventEngine : DEBUG : Creating override stageKitOutput:Handle_StrobeUpdate(100).
+EventEngine : DEBUG : Creating override stageKitOutput:Handle_FogUpdate(100).
+EventEngine : DEBUG : Creating override qlcplusOutput:basicWidgetValueSet(100).
+EventEngine : DEBUG : Creating override qlcplusOutput:setFunctionStatus(100).
+EventEngine : DEBUG : Creating override qlcplusOutput:simpleDeskChannelSet(100).
+------------------------------
+EventEngine : DEBUG : handleInputEvent called for inputId SK_STROBE_SPEED_3.
+EventEngine : DEBUG : Output qlcplusOutput:basicWidgetValueSet(1) determined to be overridden.
+EventEngine : DEBUG : Output stageKitOutput:Handle_StrobeUpdate(1) determined to be overridden.
+------------------------------
+EventEngine : DEBUG : handleInputEvent called for inputId footSpazButtonOff.
+EventEngine : DEBUG : Determined to be a negation event.
+EventEngine : DEBUG : Output qlcplusOutput:setFunctionStatus(100) determined to NOT be overridden.
+
+Processing output qlcplusOutput:setFunctionStatus.
+EventEngine : DEBUG : Determined QlcplusProcessor should process.
+MockQlcpplusOutputProcessor.process called for output: qlcplusOutput:setFunctionStatus
+
+EventEngine : DEBUG : Clearing override stageKitOutput:Handle_LEDUpdate(100).
+EventEngine : DEBUG : Clearing override stageKitOutput:Handle_StrobeUpdate(100).
+EventEngine : DEBUG : Clearing override stageKitOutput:Handle_FogUpdate(100).
+EventEngine : DEBUG : Clearing override qlcplusOutput:basicWidgetValueSet(100).
+EventEngine : DEBUG : Clearing override qlcplusOutput:setFunctionStatus(100).
+EventEngine : DEBUG : Clearing override qlcplusOutput:simpleDeskChannelSet(100).
+------------------------------
+EventEngine : DEBUG : handleInputEvent called for inputId SK_STROBE_SPEED_4.
+EventEngine : DEBUG : Output qlcplusOutput:basicWidgetValueSet(1) determined to NOT be overridden.
+EventEngine : DEBUG : Output stageKitOutput:Handle_StrobeUpdate(1) determined to NOT be overridden.
+
+Processing output qlcplusOutput:basicWidgetValueSet.
+EventEngine : DEBUG : Determined QlcplusProcessor should process.
+MockQlcpplusOutputProcessor.process called for output: qlcplusOutput:basicWidgetValueSet
+
+Processing output stageKitOutput:Handle_StrobeUpdate.
+EventEngine : DEBUG : Determined StageKitProcessor should process.
+EventEngine : DEBUG : right_weight sent with input event; determined to be RB3 input.
+StageKitOutputProcessor : DEBUG : process called for output stageKitOutput:Handle_StrobeUpdate.
+MockRpiLightsController : DEBUG : Mock processing output: Handle_StrobeUpdate:SK_STROBE_SPEED_4
+------------------------------
+EventEngine : DEBUG : handleInputEvent called for inputId SK_STROBE_OFF.
+EventEngine : DEBUG : Output qlcplusOutput:basicWidgetValueSet(1) determined to NOT be overridden.
+EventEngine : DEBUG : Output stageKitOutput:Handle_StrobeUpdate(1) determined to NOT be overridden.
+
+Processing output qlcplusOutput:basicWidgetValueSet.
+EventEngine : DEBUG : Determined QlcplusProcessor should process.
+MockQlcpplusOutputProcessor.process called for output: qlcplusOutput:basicWidgetValueSet
+
+Processing output stageKitOutput:Handle_StrobeUpdate.
+EventEngine : DEBUG : Determined StageKitProcessor should process.
+EventEngine : DEBUG : right_weight sent with input event; determined to be RB3 input.
+StageKitOutputProcessor : DEBUG : process called for output stageKitOutput:Handle_StrobeUpdate.
+MockRpiLightsController : DEBUG : Mock processing output: Handle_StrobeUpdate:SK_STROBE_OFF
+------------------------------
+EventEngine : DEBUG : handleInputEvent called for inputId SK_LED_BLUE.
+EventEngine : DEBUG : Output qlcplusOutput:basicWidgetValueSet(1) determined to NOT be overridden.
+EventEngine : DEBUG : Output stageKitOutput:Handle_LEDUpdate(1) determined to NOT be overridden.
+
+Processing output qlcplusOutput:basicWidgetValueSet.
+EventEngine : DEBUG : Determined QlcplusProcessor should process.
+MockQlcpplusOutputProcessor.process called for output: qlcplusOutput:basicWidgetValueSet
+
+Processing output stageKitOutput:Handle_LEDUpdate.
+EventEngine : DEBUG : Determined StageKitProcessor should process.
+EventEngine : DEBUG : right_weight sent with input event; determined to be RB3 input.
+StageKitOutputProcessor : DEBUG : process called for output stageKitOutput:Handle_LEDUpdate.
+MockRpiLightsController : DEBUG : Mock processing output: Handle_LEDUpdate:SK_LED_BLUE
+------------------------------
+EventEngine : DEBUG : handleInputEvent called for inputId SK_STROBE_SPEED_3.
+EventEngine : DEBUG : Output qlcplusOutput:basicWidgetValueSet(1) determined to NOT be overridden.
+EventEngine : DEBUG : Output stageKitOutput:Handle_StrobeUpdate(1) determined to NOT be overridden.
+
+Processing output qlcplusOutput:basicWidgetValueSet.
+EventEngine : DEBUG : Determined QlcplusProcessor should process.
+MockQlcpplusOutputProcessor.process called for output: qlcplusOutput:basicWidgetValueSet
+
+Processing output stageKitOutput:Handle_StrobeUpdate.
+EventEngine : DEBUG : Determined StageKitProcessor should process.
+EventEngine : DEBUG : right_weight sent with input event; determined to be RB3 input.
+StageKitOutputProcessor : DEBUG : process called for output stageKitOutput:Handle_StrobeUpdate.
+MockRpiLightsController : DEBUG : Mock processing output: Handle_StrobeUpdate:SK_STROBE_SPEED_3
+------------------------------
+EventEngine : DEBUG : handleInputEvent called for inputId SK_FOG_ON.
+EventEngine : DEBUG : Output stageKitOutput:Handle_FogUpdate(1) determined to NOT be overridden.
+
+Processing output stageKitOutput:Handle_FogUpdate.
+EventEngine : DEBUG : Determined StageKitProcessor should process.
+EventEngine : DEBUG : right_weight sent with input event; determined to be RB3 input.
+StageKitOutputProcessor : DEBUG : process called for output stageKitOutput:Handle_FogUpdate.
+MockRpiLightsController : DEBUG : Mock processing output: Handle_FogUpdate:SK_FOG_ON
+------------------------------
+EventEngine : DEBUG : handleInputEvent called for inputId SK_ALL_OFF.
+EventEngine : DEBUG : Output qlcplusOutput:basicWidgetValueSet(1) determined to NOT be overridden.
+EventEngine : DEBUG : Output stageKitOutput:Handle_LEDUpdate(1) determined to NOT be overridden.
+
+Processing output qlcplusOutput:basicWidgetValueSet.
+EventEngine : DEBUG : Determined QlcplusProcessor should process.
+MockQlcpplusOutputProcessor.process called for output: qlcplusOutput:basicWidgetValueSet
+
+Processing output stageKitOutput:Handle_LEDUpdate.
+EventEngine : DEBUG : Determined StageKitProcessor should process.
+EventEngine : DEBUG : right_weight sent with input event; determined to be RB3 input.
+StageKitOutputProcessor : DEBUG : process called for output stageKitOutput:Handle_LEDUpdate.
+MockRpiLightsController : DEBUG : Mock processing output: Handle_LEDUpdate:SK_ALL_OFF
+MockRpiLightsController : DEBUG : Mock processing output: Handle_StrobeUpdate:SK_STROBE_OFF
+MockRpiLightsController : DEBUG : Mock processing output: Handle_FogUpdate:SK_FOG_OFF
+------------------------------

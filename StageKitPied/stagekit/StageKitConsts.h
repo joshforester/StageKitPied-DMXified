@@ -1,6 +1,9 @@
 #ifndef _STAGEKITCONSTS_H_
 #define _STAGEKITCONSTS_H_
 
+#include <string>
+#include <stdexcept>
+
 // Interfaces
 // const uint16_t
 enum SKINTERFACE {
@@ -76,4 +79,97 @@ enum SKRUMBLEDATA {
   SK_LED_MASK       = 0xE0,  // 1110 0000 - Right weight
   SK_ALL_OFF        = 0xFF,  // 1111 1111 - Right weight
 };
+
+
+inline const std::string skRumbleDataTypeToString(const SKRUMBLEDATA type) {
+    switch (type) {
+        case SKRUMBLEDATA::SK_FOG_ON:
+            return "SK_FOG_ON";
+        case SKRUMBLEDATA::SK_FOG_OFF:
+            return "SK_FOG_OFF";
+        case SKRUMBLEDATA::SK_STROBE_SPEED_1:
+            return "SK_STROBE_SPEED_1";
+        case SKRUMBLEDATA::SK_STROBE_SPEED_2:
+            return "SK_STROBE_SPEED_2";
+        case SKRUMBLEDATA::SK_STROBE_SPEED_3:
+            return "SK_STROBE_SPEED_3";
+        case SKRUMBLEDATA::SK_STROBE_SPEED_4:
+            return "SK_STROBE_SPEED_4";
+        case SKRUMBLEDATA::SK_STROBE_OFF:
+            return "SK_STROBE_OFF";
+        case SKRUMBLEDATA::SK_LED_BLUE:
+            return "SK_LED_BLUE";
+        case SKRUMBLEDATA::SK_LED_GREEN:
+            return "SK_LED_GREEN";
+        case SKRUMBLEDATA::SK_LED_YELLOW:
+            return "SK_LED_YELLOW";
+        case SKRUMBLEDATA::SK_LED_RED:
+            return "SK_LED_RED";
+        case SKRUMBLEDATA::SK_LED_MASK:
+            return "SK_LED_MASK";
+        case SKRUMBLEDATA::SK_ALL_OFF:
+            return "SK_ALL_OFF";
+        default:
+            return "Unknown";
+    }
+}
+
+inline const SKRUMBLEDATA stringToSkRumbleData(std::string str) {
+	if (str == "SK_FOG_ON") {
+		return SKRUMBLEDATA::SK_FOG_ON;
+	} else if (str == "SK_FOG_OFF") {
+		return SKRUMBLEDATA::SK_FOG_OFF;
+	} else if (str == "SK_STROBE_SPEED_1") {
+		return SKRUMBLEDATA::SK_STROBE_SPEED_1;
+	} else if (str == "SK_STROBE_SPEED_2") {
+		return SKRUMBLEDATA::SK_STROBE_SPEED_2;
+	} else if (str == "SK_STROBE_SPEED_3") {
+		return SKRUMBLEDATA::SK_STROBE_SPEED_3;
+	} else if (str == "SK_STROBE_SPEED_4") {
+		return SKRUMBLEDATA::SK_STROBE_SPEED_4;
+	} else if (str == "SK_STROBE_OFF") {
+		return SKRUMBLEDATA::SK_STROBE_OFF;
+	} else if (str == "SK_LED_BLUE") {
+		return SKRUMBLEDATA::SK_LED_BLUE;
+	} else if (str == "SK_LED_GREEN") {
+		return SKRUMBLEDATA::SK_LED_GREEN;
+	} else if (str == "SK_LED_YELLOW") {
+		return SKRUMBLEDATA::SK_LED_YELLOW;
+	} else if (str == "SK_LED_RED") {
+		return SKRUMBLEDATA::SK_LED_RED;
+	} else if (str == "SK_LED_MASK") {
+		return SKRUMBLEDATA::SK_LED_MASK;
+	} else if (str == "SK_ALL_OFF") {
+		return SKRUMBLEDATA::SK_ALL_OFF;
+	} else {
+		throw std::runtime_error("Attempting to convert string " + str + " to SKRUMBLEDATA, but it is not a valid type.");
+	}
+}
+
+inline const SKRUMBLEDATA boolToSkFogRumbleData(bool fog_on_status) {
+    if (fog_on_status) {
+    	return SKRUMBLEDATA::SK_FOG_ON;
+    } else {
+    	return SKRUMBLEDATA::SK_FOG_OFF;
+    }
+}
+
+inline const SKRUMBLEDATA intToSkStrobeSpeedRumbleData(const uint8_t strobe_speed) {
+	switch (strobe_speed) {
+		case 0:
+			return SKRUMBLEDATA::SK_STROBE_OFF;
+		case 1:
+			return SKRUMBLEDATA::SK_STROBE_SPEED_1;
+		case 2:
+			return SKRUMBLEDATA::SK_STROBE_SPEED_2;
+		case 3:
+			return SKRUMBLEDATA::SK_STROBE_SPEED_3;
+		case 4:
+			return SKRUMBLEDATA::SK_STROBE_SPEED_4;
+		default:
+			throw std::runtime_error("Attempting to convert uint8_t " + std::to_string(strobe_speed) + " to SKRUMBLEDATA::SK_STROBE speed, but it is not a valid speed.");
+			return SKRUMBLEDATA::SK_NONE;
+	}
+}
+
 #endif

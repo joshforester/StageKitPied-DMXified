@@ -5,49 +5,58 @@
 int main(int argc, char* argv[]) {
 
     // Default value
-    std::string inputFile = "demo_mapping.xml";
+    std::string mappingFileName = "demo_mapping.xml";
 
     // Check if a command-line argument is provided
     if (argc == 2) {
-        // If provided, use the first argument as the input file name
-        inputFile = argv[1];
+        // If provided, use the first argument as the mapping file name
+        mappingFileName = argv[1];
     } else if (argc > 2) {
     	std::cerr << "Too many arguments provided.\n";
     	std::cout << "Usage: " << argv[0] << " [mappingFile]\n";
-
     	return -1;
     }
 
     // Print the file name
-    std::cout << "Input file: " << inputFile << std::endl;
+    std::cout << "Mapping file: " << mappingFileName << std::endl;
 
     try {
         // Load the XML file into a MappingConfig object
-        MappingConfig config = XmlLoader::loadMappingConfig(inputFile);
+        MappingConfig config = XmlLoader::loadMappingConfig(mappingFileName);
 
         // Iterate through the Mappings in the config and print their details
-        for (Mapping& mapping : config.getMappings()) {
-            std::cout << "Input: " << mapping.getInput().getType() << ":" << mapping.getInput().getId() << "(P:" << mapping.getInput().getPriority() << ")\n";
-            if (mapping.getInput().getType() == "fileExistsInput") {
-            	std::cout << "File: " << mapping.getInput().getFile() << "\n";
+        for (const Mapping& mapping : config.getMappings()) {
+        	Input input = mapping.getInput();
+
+            std::cout << "Input: " << input.getType() << ":" << input.getId() << "(P:" << input.getPriority() << ")";
+            const bool isNegationEvent = input.isNegationEvent();
+            if (isNegationEvent) {
+            	std::cout << " [Negating event for " << input.getNegatedInputId() << "]";
             }
-            std::cout << "Output Override List:\n";
-            for (const auto& outputOverride : mapping.getInput().getOutputOverrideList()) {
-                std::cout << "  " << outputOverride.getType() << ":" << outputOverride.getSubtype() << "\n";
+            std::cout << std::endl;
+
+            if (!isNegationEvent) {
+				if (input.getType() == "fileExistsInput") {
+					std::cout << "File: " << input.getFile() << std::endl;
+				}
+				std::cout << "Output Override List:" << std::endl;
+				for (const auto& outputOverride : input.getOutputOverrideList()) {
+					std::cout << "  " << outputOverride.getType() << ":" << outputOverride.getSubtype() << std::endl;
+				}
             }
 
-            std::cout << "Outputs:\n";
+            std::cout << "Outputs:" << std::endl;
             for (const auto& output : mapping.getOutputs()) {
-                std::cout << "  Output: " << output.getType() << ":" << output.getSubtype() << "\n";
-                std::cout << "  Parameters:\n";
+                std::cout << "  Output: " << output.getType() << ":" << output.getSubtype() << std::endl;
+                std::cout << "  Parameters:" << std::endl;
                 for (const auto& key : output.getParameterTypes()) {
-                  std::cout << "    " << key << ":" << output.getParameter(key) << "\n";
+                  std::cout << "    " << key << ":" << output.getParameter(key) << std::endl;
                 }
             }
-            std::cout << "\n";
+            std::cout << std::endl;
         }
     } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << "\n";
+        std::cerr << "Error: " << e.what() << std::endl;
     }
 
     return 0;

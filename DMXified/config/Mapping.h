@@ -11,8 +11,8 @@ public:
     Mapping(rapidxml::xml_node<>* node);
 
     // Getters
-    Input& getInput();
-    std::vector<Output>& getOutputs();
+    const Input& getInput() const;
+    const std::vector<Output>& getOutputs() const;
 
 private:
     Input input;

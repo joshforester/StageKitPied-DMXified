@@ -2,13 +2,22 @@
 #define _RPILIGHTSCONTROLLER_H_
 
 #ifdef DEBUG
-  #define MSG_RPLC_DEBUG( str ) do { std::cout << "RpiLightsController : DEBUG : " << str << std::endl; } while( false )
+  #ifdef EESD
+    #define MSG_RPLC_DEBUG( str ) do { std::cout << "MockRpiLightsController : DEBUG : " << str << std::endl; } while( false )
+  #else
+    #define MSG_RPLC_DEBUG( str ) do { std::cout << "RpiLightsController : DEBUG : " << str << std::endl; } while( false )
+  #endif
 #else
   #define MSG_RPLC_DEBUG( str ) do { } while ( false )
 #endif
 
-#define MSG_RPLC_ERROR( str ) do { std::cout << "RpiLightsController : ERROR : " << str << std::endl; } while( false )
-#define MSG_RPLC_INFO( str ) do { std::cout << "RpiLightsController : INFO : " << str << std::endl; } while( false )
+#ifdef EESD
+  #define MSG_RPLC_ERROR( str ) do { std::cout << "MockRpiLightsController : ERROR : " << str << std::endl; } while( false )
+  #define MSG_RPLC_INFO( str ) do { std::cout << "MockRpiLightsController : INFO : " << str << std::endl; } while( false )
+#else
+  #define MSG_RPLC_ERROR( str ) do { std::cout << "RpiLightsController : ERROR : " << str << std::endl; } while( false )
+  #define MSG_RPLC_INFO( str ) do { std::cout << "RpiLightsController : INFO : " << str << std::endl; } while( false )
+#endif
 
 //
 #include <iostream>
@@ -18,15 +27,18 @@
 #include <unistd.h> // readlink
 #include <libgen.h> // dirname
 
-//
+#include "stagekit/StageKitConsts.h"
+
+// Only include StageKitPied dependencies if we're not in the EESD (demo) build
+#ifndef EESD
 #include "helpers/INI_Handler.h"
 #include "helpers/SleepTimer.h"
 #include "serial/SerialAdapter.h"
 #include "stagekit/USB_ControlRequest.h"
 #include "stagekit/StageKitManager.h"
-#include "stagekit/StageKitConsts.h"
 #include "leds/LEDArray.h"
 #include "network/RB3E_Network.h"
+#endif
 
 //
 #define USB_DIRECTION_IN 0x80
@@ -39,14 +51,19 @@ public:
 
   ~RpiLightsController();
 
+  void Do_Handle_RumbleData( const uint8_t left_weight, const uint8_t right_weight );
+
+#ifndef EESD
   bool Start();
 
   long Update( const long time_passed_ms ); // Returns time to sleep in ms
 
   void Stop();
+#endif // EESD
 
 private:
 
+#ifndef EESD
   void SerialAdapter_Poll();
 
   void SerialAdapter_HandleControlData();
@@ -69,7 +86,8 @@ private:
 
   void Handle_SerialDisconnect();
 
-  void Handle_RumbleData( uint8_t left_weight, uint8_t right_weight );
+  void Handle_RumbleData( const uint8_t left_weight, const uint8_t right_weight );
+#endif // EESD
 
   void Handle_LEDUpdate( const uint8_t colour, const uint8_t leds );
 
@@ -77,6 +95,7 @@ private:
 
   void Handle_StrobeUpdate( const uint8_t strobe_speed );
 
+#ifndef EESD
   SerialAdapter      mSerialAdapter;
   StageKitManager    mStageKitManager;
   LEDArray           mLEDS;
@@ -134,6 +153,7 @@ private:
   uint8_t            m_nodata_brightness;
   
   long               m_button_check_delay;
+#endif // EESD
 };
 
 #endif

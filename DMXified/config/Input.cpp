@@ -1,5 +1,4 @@
 #include "Input.h"
-#include <stdexcept>
 
 Input::Input(rapidxml::xml_node<>* node) {
     // Parse attributes
@@ -27,15 +26,34 @@ std::string Input::getId() const { return id; }
 int Input::getPriority() const { return priority; }
 
 std::string Input::getFile() const {
-    if (hasFile()) {
-        return file;
-    }
-    throw std::runtime_error("File does not exist for this Input.");
+	return file;
 }
 
 bool Input::hasFile() const { return !file.empty(); }
+
+bool Input::isNegationEvent() const {
+    // Check if the string has at least 3 characters
+    if (id.size() < 3) {
+        return false;
+    }
+
+    // Check the last 3 characters
+    return id.substr(id.size() - 3) == "Off";
+}
+
+std::string Input::getNegatedInputId() const {
+	if (this->isNegationEvent()) {
+		return id.substr(0, id.length() - 3);
+	}
+
+	throw std::runtime_error("Attempting to getNegatedInputId when " + id + " is not a negation event.");
+}
 
 std::vector<OutputOverride> Input::getOutputOverrideList() const {
     return outputOverrideList;
 }
 
+void Input::populateFromNegatedInput(const Input& negatedInput) {
+    file = negatedInput.getFile();
+    outputOverrideList = negatedInput.getOutputOverrideList();
+}

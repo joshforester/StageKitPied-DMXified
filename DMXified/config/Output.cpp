@@ -27,5 +27,5 @@ std::string Output::getParameter(const std::string& name) const {
             return param.second;
         }
     }
-    throw std::invalid_argument("Parameter not found");
+    throw std::invalid_argument("Parameter " + name + " not found for Output " + this->getType() + ":" + this->getSubtype());
 }
