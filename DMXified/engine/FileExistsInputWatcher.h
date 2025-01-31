@@ -10,10 +10,14 @@ class EventEngine;  // Forward declaration
 
 class FileExistsInputWatcher {
 public:
-    FileExistsInputWatcher(std::string id, const std::string& filePath, unsigned int sleepTimeMs, EventEngine& engine);
+    FileExistsInputWatcher(std::string id, const std::string& filePath, EventEngine& engine, unsigned int sleepTimeMs = 100);
     ~FileExistsInputWatcher();
 
     void stop();
+
+    // Delete the copy constructor and copy assignment operator
+    FileExistsInputWatcher(const FileExistsInputWatcher&) = delete;
+    FileExistsInputWatcher& operator=(const FileExistsInputWatcher&) = delete;
 
 private:
     void watchFile();
@@ -21,8 +25,8 @@ private:
 
     std::string id;
     std::string filePath;
-    unsigned int sleepTimeMs;
     EventEngine& engine;
+    unsigned int sleepTimeMs;
     std::thread watcherThread;
     std::atomic<bool> isRunning;
     bool previousExistence;

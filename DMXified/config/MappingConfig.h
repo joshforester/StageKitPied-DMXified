@@ -19,6 +19,9 @@ public:
     // Convenience method to get lists of outputs based on the inputId
     const std::vector<Output>& getOutputsByInputId(const std::string& id) const;
 
+    // Convenience method to get list of inputs that are of type fileExistsInput
+    const std::vector<Input> getFileExistsInputs() const;
+
 private:
     std::vector<Mapping> mappings;  // Holds all Mapping objects
 };

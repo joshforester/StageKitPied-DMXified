@@ -13,6 +13,7 @@
 
 #include <vector>
 #include <string>
+#include <mutex>
 #include <algorithm> // For std::remove
 
 #include "../config/ConfigHelpers.h"
@@ -37,11 +38,14 @@ public:
     const bool isOverridden(const PrioritizedOutputOverride& override) const;
 
 private:
-    std::string lastInputId;                                            // Last processed input ID; used for deterring SK_FOG_OFF spam
+    std::string lastInputId;                                                       // Last processed input ID; used for deterring SK_FOG_OFF spam
     std::vector<PrioritizedOutputOverride> outputOverrideList;
-    MappingConfig mappings;                                             // Configuration for number of watchers
+    MappingConfig mappings;                                                        // Configuration for number of watchers
     StageKitOutputProcessor skProcessor;
-    QlcplusOutputProcessor* qlcProcessor;                               // Output processor (placeholder)
+    QlcplusOutputProcessor* qlcProcessor;                                          // Output processor (placeholder)
+    std::vector<std::shared_ptr<FileExistsInputWatcher>> fileExistsInputWatchers;  // File watchers for fileInputExists input events.
+
+    std::mutex mtx;  // Mutex to protect shared resources
 
     // Utility function since we are dealing with XML strings in the config
     const SKRUMBLEDATA stageKitOutputSubtypeToSkRumbleData(const Output& output);

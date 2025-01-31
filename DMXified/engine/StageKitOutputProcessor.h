@@ -12,6 +12,7 @@
 
 
 #include <cstdint> // For uint8_t
+#include <mutex>   // For std::mutex
 #include "../config/Output.h"
 #include "../../StageKitPied/controller/RpiLightsController.h" // Include the RpiLightsController header
 
@@ -25,6 +26,7 @@ public:
 
 private:
     RpiLightsController& rpiLightsController; // Lights controller (reference)
+    mutable std::mutex mtx;                   // Mutex to protect shared data
 };
 
 #endif // STAGEKITOUTPUTPROCESSOR_H

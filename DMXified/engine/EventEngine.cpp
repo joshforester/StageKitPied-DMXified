@@ -3,7 +3,19 @@
 // Constructor
 EventEngine::EventEngine(const MappingConfig& mappings, RpiLightsController& rpiLightsController)
     : mappings(mappings), skProcessor(rpiLightsController), qlcProcessor(nullptr) {
-    // You can initialize processors here
+
+	//TODO: sleepTimeMs should be read from INI file if set to initialize FileExistsInputWatcher.
+	//TODO: url should be read from INI file if set to initialize qlcProcessor.
+
+	const std::vector<Input> fileExistsInputs = mappings.getFileExistsInputs();
+    for (const auto& fileExistsInput : fileExistsInputs) {
+        // Use shared_ptr to store in the vector
+        auto fileExistsInputWatcher = std::make_shared<FileExistsInputWatcher>(
+            fileExistsInput.getId(), fileExistsInput.getFile(), *this
+        );
+        fileExistsInputWatchers.push_back(fileExistsInputWatcher);
+    }
+
 }
 
 // Handle an InputEvent.  Algorithm:
@@ -18,6 +30,8 @@ EventEngine::EventEngine(const MappingConfig& mappings, RpiLightsController& rpi
 //      setup any override lists
 //      set lastInputId
 void EventEngine::handleInputEvent(const InputEvent& inputEvent) {
+	std::lock_guard<std::mutex> lock(mtx); // protect the modification of overrides, outputsToProcess, outputOverrideList, and lastInputId
+
 	const std::string inputId = inputEvent.getId();
     Input input = mappings.getInputById(inputId);
 
@@ -52,7 +66,7 @@ void EventEngine::handleInputEvent(const InputEvent& inputEvent) {
     // For each Output, create a PrioritizedOutputOverride from input priority, then use it
     // to check if the output should be processed.
     for (const Output& output : outputs) {
-        const PrioritizedOutputOverride overrideToCheck(output.getType(), output.getSubtype(), priority);
+    	const PrioritizedOutputOverride overrideToCheck(output.getType(), output.getSubtype(), priority);
 
         // Add it to the list to outputs to process if not already overridden
         if (!this->isOverridden(overrideToCheck)) {

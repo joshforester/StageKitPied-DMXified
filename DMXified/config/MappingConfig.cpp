@@ -25,3 +25,14 @@ const std::vector<Output>& MappingConfig::getOutputsByInputId(const std::string&
 	}
 	throw std::runtime_error("Input with id '" + id + "' not found in MappingConfig.");
 }
+
+const std::vector<Input> MappingConfig::getFileExistsInputs() const {
+	std::vector<Input> fileExistsInputs;
+	for (auto& mapping : mappings) {
+		Input input = mapping.getInput();
+		if (input.getType() == "fileExistsInput") {
+			fileExistsInputs.push_back(input);
+		}
+	}
+	return fileExistsInputs;
+}

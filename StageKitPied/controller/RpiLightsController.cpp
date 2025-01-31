@@ -560,68 +560,10 @@ void RpiLightsController::Handle_SerialDisconnect() {
 };
 
 void RpiLightsController::Handle_RumbleData( const uint8_t left_weight, const uint8_t right_weight ) {
-  switch( right_weight ) {
-    case SKRUMBLEDATA::SK_LED_RED:
-      MSG_RPLC_DEBUG( "RED LED" );
-      this->Handle_LEDUpdate( left_weight, SKRUMBLEDATA::SK_LED_RED);
-      break;
-   case SKRUMBLEDATA::SK_LED_GREEN:
-      MSG_RPLC_DEBUG( "GREEN LED" );
-      this->Handle_LEDUpdate( left_weight, SKRUMBLEDATA::SK_LED_GREEN);
-      break;
-    case SKRUMBLEDATA::SK_LED_BLUE:
-      MSG_RPLC_DEBUG( "BLUE LED" );
-      this->Handle_LEDUpdate( left_weight, SKRUMBLEDATA::SK_LED_BLUE);
-      break;
-    case SKRUMBLEDATA::SK_LED_YELLOW:
-      MSG_RPLC_DEBUG( "YELLOW LED" );
-      this->Handle_LEDUpdate( left_weight, SKRUMBLEDATA::SK_LED_YELLOW);
-      break;
-    case SKRUMBLEDATA::SK_FOG_ON:
-      MSG_RPLC_DEBUG( "FOG ON" );
-      this->Handle_FogUpdate( true );
-      break;
-    case SKRUMBLEDATA::SK_FOG_OFF:
-      MSG_RPLC_DEBUG( "FOG OFF" );
-      this->Handle_FogUpdate( false );
-      break;
-    case SKRUMBLEDATA::SK_STROBE_OFF:
-      MSG_RPLC_DEBUG( "Strobe OFF" );
-      this->Handle_StrobeUpdate( 0 );
-      break;
-    case SKRUMBLEDATA::SK_STROBE_SPEED_1:
-      MSG_RPLC_DEBUG( "Strobe - Speed 1" );
-      this->Handle_StrobeUpdate( 1 );
-      break;
-    case SKRUMBLEDATA::SK_STROBE_SPEED_2:
-      MSG_RPLC_DEBUG( "Strobe - Speed 2" );
-      this->Handle_StrobeUpdate( 2 );
-      break;
-    case SKRUMBLEDATA::SK_STROBE_SPEED_3:
-      MSG_RPLC_DEBUG( "Strobe - Speed 3" );
-      this->Handle_StrobeUpdate( 3 );
-      break;
-    case SKRUMBLEDATA::SK_STROBE_SPEED_4:
-      MSG_RPLC_DEBUG( "Strobe - Speed 4" );
-      this->Handle_StrobeUpdate( 4 );
-      break;
-    case SKRUMBLEDATA::SK_ALL_OFF:
-      // I suspect all off includes fog & strobe.
-      MSG_RPLC_DEBUG( "ALL OFF - LEDS & STROBE - " );
-      this->Handle_LEDUpdate( SKRUMBLEDATA::SK_NONE, SKRUMBLEDATA::SK_ALL_OFF );
-      this->Handle_StrobeUpdate( 0 );
-      this->Handle_FogUpdate( false );
-      break;
-    default:
-      MSG_RPLC_INFO( "Unhandled stagekit data received : " << right_weight );
-      break;
-  }
 
-  // Anything other than fog off counts as new data since fog off is constantly sent.
-  if( right_weight != SKRUMBLEDATA::SK_FOG_OFF ) {
-    m_nodata_ms_count = 0;
-  }
-  
+  //TOOD: For now, simply wrap Do_Handle_RumbleData with the exception of the rb3e statement below.  In the future, plug the EventEngine in here.
+  this->Handle_RumbleData(left_weight, right_weight);
+
   if( m_rb3e_sender_enabled ) {
     mRB3E_Network.SendLightEvent( left_weight, right_weight );
   }
@@ -629,6 +571,9 @@ void RpiLightsController::Handle_RumbleData( const uint8_t left_weight, const ui
 
 
 void RpiLightsController::Do_Handle_RumbleData( const uint8_t left_weight, const uint8_t right_weight ) {
+  // TODO: protect other points of entry ???from additional StageKitPied threads, such as adapter polling threads??? if any
+  std::lock_guard<std::mutex> lock(mtx);  // Ensure thread-safe access to rumble data updates
+
   switch( right_weight ) {
     case SKRUMBLEDATA::SK_LED_RED:
       MSG_RPLC_DEBUG( "RED LED" );
@@ -723,7 +668,6 @@ void RpiLightsController::Handle_FogUpdate( const bool fog_on_state ) {
 };
 
 void RpiLightsController::Handle_StrobeUpdate( const uint8_t strobe_speed ) {
-
   m_leds_strobe_speed_current = strobe_speed;
 
   if( strobe_speed == 0  ) {

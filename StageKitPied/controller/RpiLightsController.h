@@ -26,6 +26,7 @@
 #include <cstring>  // memcpy
 #include <unistd.h> // readlink
 #include <libgen.h> // dirname
+#include <mutex>    // for ensuring Do_Handle_RumbleData is thread-safe
 
 #include "stagekit/StageKitConsts.h"
 
@@ -94,6 +95,8 @@ private:
   void Handle_FogUpdate( bool fog_on_state );
 
   void Handle_StrobeUpdate( const uint8_t strobe_speed );
+
+  std::mutex mtx; // an admittedly weak attempt at protecting updates to shared resources
 
 #ifndef EESD
   SerialAdapter      mSerialAdapter;

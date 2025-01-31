@@ -7,8 +7,8 @@
 #include "EventEngine.h"
 #include "InputEvent.h"
 
-FileExistsInputWatcher::FileExistsInputWatcher(std::string id, const std::string& filePath, unsigned int sleepTimeMs, EventEngine& engine)
-    : id(id), filePath(filePath), sleepTimeMs(sleepTimeMs), engine(engine), isRunning(true), previousExistence(false) {
+FileExistsInputWatcher::FileExistsInputWatcher(std::string id, const std::string& filePath, EventEngine& engine, unsigned int sleepTimeMs)
+    : id(id), filePath(filePath), engine(engine), sleepTimeMs(sleepTimeMs), isRunning(true), previousExistence(false) {
     watcherThread = std::thread(&FileExistsInputWatcher::watchFile, this);
 }
 
