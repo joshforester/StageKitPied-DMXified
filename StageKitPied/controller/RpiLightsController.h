@@ -2,7 +2,7 @@
 #define _RPILIGHTSCONTROLLER_H_
 
 #ifdef DEBUG
-  #ifdef EESD
+  #if defined(XXSD)
     #define MSG_RPLC_DEBUG( str ) do { std::cout << "MockRpiLightsController : DEBUG : " << str << std::endl; } while( false )
   #else
     #define MSG_RPLC_DEBUG( str ) do { std::cout << "RpiLightsController : DEBUG : " << str << std::endl; } while( false )
@@ -11,7 +11,7 @@
   #define MSG_RPLC_DEBUG( str ) do { } while ( false )
 #endif
 
-#ifdef EESD
+#if defined(XXSD)
   #define MSG_RPLC_ERROR( str ) do { std::cout << "MockRpiLightsController : ERROR : " << str << std::endl; } while( false )
   #define MSG_RPLC_INFO( str ) do { std::cout << "MockRpiLightsController : INFO : " << str << std::endl; } while( false )
 #else
@@ -31,7 +31,7 @@
 #include "stagekit/StageKitConsts.h"
 
 // Only include StageKitPied dependencies if we're not in the EESD (demo) build
-#ifndef EESD
+#if !defined(XXSD)
 #include "helpers/INI_Handler.h"
 #include "helpers/SleepTimer.h"
 #include "serial/SerialAdapter.h"
@@ -39,7 +39,7 @@
 #include "stagekit/StageKitManager.h"
 #include "leds/LEDArray.h"
 #include "network/RB3E_Network.h"
-#endif
+#endif // !XXSD
 
 //
 #define USB_DIRECTION_IN 0x80
@@ -54,17 +54,17 @@ public:
 
   void Do_Handle_RumbleData( const uint8_t left_weight, const uint8_t right_weight );
 
-#ifndef EESD
+#if !defined(XXSD)
   bool Start();
 
   long Update( const long time_passed_ms ); // Returns time to sleep in ms
 
   void Stop();
-#endif // EESD
+#endif // !XXSD
 
 private:
 
-#ifndef EESD
+#if !defined(XXSD)
   void SerialAdapter_Poll();
 
   void SerialAdapter_HandleControlData();
@@ -88,7 +88,7 @@ private:
   void Handle_SerialDisconnect();
 
   void Handle_RumbleData( const uint8_t left_weight, const uint8_t right_weight );
-#endif // EESD
+#endif // !EESD && !QOSD
 
   void Handle_LEDUpdate( const uint8_t colour, const uint8_t leds );
 
@@ -98,7 +98,7 @@ private:
 
   std::mutex mtx; // an admittedly weak attempt at protecting updates to shared resources
 
-#ifndef EESD
+#if !defined(XXSD)
   SerialAdapter      mSerialAdapter;
   StageKitManager    mStageKitManager;
   LEDArray           mLEDS;
@@ -156,7 +156,7 @@ private:
   uint8_t            m_nodata_brightness;
   
   long               m_button_check_delay;
-#endif // EESD
+#endif // !XXSD
 };
 
 #endif

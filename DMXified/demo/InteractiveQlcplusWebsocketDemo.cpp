@@ -1,71 +1,72 @@
-#include <cstdlib>
+#include "../websocket/WebsocketEndpoint.h"  // Ensure the path is correct
+#include "../websocket/ConnectionMetadata.h" // This includes the metadata class
+
+// Include other necessary standard libraries
 #include <iostream>
-#include <map>
-#include <string>
 #include <sstream>
-
-#include "../websocket/ConnectionMetadata.h"
-#include "../websocket/WebsocketEndpoint.h"
-
-typedef std::string string;
+#include <cstdlib>
+#include <string>
 
 int main() {
     bool done = false;
-    string input;
-    WebsocketEndpoint endpoint;
+    std::string input;
+    WebsocketEndpoint endpoint;  // Create the WebSocket endpoint
 
     while (!done) {
         std::cout << "Enter Command: ";
         std::getline(std::cin, input);
 
         if (input == "quit") {
-            done = true;
+            done = true;  // Exit the loop immediately
+            endpoint.close(websocketpp::close::status::normal, "quit");
         } else if (input == "help") {
             std::cout
                 << "\nCommand List:\n"
                 << "connect <ws uri>\n"
-                << "send <connection id> <message>\n"
-                << "close <connection id> [<close code:default=1000>] [<close reason>]\n"
-                << "show <connection id>\n"
+                << "send <message>\n"
+                << "close [<close code:default=1000>] [<close reason>]\n"
+                << "show\n"
                 << "help: Display this help text\n"
                 << "quit: Exit the program\n"
                 << std::endl;
-        } else if (input.substr(0,7) == "connect") {
-            int id = endpoint.connect(input.substr(8));
-            if (id != -1) {
-                std::cout << "> Created connection with id " << id << std::endl;
+        } else if (input.substr(0, 7) == "connect") {
+            bool isConnected = endpoint.connect(input.substr(8));
+            if (isConnected) {
+                std::cout << "> Created connection" << std::endl;
             }
-        } else if (input.substr(0,4) == "send") {
+        } else if (input.substr(0, 4) == "send") {
             std::stringstream ss(input);
 
-            string cmd;
-            int id;
-            string message;
+            std::string cmd;
+            std::string message;
 
-            ss >> cmd >> id;
-            std::getline(ss,message);
+            ss >> cmd;
+            std::getline(ss, message);
 
-            endpoint.send(id, message);
-        } else if (input.substr(0,5) == "close") {
+            endpoint.send(message);
+        } else if (input.substr(0, 5) == "close") {
             std::stringstream ss(input);
 
-            string cmd;
-            int id;
+            std::string cmd;
             int close_code = websocketpp::close::status::normal;
-            string reason;
+            std::string reason;
 
-            ss >> cmd >> id >> close_code;
-            std::getline(ss,reason);
+            ss >> cmd >> close_code;
+            std::getline(ss, reason);
 
-            endpoint.close(id, close_code, reason);
-        } else if (input.substr(0,4) == "show") {
-            int id = atoi(input.substr(5).c_str());
-
-            ConnectionMetadata::ptr metadata = endpoint.get_metadata(id);
+            // Only close if there's an active connection
+            ConnectionMetadata::ptr metadata = endpoint.get_metadata();
+            if (metadata) {
+                endpoint.close(close_code, reason);
+            } else {
+                std::cout << "> No active connection to close." << std::endl;
+            }
+        } else if (input.substr(0, 4) == "show") {
+            ConnectionMetadata::ptr metadata = endpoint.get_metadata();
             if (metadata) {
                 std::cout << *metadata << std::endl;
             } else {
-                std::cout << "> Unknown connection id " << id << std::endl;
+                std::cout << "> Unknown connection" << std::endl;
             }
         } else {
             std::cout << "> Unrecognized Command" << std::endl;

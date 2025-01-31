@@ -2,9 +2,14 @@
 #define FILEEXISTSINPUTWATCHER_H
 
 #include <string>
-#include <thread>
 #include <atomic>
 #include <functional>
+#include <fstream>
+#include <iostream>
+#include <chrono>
+#include <thread>
+#include "EventEngine.h"
+#include "InputEvent.h"
 
 class EventEngine;  // Forward declaration
 

@@ -59,7 +59,9 @@ int main(int argc, char* argv[]) {
 
     // Initialize the EventEngine
     RpiLightsController rpiLightsController("mock.INI");
-    EventEngine eventEngine(config, rpiLightsController);
+
+    // Access the singleton instance of EventEngine
+    EventEngine& eventEngine = EventEngine::getInstance(config, rpiLightsController);
 
     // Feed the EventEngine events, have it log its decisions with sleep.
     bool isFirst = true;
@@ -79,9 +81,6 @@ int main(int argc, char* argv[]) {
     	} else {
     		inputEventObj = InputEvent(inputEventId);
     	}
-
-    	// Create the input event with no left_weight and translated right_weight.
-        //InputEvent inputEventObj(inputEventId);
 
         // Handle the event
         eventEngine.handleInputEvent(inputEventObj);

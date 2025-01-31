@@ -83,7 +83,7 @@ Once connected (and confirmed via the iqwd `show` command), different QLC+ webso
 
 For QLC+ websocket API, see the [QLC+ Web API Test Page](https://www.qlcplus.org/Test_Web_API.html).
 
-Note that the API isn't explicitly documented there per se, but can be reverse engineered.  From it, one can glean messages to `send <connectionId> <message>`, for example:
+Note that the API isn't explicitly documented there per se, but can be reverse engineered.  From it, one can glean messages to `send <message>`, for example:
 
 getWidgetType:
 

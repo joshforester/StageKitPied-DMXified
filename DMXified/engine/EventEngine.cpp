@@ -1,13 +1,17 @@
 #include "EventEngine.h"
 
+// Initialize the static members
+EventEngine* EventEngine::instance = nullptr;
+std::mutex EventEngine::mutex;
+
 // Constructor
 EventEngine::EventEngine(const MappingConfig& mappings, RpiLightsController& rpiLightsController)
-    : mappings(mappings), skProcessor(rpiLightsController), qlcProcessor(nullptr) {
+    : mappings(mappings), skProcessor(rpiLightsController), qlcProcessor() {
 
 	//TODO: sleepTimeMs should be read from INI file if set to initialize FileExistsInputWatcher.
 	//TODO: url should be read from INI file if set to initialize qlcProcessor.
 
-	const std::vector<Input> fileExistsInputs = mappings.getFileExistsInputs();
+    const std::vector<Input> fileExistsInputs = mappings.getFileExistsInputs();
     for (const auto& fileExistsInput : fileExistsInputs) {
         // Use shared_ptr to store in the vector
         auto fileExistsInputWatcher = std::make_shared<FileExistsInputWatcher>(
@@ -16,6 +20,34 @@ EventEngine::EventEngine(const MappingConfig& mappings, RpiLightsController& rpi
         fileExistsInputWatchers.push_back(fileExistsInputWatcher);
     }
 
+}
+
+EventEngine::~EventEngine() {
+    std::cout << "Cleaning up EventEngine..." << std::endl;
+
+    // Manually delete the static instance if necessary (only if you don't rely on shared_ptr cleanup)
+    if (instance != nullptr) {
+        delete instance;
+        instance = nullptr;  // Set to nullptr to avoid double-delete or invalid access
+    }
+
+    // Optionally, explicitly cleanup resources if necessary
+    // For example, stopping background tasks or releasing system resources
+    for (auto& watcher : fileExistsInputWatchers) {
+        watcher.reset();  // Ensure shared_ptr releases its memory, even though it's redundant here
+    }
+
+    // No need to call any explicit cleanup for skProcessor and qlcProcessor, as their destructors
+    // will automatically clean up the necessary resources when EventEngine is destroyed
+}
+
+// Singleton getInstance method
+EventEngine& EventEngine::getInstance(const MappingConfig& mappings, RpiLightsController& rpiLightsController) {
+    std::lock_guard<std::mutex> lock(mutex);  // Ensure thread safety during initialization
+    if (instance == nullptr) {
+        instance = new EventEngine(mappings, rpiLightsController);
+    }
+    return *instance;
 }
 
 // Handle an InputEvent.  Algorithm:
@@ -30,123 +62,135 @@ EventEngine::EventEngine(const MappingConfig& mappings, RpiLightsController& rpi
 //      setup any override lists
 //      set lastInputId
 void EventEngine::handleInputEvent(const InputEvent& inputEvent) {
-	std::lock_guard<std::mutex> lock(mtx); // protect the modification of overrides, outputsToProcess, outputOverrideList, and lastInputId
+//	std::lock_guard<std::mutex> lock(mtx); // protect the modification of overrides, outputsToProcess, outputOverrideList, and lastInputId
 
-	const std::string inputId = inputEvent.getId();
-    Input input = mappings.getInputById(inputId);
+	try {
 
-    MSG_EVENTENGINE_DEBUG( "handleInputEvent called for inputId " << inputId << "." );
+		const std::string inputId = inputEvent.getId();
+		Input input = mappings.getInputById(inputId);
 
-    // Ignore SK_FOG_OFF spam
-    if ((inputId == skRumbleDataTypeToString(SKRUMBLEDATA::SK_FOG_OFF)) &&
-    	(inputId == lastInputId)) {
-        MSG_EVENTENGINE_DEBUG( "Ignoring SK_FOG_OFF spam." );
-    	return;
-    }
+		MSG_EVENTENGINE_DEBUG( "handleInputEvent called for inputId " << inputId << "." );
 
-
-    // If this is a negation event, populate it accordingly.
-    const bool isNegationEvent = input.isNegationEvent();
-    if (isNegationEvent) {
-        MSG_EVENTENGINE_DEBUG( "Determined to be a negation event." );
-    	const Input negatedEvent = mappings.getInputById(input.getNegatedInputId());
-    	input.populateFromNegatedInput(negatedEvent);
-    }
-
-
-    // Let's now find the outputs that are not overridden.
-    // First, get the priority from the Input
-    const int priority = input.getPriority();
-
-    // Get the list of outputs from MappingConfig based on input's ID
-    const std::vector<Output> outputs = mappings.getOutputsByInputId(input.getId());
-    std::vector<Output> outputsToProcess;
-    std::vector<PrioritizedOutputOverride> overridesToProcess;
-
-    // For each Output, create a PrioritizedOutputOverride from input priority, then use it
-    // to check if the output should be processed.
-    for (const Output& output : outputs) {
-    	const PrioritizedOutputOverride overrideToCheck(output.getType(), output.getSubtype(), priority);
-
-        // Add it to the list to outputs to process if not already overridden
-        if (!this->isOverridden(overrideToCheck)) {
-            MSG_EVENTENGINE_DEBUG( "Output " + output.getType() + ":" + output.getSubtype() + "(P:" + std::to_string(priority) + ") determined to NOT be overridden." );
-        	outputsToProcess.push_back(output);
-        } else {
-            MSG_EVENTENGINE_DEBUG( "Output " + output.getType() + ":" + output.getSubtype() + "(P:" + std::to_string(priority) + ") determined to be overridden." );
-        }
-    }
-
-    // WARNING:
-    // This may cause confusion/problems where input priorities/overrides are complex,
-    // since overrides are associated with inputs but act on outputs.
-    // For now, I'm looking to service the simple use cases, and don't expect this to rear its head.
-    //
-    // If there are outputs to process, then the input event's outputs are not FULLY overridden.
-    // So, we'll go ahead and process the input event's overrides.
-    if (outputsToProcess.size() > 0) {
-    	for (const OutputOverride& overrideToProcess : input.getOutputOverrideList()) {
-    		overridesToProcess.push_back(
-				PrioritizedOutputOverride(overrideToProcess.getType(), overrideToProcess.getSubtype(), input.getPriority())
-			);
-
-    	}
-    }
-
-    // Time to process the outputs
-    bool isFirst = true;
-    for (const Output& outputToProcess : outputsToProcess) {
-    	if (isFirst) {
-    		std::cout << "\n";
-    		isFirst = false;
-    	}
-    	const std::string message = "Processing output " + outputToProcess.getType() + ":" + outputToProcess.getSubtype();
-    	MSG_EVENTENGINE_DEBUG(message);
-
-    	const OUTPUT_TYPE type = stringToOutputType(outputToProcess.getType());
-    	switch (type) {
-    		case stageKitOutput:
-                MSG_EVENTENGINE_DEBUG( "Determined StageKitProcessor should process." );
-				if (inputEvent.getRightWeight() != 0) {
-	                MSG_EVENTENGINE_DEBUG( "right_weight sent with input event; determined to be RB3 input." );
-					skProcessor.process(
-							outputToProcess,
-							inputEvent.getLeftWeight(),
-							inputEvent.getRightWeight()
-					);
-				} else {
-	                MSG_EVENTENGINE_DEBUG( "right_weight NOT sent with input event; will need to determine event from config." );
-	                SKRUMBLEDATA right_weight = this->stageKitOutputSubtypeToSkRumbleData(outputToProcess);
-					skProcessor.process(
-							outputToProcess,
-							inputEvent.getLeftWeight(),
-							right_weight
-					);
-				}
-				break;
-			case qlcplusOutput:
-                MSG_EVENTENGINE_DEBUG( "Determined QlcplusProcessor should process." );
-				qlcProcessor->process(outputToProcess);
-				break;
-			default:
-				std::cerr << "Unknown output type!" << std::endl;
-				break;
+		// Ignore SK_FOG_OFF spam
+		if ((inputId == skRumbleDataTypeToString(SKRUMBLEDATA::SK_FOG_OFF)) &&
+			(inputId == lastInputId)) {
+			MSG_EVENTENGINE_DEBUG( "Ignoring SK_FOG_OFF spam." );
+			return;
 		}
-    }
 
-    // If this is a negation event, clear the overrides, else add them.
-    for (const PrioritizedOutputOverride& overrideToProcess : overridesToProcess) {
-    	if (isNegationEvent) {
-            MSG_EVENTENGINE_DEBUG( "Clearing override " + overrideToProcess.getType() + ":" + overrideToProcess.getSubtype() + "(P:" + std::to_string(overrideToProcess.getPriority()) + ")." );
-    		this->clearOverride(overrideToProcess);
-    	} else {
-            MSG_EVENTENGINE_DEBUG( "Creating override " + overrideToProcess.getType() + ":" + overrideToProcess.getSubtype() + "(P:" + std::to_string(overrideToProcess.getPriority()) + ")." );
-        	this->override(overrideToProcess);
-    	}
-    }
+		// If this is a negation event, populate it accordingly.
+		const bool isNegationEvent = input.isNegationEvent();
+		if (isNegationEvent) {
+			MSG_EVENTENGINE_DEBUG( "Determined to be a negation event." );
+			const Input negatedEvent = mappings.getInputById(input.getNegatedInputId());
+			input.populateFromNegatedInput(negatedEvent);
+		}
 
-    // Only doing this to prevent processing of SK_FOG_OFF spam.
-    lastInputId = inputId;
+		// Let's now find the outputs that are not overridden.
+		// First, get the priority from the Input
+		const int priority = input.getPriority();
+
+		// Get the list of outputs from MappingConfig based on input's ID
+		const std::vector<Output> outputs = mappings.getOutputsByInputId(input.getId());
+		std::vector<Output> outputsToProcess;
+		std::vector<PrioritizedOutputOverride> overridesToProcess;
+
+		// For each Output, create a PrioritizedOutputOverride from input priority, then use it
+		// to check if the output should be processed.
+		for (const Output& output : outputs) {
+			const PrioritizedOutputOverride overrideToCheck(output.getType(), output.getSubtype(), priority);
+
+			// Add it to the list to outputs to process if not already overridden
+			if (!this->isOverridden(overrideToCheck)) {
+				MSG_EVENTENGINE_DEBUG( "Output " + output.getType() + ":" + output.getSubtype() + "(P:" + std::to_string(priority) + ") determined to NOT be overridden." );
+				outputsToProcess.push_back(output);
+			} else {
+				MSG_EVENTENGINE_DEBUG( "Output " + output.getType() + ":" + output.getSubtype() + "(P:" + std::to_string(priority) + ") determined to be overridden." );
+			}
+		}
+
+		// WARNING:
+		// This may cause confusion/problems where input priorities/overrides are complex,
+		// since overrides are associated with inputs but act on outputs.
+		// For now, I'm looking to service the simple use cases, and don't expect this to rear its head.
+		//
+		// If there are outputs to process, then the input event's outputs are not FULLY overridden.
+		// So, we'll go ahead and process the input event's overrides.
+		if (outputsToProcess.size() > 0) {
+			for (const OutputOverride& overrideToProcess : input.getOutputOverrideList()) {
+				overridesToProcess.push_back(
+					PrioritizedOutputOverride(overrideToProcess.getType(), overrideToProcess.getSubtype(), input.getPriority())
+				);
+			}
+		}
+
+		// Time to process the outputs
+		bool isFirst = true;
+		for (const Output& outputToProcess : outputsToProcess) {
+			if (isFirst) {
+				std::cout << "\n";
+				isFirst = false;
+			}
+			const std::string message = "Processing output " + outputToProcess.getType() + ":" + outputToProcess.getSubtype();
+			MSG_EVENTENGINE_DEBUG(message);
+
+			const OUTPUT_TYPE type = stringToOutputType(outputToProcess.getType());
+			switch (type) {
+				case stageKitOutput:
+					MSG_EVENTENGINE_DEBUG( "Determined StageKitProcessor should process." );
+					if (inputEvent.getRightWeight() != 0) {
+						MSG_EVENTENGINE_DEBUG( "right_weight sent with input event; determined to be RB3 input." );
+						skProcessor.process(
+								outputToProcess,
+								inputEvent.getLeftWeight(),
+								inputEvent.getRightWeight()
+						);
+					} else {
+						MSG_EVENTENGINE_DEBUG( "right_weight NOT sent with input event; will need to determine event from config." );
+						SKRUMBLEDATA right_weight = this->stageKitOutputSubtypeToSkRumbleData(outputToProcess);
+						skProcessor.process(
+								outputToProcess,
+								inputEvent.getLeftWeight(),
+								right_weight
+						);
+					}
+					break;
+				case qlcplusOutput:
+					try {
+						MSG_EVENTENGINE_DEBUG("Determined QlcplusProcessor should process.");
+						qlcProcessor.process(outputToProcess);
+					} catch (const std::exception& e) {
+						std::cerr << "Error processing Qlcplus output: " << e.what() << std::endl;
+					} catch (...) {
+						std::cerr << "Unknown error processing Qlcplus output." << std::endl;
+					}
+					break;
+				default:
+					std::cerr << "Unknown output type!" << std::endl;
+					break;
+			}
+
+
+		    // If this is a negation event, clear the overrides, else add them.
+		    for (const PrioritizedOutputOverride& overrideToProcess : overridesToProcess) {
+		    	if (isNegationEvent) {
+		            MSG_EVENTENGINE_DEBUG( "Clearing override " + overrideToProcess.getType() + ":" + overrideToProcess.getSubtype() + "(P:" + std::to_string(overrideToProcess.getPriority()) + ")." );
+		    		this->clearOverride(overrideToProcess);
+		    	} else {
+		            MSG_EVENTENGINE_DEBUG( "Creating override " + overrideToProcess.getType() + ":" + overrideToProcess.getSubtype() + "(P:" + std::to_string(overrideToProcess.getPriority()) + ")." );
+		        	this->override(overrideToProcess);
+		    	}
+		    }
+
+		    // Only doing this to prevent processing of SK_FOG_OFF spam.
+		    lastInputId = inputId;  // Save inputId for comparison with SK_FOG_OFF.
+		}
+
+	} catch (const std::exception& e) {
+		std::cerr << "Exception in handleInputEvent: " << e.what() << std::endl;
+	} catch (...) {
+		std::cerr << "Unknown exception in handleInputEvent." << std::endl;
+	}
 }
 
 // Override an existing output override
@@ -161,7 +205,7 @@ void EventEngine::clearOverride(const PrioritizedOutputOverride& override) {
                                  return existingOverride == override;
                              });
 
-    // If we found a match, erase it
+    // Clear an existing output override
     if (it != outputOverrideList.end()) {
         outputOverrideList.erase(it, outputOverrideList.end());
     }
@@ -178,38 +222,35 @@ const bool EventEngine::isOverridden(const PrioritizedOutputOverride& override) 
 }
 
 const SKRUMBLEDATA EventEngine::stageKitOutputSubtypeToSkRumbleData(const Output& output) {
-    // Declare the variables outside of the switch statement
-    int strobeSpeed = 0;  // Default initialization
-    bool fogOn = false;   // Default initialization
+	// Declare the variables outside of the switch statement
+	int strobeSpeed = 0;
+    bool fogOn = false;
 
-	STAGEKIT_OUTPUT_SUBTYPE stageKitOutputSubtype = stringToStagekitOutputSubtype(output.getSubtype());
-	switch(stageKitOutputSubtype) {
+    STAGEKIT_OUTPUT_SUBTYPE stageKitOutputSubtype = stringToStagekitOutputSubtype(output.getSubtype());
+    switch (stageKitOutputSubtype) {
+        case STAGEKIT_OUTPUT_SUBTYPE::Handle_LEDUpdate:
+            return stringToSkRumbleData(output.getParameter("value"));
 
-		case STAGEKIT_OUTPUT_SUBTYPE::Handle_LEDUpdate:
-			return stringToSkRumbleData(output.getParameter("value"));
+        case STAGEKIT_OUTPUT_SUBTYPE::Handle_StrobeUpdate:
+            strobeSpeed = stringToInt(output.getParameter("value"));
+            if ((0 > strobeSpeed) || (strobeSpeed > 4)) {
+                throw std::out_of_range("Attempted to use Handle_StrobeUpdate value out of range.");
+            }
+            if (strobeSpeed == 0) {
+                return SKRUMBLEDATA::SK_STROBE_OFF;
+            } else {
+                return stringToSkRumbleData("SK_STROBE_SPEED_" + std::to_string(strobeSpeed));
+            }
 
-		case STAGEKIT_OUTPUT_SUBTYPE::Handle_StrobeUpdate:
-			strobeSpeed = stringToInt(output.getParameter("value"));
-			if ((0 > strobeSpeed) || (strobeSpeed > 4)) {
-		        throw std::out_of_range("Attempted to use Handle_StrobeUpdate value from MappingConfig: " + std::to_string(strobeSpeed) + ".  This value should be between 0 and 4.");
-			}
-			if (strobeSpeed == 0) {
-				return SKRUMBLEDATA::SK_STROBE_OFF;
-			} else {
-				return stringToSkRumbleData("SK_STROBE_SPEED_" + std::to_string(strobeSpeed));
-			}
+        case STAGEKIT_OUTPUT_SUBTYPE::Handle_FogUpdate:
+            fogOn = stringToBool(output.getParameter("value"));
+            if (fogOn) {
+                return SKRUMBLEDATA::SK_FOG_ON;
+            } else {
+                return SKRUMBLEDATA::SK_FOG_OFF;
+            }
 
-		case STAGEKIT_OUTPUT_SUBTYPE::Handle_FogUpdate:
-			fogOn = stringToBool(output.getParameter("value"));
-			if (fogOn) {
-				return SKRUMBLEDATA::SK_FOG_ON;
-			} else {
-				return SKRUMBLEDATA::SK_FOG_OFF;
-			}
-
-		default:
-			throw std::invalid_argument("Attempted to use invalid stageKitOutput " + output.getType() + ":" + output.getSubtype() + ".");
-			return SKRUMBLEDATA::SK_NONE;
-	}
-
+        default:
+            throw std::invalid_argument("Invalid stageKitOutput subtype.");
+    }
 }

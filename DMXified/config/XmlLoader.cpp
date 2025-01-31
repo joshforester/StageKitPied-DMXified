@@ -1,8 +1,5 @@
 #include "XmlLoader.h"
-#include <fstream>
-#include <iostream>
-#include <stdexcept>
-#include <rapidxml.hpp>
+
 
 MappingConfig XmlLoader::loadMappingConfig(const std::string& filename) {
     // Read the XML file into a string

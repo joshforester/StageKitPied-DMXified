@@ -2,6 +2,10 @@
 #define XMLLOADER_H
 
 #include <string>
+#include <fstream>
+#include <iostream>
+#include <stdexcept>
+#include <rapidxml.hpp>
 #include "MappingConfig.h"
 
 class XmlLoader {

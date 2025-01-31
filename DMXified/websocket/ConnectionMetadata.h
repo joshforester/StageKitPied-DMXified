@@ -29,10 +29,9 @@ typedef websocketpp::client<websocketpp::config::asio_client> client;
 
 class ConnectionMetadata {
 public:
-
   typedef websocketpp::lib::shared_ptr<ConnectionMetadata> ptr;
 
-  ConnectionMetadata(int id, websocketpp::connection_hdl hdl, std::string uri);
+  ConnectionMetadata(websocketpp::connection_hdl hdl, std::string uri);
 
   void on_open(client * c, websocketpp::connection_hdl hdl);
 
@@ -44,8 +43,6 @@ public:
 
   websocketpp::connection_hdl get_hdl() const;
 
-  int get_id() const;
-
   std::string get_status() const;
 
   void record_sent_message(std::string message);
@@ -53,15 +50,12 @@ public:
   friend std::ostream & operator<< (std::ostream & out, ConnectionMetadata const & data);
 
 private:
-
-  int 						  	m_id;
-  websocketpp::connection_hdl 	m_hdl;
-  std::string 					m_status;
-  std::string 					m_uri;
-  std::string 					m_server;
-  std::string 					m_error_reason;
-  std::vector<std::string> 		m_messages;
-
+  websocketpp::connection_hdl m_hdl;
+  std::string m_status;
+  std::string m_uri;
+  std::string m_server;
+  std::string m_error_reason;
+  std::vector<std::string> m_messages;
 };
 
 #endif /* WEBSOCKET_CONNECTIONMETADATA_H_ */

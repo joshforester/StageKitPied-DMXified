@@ -10,6 +10,8 @@
 #define MSG_EVENTENGINE_ERROR( str ) do { std::cout << "EventEngine : ERROR : " << str << std::endl; } while( false )
 #define MSG_EVENTENGINE_INFO( str ) do { std::cout << "EventEngine : INFO : " << str << std::endl; } while( false )
 
+// Forward declare FileExistsInputWatcher because the preprocessor will see the vector in private section before include
+class FileExistsInputWatcher;
 
 #include <vector>
 #include <string>
@@ -19,17 +21,24 @@
 #include "../config/ConfigHelpers.h"
 #include "../config/MappingConfig.h"
 #include "../config/MappingConfigConsts.h"
+#include "../output/StageKitOutputProcessor.h"
+#include "../output/QlcplusOutputProcessor.h"
 #include "../../StageKitPied/stagekit/StageKitConsts.h"
 #include "InputEvent.h"
 #include "PrioritizedOutputOverride.h"
-#include "StageKitOutputProcessor.h"
-#include "QlcplusOutputProcessor.h"
 #include "FileExistsInputWatcher.h"
 
 class EventEngine {
 public:
-    // Constructor that takes a MappingConfig
-    EventEngine(const MappingConfig& mappings, RpiLightsController& rpiLightsController);
+	// Destructor since we are dealing with a Singleton
+	~EventEngine();
+
+	// Constructor that takes a MappingConfig
+    static EventEngine& getInstance(const MappingConfig& mappings, RpiLightsController& rpiLightsController);
+
+    // Delete the copy constructor and assignment operator to avoid multiple instances
+    EventEngine(const EventEngine&) = delete;
+    EventEngine& operator=(const EventEngine&) = delete;
 
     // Methods for handling overrides
     void handleInputEvent(const InputEvent& inputEvent);
@@ -38,17 +47,21 @@ public:
     const bool isOverridden(const PrioritizedOutputOverride& override) const;
 
 private:
+    // Private constructor
+    EventEngine(const MappingConfig& mappings, RpiLightsController& rpiLightsController);
+
     std::string lastInputId;                                                       // Last processed input ID; used for deterring SK_FOG_OFF spam
     std::vector<PrioritizedOutputOverride> outputOverrideList;
     MappingConfig mappings;                                                        // Configuration for number of watchers
     StageKitOutputProcessor skProcessor;
-    QlcplusOutputProcessor* qlcProcessor;                                          // Output processor (placeholder)
+    QlcplusOutputProcessor qlcProcessor;                                           // Output processor
     std::vector<std::shared_ptr<FileExistsInputWatcher>> fileExistsInputWatchers;  // File watchers for fileInputExists input events.
-
-    std::mutex mtx;  // Mutex to protect shared resources
 
     // Utility function since we are dealing with XML strings in the config
     const SKRUMBLEDATA stageKitOutputSubtypeToSkRumbleData(const Output& output);
+
+    static EventEngine* instance; // Singleton instance
+    static std::mutex mutex;      // Mutex to protect singleton initialization
 };
 
 #endif // EVENTENGINE_H

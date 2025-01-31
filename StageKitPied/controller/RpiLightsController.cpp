@@ -572,7 +572,7 @@ void RpiLightsController::Handle_RumbleData( const uint8_t left_weight, const ui
 
 void RpiLightsController::Do_Handle_RumbleData( const uint8_t left_weight, const uint8_t right_weight ) {
   // TODO: protect other points of entry ???from additional StageKitPied threads, such as adapter polling threads??? if any
-  std::lock_guard<std::mutex> lock(mtx);  // Ensure thread-safe access to rumble data updates
+//  std::lock_guard<std::mutex> lock(mtx);  // Ensure thread-safe access to rumble data updates
 
   switch( right_weight ) {
     case SKRUMBLEDATA::SK_LED_RED:
