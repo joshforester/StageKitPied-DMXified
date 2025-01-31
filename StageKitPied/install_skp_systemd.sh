@@ -7,9 +7,11 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 SKP_INSTALL_DIR=/opt/StageKitPied
+SKP_INPUT_DIR=${SKP_INSTALL_DIR}/input
 
 # Setup the program in its place.
 mkdir -p ${SKP_INSTALL_DIR}
+mkdir -p ${SKP_INPUT_DIR}
 cp skp ${SKP_INSTALL_DIR}
 cp lights.ini ${SKP_INSTALL_DIR}
 cp leds1.ini ${SKP_INSTALL_DIR}
