@@ -5,7 +5,7 @@
 int main(int argc, char* argv[]) {
 
     // Default value
-    std::string mappingFileName = "demo_mapping.xml";
+    std::string mappingFileName = "xcrd_demo_mapping.xml";
 
     // Check if a command-line argument is provided
     if (argc == 2) {

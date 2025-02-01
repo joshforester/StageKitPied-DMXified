@@ -13,8 +13,8 @@
 int main(int argc, char* argv[]) {
 
     // Default value
-    std::string mappingFileName = "demo_mapping.xml";
-    std::string eventFileName = "demo_events.txt";
+    std::string mappingFileName = "eesd_demo_mapping.xml";
+    std::string eventFileName = "eesd_demo_events.txt";
 
     // Check if a command-line argument is provided
     if (argc == 3) {

@@ -4,7 +4,7 @@ This folder contains programs for verifying your StageKitPied-DMXified setup.  T
 * __Interactive Qlcplus Websocket Demo (__ `iqwd` __)__  - This is a program to simply test your connection to Qlcplus Websocket port.  When successfuly, you'll have verified that Qlcplus's Websocket API is enabled and that your Raspberry Pi can connect to it over the network.
 * __XML Config Reader Demo (__ `xcrd` __)__  - This is a program that reads in a mapping file XML and prints it out.  This validates the XML, and somewhat validates that the file has the expected format.  There  _may_  be attribute value problems in the file that won't be necessarily caught by this program, but it's a great place to start.
 * __Event Engine Simulator Demo (__ `eesd` __)__  - This is a program that simulates what decisions StageKitPied-DMXified will make given your mapping file XML and a sequence of events.  This program will also find problems with the mapping file XML file that the XML Config Reader Demo did not.
-
+* __Qlcplus Output Simulator Demo (__ `qosd` __)__  - This is a program that simulates what decisions StageKitPied-DMXified will make given your mapping file XML and a sequence of events.  However, this program will actually process <qlcOutput> outputs using Qlcplus's Websocket API.  Additionally, it respects <fileExistsInput> file watchers in the mapping file XML, responding to file system events during execution.
 
 ## Configuration
 
@@ -27,7 +27,7 @@ TODO.
 
 #### XCRD
 
-None required.  If you are passing in a mapping file to test, that will need to be correct mapping file XML (please see `demo_mapping.xml` for an example of what is possible).
+None required.  If you are passing in a mapping file to test, that will need to be correct mapping file XML (please see `xcrd_demo_mapping.xml` for an example of what is possible).
 
 #### Logging
 
@@ -37,13 +37,27 @@ TODO.
 
 #### EESD
 
-None required.  If you are passing in a mapping file to test, that will need to be correct mapping file XML (please see `demo_mapping.xml` for an example of what is possible).  
+None required.  If you are passing in a mapping file to test, that will need to be correct mapping file XML (please see `eesd_demo_mapping.xml` for an example of what is possible).  
 
-Further, if you are passing in an event file to test, that will need to be the correct format (please see `demo_events.txt` for an example of what is possible).  Note that the event file is simply an ordered list of ids.  Each id should reference a unique id attribute from an input element in the mapping file XML used.  Please review `demo_events.txt`, as it references id attributes from input elements in `demo_mapping.xml`.
+Further, if you are passing in an event file to test, that will need to be the correct format (please see `eesd_demo_events.txt` for an example of what is possible).  Note that the event file is simply an ordered list of ids.  Each id should reference a unique id attribute from an input element in the mapping file XML used.  Please review `eesd_demo_events.txt`, as it references id attributes from input elements in `eesd_demo_mapping.xml`.
+
+### Qlcplus Output Simulator Demo (`qosd`)
+
+#### QOSD
+
+None required.  If you are passing in a mapping file to test, that will need to be correct mapping file XML (please see `qosd_demo_mapping.xml` for an example of what is possible).  
+
+Further, if you are passing in an event file to test, that will need to be the correct format (please see `qosd_demo_events.txt` for an example of what is possible).  Note that the event file is simply an ordered list of ids.  Each id should reference a unique id attribute from an input element in the mapping file XML used.  Please review `qosd_demo_events.txt`, as it references id attributes from input elements in `qosd_demo_mapping.xml`.
+
+#### QLCPlus (QLC+) Server Configuration
+
+If your QLC+ instance is ready to accept the Websocket API commands, you'll see lighting updates as the simulator runs. 
+
+TODO:  explain strategies for QLC configuration
 
 #### Logging
 
-Output for this program is done via the DEBUG build macro, which is already configured for the `eesd` target and dependent code during this application's build.  Thus, there's no additional logging configuration necessary here--you should be able to read along as to what the EventEngine is deciding (based on the provided mapping file XML and event file) upon running EESD on the command line.
+Output for this program is done via the DEBUG build macro, which is already configured for the `qosd` target and dependent code during this application's build.  Thus, there's no additional logging configuration necessary here--you should be able to read along as to what the EventEngine is deciding (based on the provided mapping file XML and event file) upon running QOSD on the command line.
 
 ## Deploying
 
@@ -115,7 +129,7 @@ CH|2|255
 #> ./xcrd
 ```
 
-This will run the demo using the included `demo_mapping.xml` file.  If you'd like to test out your own file, execute it as follows:
+This will run the demo using the included `xcrd_demo_mapping.xml` file.  If you'd like to test out your own file, execute it as follows:
 
 ```
 #> ./xcrd path/to/your/mapping_file.xml
@@ -127,8 +141,20 @@ This will run the demo using the included `demo_mapping.xml` file.  If you'd lik
 #> ./eesd
 ```
 
-This will run the demo using the included `demo_mapping.xml` and `demo_events.txt` files.  If you'd like to test out your own file[s], execute it as follows:
+This will run the demo using the included `eesd_demo_mapping.xml` and `eesd_demo_events.txt` files.  If you'd like to test out your own file[s], execute it as follows:
 
 ```
 #> ./eesd path/to/your/mapping_file.xml path/to/your/event_file.txt
+```
+
+### Qlcplus Output Simulator Demo (`qosd`)
+
+```
+#> ./qosd
+```
+
+This will run the demo using the included `qosd_demo_mapping.xml` and `qosd_demo_events.txt` files.  If you'd like to test out your own file[s], execute it as follows:
+
+```
+#> ./qosd path/to/your/mapping_file.xml path/to/your/event_file.txt
 ```
