@@ -34,8 +34,9 @@ void QlcplusOutputProcessor::process(const Output output) {
 
 	// Send the message over the WebSocket connection
 	if (connectionMetadata != nullptr && connectionMetadata->get_status() == "Open") {
-		websocketEndpoint.send(message);
-		std::cout << "Sent message: " << message << std::endl;
+		std::string data = qlcplusOutputToQlcplusWsCommand(output);
+		websocketEndpoint.send(data);
+		std::cout << "Sent message: " << data << std::endl;
 	} else {
 		std::cerr << "WebSocket connection failed, unable to send message." << std::endl;
 	}
@@ -70,4 +71,29 @@ void QlcplusOutputProcessor::ensureConnection() {
             }
         }
     }
+}
+
+const std::string QlcplusOutputProcessor::qlcplusOutputToQlcplusWsCommand(const Output output) {
+	std::string type = output.getType();
+	if (type != outputTypeToString(OUTPUT_TYPE::qlcplusOutput)) {
+		throw std::invalid_argument("Invalid outputType " + type);
+	}
+
+	QLCPLUS_OUTPUT_SUBTYPE subtype = stringToQlcplusOutputSubtype(output.getSubtype());
+	if (subtype == QLCPLUS_OUTPUT_SUBTYPE::basicWidgetValueSet) {
+	    std::string widgetId = output.getParameter(qlcplusOutputParameterToString(QLCPLUS_OUTPUT_PARAMETER::widgetId));
+		std::string value = output.getParameter(qlcplusOutputParameterToString(QLCPLUS_OUTPUT_PARAMETER::value));
+		return widgetId + "|" + value;
+	} else if (subtype == QLCPLUS_OUTPUT_SUBTYPE::setFunctionStatus) {
+		std::string functionId = output.getParameter(qlcplusOutputParameterToString(QLCPLUS_OUTPUT_PARAMETER::functionId));
+		std::string status = output.getParameter(qlcplusOutputParameterToString(QLCPLUS_OUTPUT_PARAMETER::status));
+		return "QLC+API|setFunctionStatus|" + functionId + "|" + status;
+	} else if (subtype == QLCPLUS_OUTPUT_SUBTYPE::simpleDeskChannelSet) {
+		std::string absoluteDmxAddress = output.getParameter(qlcplusOutputParameterToString(QLCPLUS_OUTPUT_PARAMETER::absoluteDmxAddress));
+		std::string value = output.getParameter(qlcplusOutputParameterToString(QLCPLUS_OUTPUT_PARAMETER::value));
+		return "CH|" + absoluteDmxAddress + "|" + value;
+	}
+
+	std::cerr << "Unknown output subtype specified for " << type << "!" << std::endl;
+	return "NOOP";
 }

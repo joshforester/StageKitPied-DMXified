@@ -24,6 +24,14 @@ enum QLCPLUS_OUTPUT_SUBTYPE {
 	basicWidgetValueSet  = 3,
 };
 
+enum QLCPLUS_OUTPUT_PARAMETER {
+	widgetId             = 1,
+	value                = 2,
+	functionId           = 3,
+	status               = 4,
+	absoluteDmxAddress   = 5,
+};
+
 inline const std::string outputTypeToString(OUTPUT_TYPE type) {
     switch (type) {
         case OUTPUT_TYPE::stageKitOutput:
@@ -94,6 +102,23 @@ inline const QLCPLUS_OUTPUT_SUBTYPE stringToQlcplusOutputSubtype(std::string str
 	} else {
 		throw std::runtime_error("Attempting to convert string " + str + " to qlcplusOutput subtype, but it is not a valid subtype.");
 	}
+}
+
+inline const std::string qlcplusOutputParameterToString(QLCPLUS_OUTPUT_PARAMETER parameter) {
+    switch (parameter) {
+        case QLCPLUS_OUTPUT_PARAMETER::widgetId:
+            return "widgetId";
+        case QLCPLUS_OUTPUT_PARAMETER::value:
+            return "value";
+        case QLCPLUS_OUTPUT_PARAMETER::functionId:
+            return "functionId";
+        case QLCPLUS_OUTPUT_PARAMETER::status:
+            return "status";
+        case QLCPLUS_OUTPUT_PARAMETER::absoluteDmxAddress:
+            return "absoluteDmxAddress";
+        default:
+            return "Unknown";
+    }
 }
 
 #endif /* CONFIG_MAPPINGCONFIGCONSTS_H_ */

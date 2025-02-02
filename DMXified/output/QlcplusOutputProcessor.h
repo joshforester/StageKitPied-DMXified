@@ -14,6 +14,7 @@
 #include <iostream>
 #include <mutex>                             // For std::mutex
 #include "../config/Output.h"                // the Output class
+#include "../config/MappingConfigConsts.h"   // For translating config
 #include "../websocket/WebsocketEndpoint.h"  // Include your WebsocketEndpoint header
 #include "../websocket/ConnectionMetadata.h" // Include ConnectionMetadata
 
@@ -38,6 +39,7 @@ private:
 
     // Ensure WebSocket connection is open before sending data
     void ensureConnection();
+    const std::string qlcplusOutputToQlcplusWsCommand(const Output output);
 #endif // EESD
 };
 
