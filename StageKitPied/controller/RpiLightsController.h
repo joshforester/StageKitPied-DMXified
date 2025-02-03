@@ -39,6 +39,9 @@
 #include "stagekit/StageKitManager.h"
 #include "leds/LEDArray.h"
 #include "network/RB3E_Network.h"
+#include "../dmxified/engine/EventEngine.h"
+#include "../dmxified/config/MappingConfig.h"
+#include "../dmxified/config/XmlLoader.h"
 #endif // !XXSD
 
 //
@@ -99,6 +102,8 @@ private:
   std::mutex mtx; // an admittedly weak attempt at protecting updates to shared resources
 
 #if !defined(XXSD)
+  MappingConfig	     dmxifiedMappingConfig;
+
   SerialAdapter      mSerialAdapter;
   StageKitManager    mStageKitManager;
   LEDArray           mLEDS;

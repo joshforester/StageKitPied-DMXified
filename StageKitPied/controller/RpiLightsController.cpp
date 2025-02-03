@@ -101,6 +101,14 @@ RpiLightsController::RpiLightsController( const char* ini_file ) {
     //TODO: dmxified should be read from INI file to set whether or not to create DMXified engine
 	//TODO: sleepTimeMs should be read from INI file if set to initialize FileExistsInputWatcher.
 	//TODO: url should be read from INI file if set to initialize qlcProcessor.
+    //TODO: mapping config file should be read from INI if set to initialize EventEngine
+
+    // Load the XML file into a MappingConfig object
+    try {
+    	dmxifiedMappingConfig = XmlLoader::loadMappingConfig("dmxified_mapping.xml");
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << "\n";
+    }
 
     std::string section_name;
     for( uint8_t config_id = 1; config_id < 5; config_id++ ) {
@@ -566,7 +574,19 @@ void RpiLightsController::Handle_SerialDisconnect() {
 void RpiLightsController::Handle_RumbleData( const uint8_t left_weight, const uint8_t right_weight ) {
 
   //TOOD: For now, simply wrap Do_Handle_RumbleData with the exception of the rb3e statement below.  In the future, plug the EventEngine in here.
-  this->Do_Handle_RumbleData(left_weight, right_weight);
+  //this->Do_Handle_RumbleData(left_weight, right_weight);
+
+  InputEvent inputEvent(
+	skRumbleDataTypeToString(static_cast<SKRUMBLEDATA>(right_weight)),
+	left_weight,
+	right_weight
+  );
+
+  EventEngine& eventEngine = EventEngine::getInstance(
+  	dmxifiedMappingConfig,
+	*this
+  );
+  eventEngine.handleInputEvent(inputEvent);
 
   if( m_rb3e_sender_enabled ) {
     mRB3E_Network.SendLightEvent( left_weight, right_weight );

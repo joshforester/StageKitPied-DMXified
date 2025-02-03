@@ -1,4 +1,5 @@
 #include "StageKitOutputProcessor.h"
+#include "../../controller/RpiLightsController.h" // Include the RpiLightsController header
 
 StageKitOutputProcessor::StageKitOutputProcessor(RpiLightsController& rpiLightsController)
     : rpiLightsController(rpiLightsController) {} // Initialize the reference to RpiLightsController
