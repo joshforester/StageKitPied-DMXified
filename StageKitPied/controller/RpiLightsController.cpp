@@ -1,5 +1,5 @@
-
 #include "RpiLightsController.h"
+
 
 RpiLightsController::RpiLightsController( const char* ini_file ) {
 
@@ -98,6 +98,10 @@ RpiLightsController::RpiLightsController( const char* ini_file ) {
       }
     }
     
+    //TODO: dmxified should be read from INI file to set whether or not to create DMXified engine
+	//TODO: sleepTimeMs should be read from INI file if set to initialize FileExistsInputWatcher.
+	//TODO: url should be read from INI file if set to initialize qlcProcessor.
+
     std::string section_name;
     for( uint8_t config_id = 1; config_id < 5; config_id++ ) {
       // Stagekit configs.  Config=0 is internal for all off.
@@ -562,7 +566,7 @@ void RpiLightsController::Handle_SerialDisconnect() {
 void RpiLightsController::Handle_RumbleData( const uint8_t left_weight, const uint8_t right_weight ) {
 
   //TOOD: For now, simply wrap Do_Handle_RumbleData with the exception of the rb3e statement below.  In the future, plug the EventEngine in here.
-  this->Handle_RumbleData(left_weight, right_weight);
+  this->Do_Handle_RumbleData(left_weight, right_weight);
 
   if( m_rb3e_sender_enabled ) {
     mRB3E_Network.SendLightEvent( left_weight, right_weight );

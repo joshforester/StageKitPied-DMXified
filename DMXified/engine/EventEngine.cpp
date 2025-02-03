@@ -1,21 +1,28 @@
 #include "EventEngine.h"
+#include "FileExistsInputWatcher.h"
 
 // Initialize the static members
 EventEngine* EventEngine::instance = nullptr;
 std::mutex EventEngine::mutex;
 
 // Constructor
-EventEngine::EventEngine(const MappingConfig& mappings, RpiLightsController& rpiLightsController)
-    : mappings(mappings), skProcessor(rpiLightsController), qlcProcessor() {
-
-	//TODO: sleepTimeMs should be read from INI file if set to initialize FileExistsInputWatcher.
-	//TODO: url should be read from INI file if set to initialize qlcProcessor.
+EventEngine::EventEngine(
+		const MappingConfig& mappings,
+		RpiLightsController&
+		rpiLightsController,
+		const std::string& url,
+		const unsigned int fileExistsInputWatcherSleepTimeMs
+)
+    : mappings(mappings), skProcessor(rpiLightsController), qlcProcessor(url) {
 
     const std::vector<Input> fileExistsInputs = mappings.getFileExistsInputs();
     for (const auto& fileExistsInput : fileExistsInputs) {
         // Use shared_ptr to store in the vector
         auto fileExistsInputWatcher = std::make_shared<FileExistsInputWatcher>(
-            fileExistsInput.getId(), fileExistsInput.getFile(), *this
+            fileExistsInput.getId(),
+			fileExistsInput.getFile(),
+			*this,
+			fileExistsInputWatcherSleepTimeMs
         );
         fileExistsInputWatchers.push_back(fileExistsInputWatcher);
     }
@@ -42,10 +49,24 @@ EventEngine::~EventEngine() {
 }
 
 // Singleton getInstance method
-EventEngine& EventEngine::getInstance(const MappingConfig& mappings, RpiLightsController& rpiLightsController) {
+EventEngine& EventEngine::getInstance(
+		const MappingConfig& mappings,
+		RpiLightsController& rpiLightsController,
+		const std::string& url,
+		const unsigned int fileExistsInputWatcherSleepTimeMs
+) {
     std::lock_guard<std::mutex> lock(mutex);  // Ensure thread safety during initialization
     if (instance == nullptr) {
-        instance = new EventEngine(mappings, rpiLightsController);
+    	std::string urlProvided = (url.empty())
+    							 ? QlcplusOutputProcessor::defaultQlcplusWebsocketUrl
+    							 : url;
+
+        // If no value for sleepTimeMs is provided, use the default from FileExistsInputWatcher
+        unsigned int sleepTimeMsProvided = (fileExistsInputWatcherSleepTimeMs == 0)
+                                          ? FileExistsInputWatcher::defaultFileExistsInputWatcherSleepTimeMs
+                                          : fileExistsInputWatcherSleepTimeMs;
+
+        instance = new EventEngine(mappings, rpiLightsController, urlProvided, sleepTimeMsProvided);
     }
     return *instance;
 }

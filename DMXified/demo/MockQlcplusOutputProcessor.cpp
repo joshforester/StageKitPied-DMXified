@@ -1,6 +1,8 @@
 #include <iostream>
 #include "../output/QlcplusOutputProcessor.h"
 
+std::string QlcplusOutputProcessor::defaultQlcplusWebsocketUrl = "";
+
 QlcplusOutputProcessor::QlcplusOutputProcessor(const std::string& url)
     : url(url) {
 }

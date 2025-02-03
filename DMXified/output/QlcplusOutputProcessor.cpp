@@ -1,6 +1,10 @@
 #include "QlcplusOutputProcessor.h"
 
 
+std::string QlcplusOutputProcessor::defaultQlcplusWebsocketUrl = "ws://127.0.0.1:9999/qlcplusWS";
+unsigned int QlcplusOutputProcessor::defaultQlcplusConnectionWaitTimeMs = 100;
+unsigned int QlcplusOutputProcessor::defaultQlcplusSendWaitTimeMs = 20;
+
 QlcplusOutputProcessor::QlcplusOutputProcessor(const std::string& url)
     : url(url), connectionMetadata(nullptr) {
 }
@@ -29,14 +33,15 @@ void QlcplusOutputProcessor::process(const Output output) {
     ensureConnection();
 
 	std::string message = "process called for output " + output.getType() + ":" + output.getSubtype() + ".";
-	MSG_QLCPLUSOUTPUTPROCESSOR_DEBUG( message );
+	MSG_QLCPLUSOUTPUTPROCESSOR_DEBUG(message);
 
 
 	// Send the message over the WebSocket connection
 	if (connectionMetadata != nullptr && connectionMetadata->get_status() == "Open") {
 		std::string data = qlcplusOutputToQlcplusWsCommand(output);
 		websocketEndpoint.send(data);
-		std::cout << "Sent message: " << data << std::endl;
+		MSG_QLCPLUSOUTPUTPROCESSOR_DEBUG("Sent message: " + data);
+        std::this_thread::sleep_for(std::chrono::milliseconds(defaultQlcplusSendWaitTimeMs));
 	} else {
 		std::cerr << "WebSocket connection failed, unable to send message." << std::endl;
 	}
@@ -52,6 +57,7 @@ void QlcplusOutputProcessor::ensureConnection() {
         bool isConnected = false;
         try {
             isConnected = websocketEndpoint.connect(url);
+            std::this_thread::sleep_for(std::chrono::milliseconds(defaultQlcplusConnectionWaitTimeMs));
         } catch (const std::exception& e) {
             std::cerr << "Exception while connecting to WebSocket: " << e.what() << std::endl;
         } catch (...) {

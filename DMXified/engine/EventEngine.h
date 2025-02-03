@@ -26,7 +26,6 @@ class FileExistsInputWatcher;
 #include "../../StageKitPied/stagekit/StageKitConsts.h"
 #include "InputEvent.h"
 #include "PrioritizedOutputOverride.h"
-#include "FileExistsInputWatcher.h"
 
 class EventEngine {
 public:
@@ -34,7 +33,12 @@ public:
 	~EventEngine();
 
 	// Constructor that takes a MappingConfig
-    static EventEngine& getInstance(const MappingConfig& mappings, RpiLightsController& rpiLightsController);
+    static EventEngine& getInstance(
+    		const MappingConfig& mappings,
+			RpiLightsController& rpiLightsController,
+			const std::string& url,
+			const unsigned int fileExistsInputWatcherSleepTimeMs
+	);
 
     // Delete the copy constructor and assignment operator to avoid multiple instances
     EventEngine(const EventEngine&) = delete;
@@ -48,7 +52,12 @@ public:
 
 private:
     // Private constructor
-    EventEngine(const MappingConfig& mappings, RpiLightsController& rpiLightsController);
+    EventEngine(
+    		const MappingConfig& mappings,
+			RpiLightsController& rpiLightsController,
+			const std::string& url,
+			const unsigned int fileExistsInputWatcherSleepTimeMs
+	);
 
     std::string lastInputId;                                                       // Last processed input ID; used for deterring SK_FOG_OFF spam
     std::vector<PrioritizedOutputOverride> outputOverrideList;

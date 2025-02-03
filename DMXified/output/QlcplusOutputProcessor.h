@@ -20,8 +20,15 @@
 
 class QlcplusOutputProcessor {
 public:
-    // Constructor that initializes WebSocket endpoint with a URL
-    QlcplusOutputProcessor(const std::string& url = "ws://127.0.0.1:9999/qlcplusWS");
+
+	static std::string defaultQlcplusWebsocketUrl;
+
+	// TODO: these might be best placed in the INI config
+	static unsigned int defaultQlcplusConnectionWaitTimeMs;
+	static unsigned int defaultQlcplusSendWaitTimeMs;
+
+	// Constructor that initializes WebSocket endpoint with a URL
+    QlcplusOutputProcessor(const std::string& url = defaultQlcplusWebsocketUrl);
 
 #ifndef EESD
     ~QlcplusOutputProcessor();

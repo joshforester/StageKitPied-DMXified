@@ -1,5 +1,8 @@
 #include "FileExistsInputWatcher.h"
 
+
+unsigned int FileExistsInputWatcher::defaultFileExistsInputWatcherSleepTimeMs = 100;
+
 FileExistsInputWatcher::FileExistsInputWatcher(std::string id, const std::string& filePath, EventEngine& engine, unsigned int sleepTimeMs)
     : id(id), filePath(filePath), engine(engine), sleepTimeMs(sleepTimeMs), isRunning(true), previousExistence(false) {
     watcherThread = std::thread(&FileExistsInputWatcher::watchFile, this);

@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
     	std::cerr << "Too few arguments provided.\n";
     	std::cout << "Usage: " << argv[0] << " [mappingFile] [eventFile]\n";
     	return -1;
-    } else if (argc > 3) {
+    } else if (argc > 2) {
     	std::cerr << "Too many arguments provided.\n";
     	std::cout << "Usage: " << argv[0] << " [mappingFile] [eventFile]\n";
     	return -1;
@@ -86,9 +86,6 @@ int main(int argc, char* argv[]) {
         eventEngine.handleInputEvent(inputEventObj);
 
         std::cout << inputDelimiter << std::endl;
-
-        // Sleep for 1 second
-        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 
     return 0;

@@ -15,7 +15,9 @@ class EventEngine;  // Forward declaration
 
 class FileExistsInputWatcher {
 public:
-    FileExistsInputWatcher(std::string id, const std::string& filePath, EventEngine& engine, unsigned int sleepTimeMs = 100);
+	static unsigned int defaultFileExistsInputWatcherSleepTimeMs;
+
+    FileExistsInputWatcher(std::string id, const std::string& filePath, EventEngine& engine, unsigned int sleepTimeMs = defaultFileExistsInputWatcherSleepTimeMs);
     ~FileExistsInputWatcher();
 
     void stop();

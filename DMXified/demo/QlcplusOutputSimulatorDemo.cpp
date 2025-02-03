@@ -6,6 +6,7 @@
 #include <chrono>  // For std::chrono::seconds
 #include "../engine/EventEngine.h"
 #include "../engine/InputEvent.h"
+#include "../engine/FileExistsInputWatcher.h"
 #include "../config/XmlLoader.h"
 #include "../config/MappingConfig.h"
 #include "../../StageKitPied/stagekit/StageKitConsts.h"
@@ -15,25 +16,37 @@ int main(int argc, char* argv[]) {
     // Default value
     std::string mappingFileName = "qosd_demo_mapping.xml";
     std::string eventFileName = "qosd_demo_events.txt";
+    std::string qlcplusWebsocketUrl = QlcplusOutputProcessor::defaultQlcplusWebsocketUrl;
+    unsigned int betweenInputEventsSleepTimeS = 3;
 
     // Check if a command-line argument is provided
-    if (argc == 3) {
+    if (argc == 5) {
         // If provided, use the first argument as the mapping file name and the second as the event file.
         mappingFileName = argv[1];
         eventFileName = argv[2];
-    } else if (argc == 2) {
+        qlcplusWebsocketUrl = argv[3];
+        try {
+            betweenInputEventsSleepTimeS = std::stoul(argv[4]);
+        } catch (const std::invalid_argument& e) {
+            std::cerr << "Invalid argument: " << argv[4] << " is not a valid number." << std::endl;
+        } catch (const std::out_of_range& e) {
+            std::cerr << "Out of range: " << argv[4] << " is too large." << std::endl;
+        }
+    } else if ((1 < argc) && (argc <= 5)) {
     	std::cerr << "Too few arguments provided.\n";
-    	std::cout << "Usage: " << argv[0] << " [mappingFile] [eventFile]\n";
+    	std::cout << "Usage: " << argv[0] << " [mappingFile] [eventFile] [qlcplusWebsocketUrl] [sleepTimeBetweenEventSeconds]" << std::endl;
     	return -1;
-    } else if (argc > 3) {
+    } else if (argc > 5) {
     	std::cerr << "Too many arguments provided.\n";
-    	std::cout << "Usage: " << argv[0] << " [mappingFile] [eventFile]\n";
+    	std::cout << "Usage: " << argv[0] << " [mappingFile] [eventFile] [qlcplusWebsocketUrl] [sleepTimeBetweenEventSeconds]" << std::endl;
     	return -1;
     }
 
     // Print the file names
     std::cout << "Mapping file: " << mappingFileName << std::endl;
     std::cout << "Event file: " << eventFileName << std::endl;
+    std::cout << "Qlcplus websocket URL: " << qlcplusWebsocketUrl << std::endl;
+    std::cout << "Sleep time between events: " << std::to_string(betweenInputEventsSleepTimeS) << std::endl;
 
     // Open even file and read lines.
     std::ifstream eventFile(eventFileName);
@@ -61,7 +74,12 @@ int main(int argc, char* argv[]) {
     RpiLightsController rpiLightsController("mock.INI");
 
     // Access the singleton instance of EventEngine
-    EventEngine& eventEngine = EventEngine::getInstance(config, rpiLightsController);
+    EventEngine& eventEngine = EventEngine::getInstance(
+    		config,
+			rpiLightsController,
+			qlcplusWebsocketUrl,
+			FileExistsInputWatcher::defaultFileExistsInputWatcherSleepTimeMs
+	);
 
     // Feed the EventEngine events, have it log its decisions with sleep.
     bool isFirst = true;
@@ -93,10 +111,17 @@ int main(int argc, char* argv[]) {
 
         std::cout << inputDelimiter << std::endl;
 
-        // Sleep for 1 second
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        // Sleep for a number of seconds
+        std::this_thread::sleep_for(std::chrono::seconds(betweenInputEventsSleepTimeS));
     }
 
     std::cout << "Demo complete." << std::endl;
-    return 0;
+
+	try {
+	    return 0;
+	} catch (const std::exception& e) {
+	    std::cerr << "Exception caught while ending program: " << e.what() << std::endl;
+	} catch (...) {
+	    std::cerr << "Unknown exception caught while ending program." << std::endl;
+	}
 }

@@ -153,8 +153,11 @@ This will run the demo using the included `eesd_demo_mapping.xml` and `eesd_demo
 #> ./qosd
 ```
 
-This will run the demo using the included `qosd_demo_mapping.xml` and `qosd_demo_events.txt` files.  If you'd like to test out your own file[s], execute it as follows:
+This will run the demo using the included `qosd_demo_mapping.xml` and `qosd_demo_events.txt` files.  If you'd like to test out your own file[s], or have it run against a QLC+ instance running at a URL different from ws://127.0.0.1:9999/qlcplusWS, or have it run slower/faster, execute it as follows:
 
 ```
-#> ./qosd path/to/your/mapping_file.xml path/to/your/event_file.txt
+#> ./qosd path/to/your/mapping_file.xml path/to/your/event_file.txt your_qlcplus_url sleep_time
 ```
+where:
+* `your_qlcplus_url` is the websocket URL where your instance is running (default: `ws://127.0.0.1:9999/qlcplusWS`)
+* `sleep_time` is the time in seconds `qosd` will sleep between processing each event in the event file
