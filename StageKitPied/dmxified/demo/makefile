@@ -18,10 +18,8 @@ WEBSOCKET_OBJ_FILES   := $(patsubst $(WEBSOCKET_SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(
 XXSD_SOP_SRC          := ../output/StageKitOutputProcessor.cpp
 XXSD_RLC_SRC          := MockRpiLightsController.cpp
 FLAGS                 := -g -Wall -std=c++11
-LWEBSOCKETPP_PATH     := -I/usr/include/websocketpp/
-LRAPIDXML_PATH        := -I/usr/include/rapidxml/
-LPTHREAD_FLAG         := -lpthread
-LSSL_FLAG             := -lssl -lcrypto
+LWEBSOCKETPP_PATH     := /usr/include/websocketpp/
+LRAPIDXML_PATH        := /usr/include/rapidxml/
 
 all:
 	make BUILD_TYPE=IQWD_BUILD iqwd
@@ -35,7 +33,7 @@ IQWD_SRC              := InteractiveQlcplusWebsocketDemo.cpp
 IQWD_OBJ_FILES        := $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(IQWD_SRC))
 IQWD_OUT              := iqwd
 FLAGS                 := $(FLAGS)
-INC_PATHS             := -I./ $(LWEBSOCKETPP_PATH)
+INC_PATHS             := -I./ -I$(LWEBSOCKETPP_PATH)
 endif
 
 ifeq ($(BUILD_TYPE), XCRD_BUILD)
@@ -43,7 +41,7 @@ XCRD_SRC              := XmlConfigReaderDemo.cpp
 XCRD_OBJ_FILES        := $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(XCRD_SRC))
 XCRD_OUT              := xcrd
 FLAGS                 := $(FLAGS)
-INC_PATHS             := -I./ $(LRAPIDXML_PATH)
+INC_PATHS             := -I./ -I$(LRAPIDXML_PATH)
 endif
 
 ifeq ($(BUILD_TYPE), EESD_BUILD)
@@ -51,7 +49,7 @@ EESD_QOP_SRC          := MockQlcplusOutputProcessor.cpp
 EESD_SRC              := EventEngineSimulatorDemo.cpp
 EESD_OUT              := eesd
 FLAGS                 := $(FLAGS) -DDEBUG -DXXSD -DEESD
-INC_PATHS             := -I./ $(LWEBSOCKETPP_PATH) $(LRAPIDXML_PATH) -I$(PROJECT_ROOT)
+INC_PATHS             := -I./ -I$(LWEBSOCKETPP_PATH) -I$(LRAPIDXML_PATH) -I$(PROJECT_ROOT)
 OUTPUT_SRC_FILES      := $(OUTPUT_SRC_DIR)/StageKitOutputProcessor.cpp
 EESD_OBJ_FILES        := $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(EESD_SRC)) \
                          $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(XXSD_RLC_SRC)) \
@@ -65,7 +63,7 @@ QOSD_QOP_SRC          := ../output/QlcplusOutputProcessor.cpp
 QOSD_SRC              := QlcplusOutputSimulatorDemo.cpp
 QOSD_OUT              := qosd
 FLAGS                 := $(FLAGS) -DDEBUG -DXXSD -DQOSD
-INC_PATHS             := -I./ $(LWEBSOCKETPP_PATH) $(LRAPIDXML_PATH) -I$(PROJECT_ROOT)
+INC_PATHS             := -I./ -I$(LWEBSOCKETPP_PATH) -I$(LRAPIDXML_PATH) -I$(PROJECT_ROOT)
 OUTPUT_SRC_FILES      := $(OUTPUT_SRC_DIR)/StageKitOutputProcessor.cpp $(OUTPUT_SRC_DIR)/QlcplusOutputProcessor.cpp
 QOSD_OBJ_FILES        := $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(QOSD_SRC)) \
                          $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(XXSD_RLC_SRC)) \
@@ -75,7 +73,7 @@ endif
 
 
 iqwd: $(IQWD_OBJ_FILES) $(WEBSOCKET_OBJ_FILES)
-	$(COMPILER) $(FLAGS) $(INC_PATHS) $^ -o $(IQWD_OUT) $(LSSL_FLAG)
+	$(COMPILER) $(FLAGS) $(INC_PATHS) $^ -o $(IQWD_OUT)
 
 xcrd: $(XCRD_OBJ_FILES) $(CONFIG_OBJ_FILES)
 	$(COMPILER) $(FLAGS) $(INC_PATHS) $^ -o $(XCRD_OUT)
@@ -85,14 +83,6 @@ eesd: $(EESD_OBJ_FILES) $(CONFIG_OBJ_FILES) $(ENGINE_OBJ_FILES) $(OUTPUT_OBJ_FIL
 
 qosd: $(QOSD_OBJ_FILES) $(CONFIG_OBJ_FILES) $(ENGINE_OBJ_FILES) $(OUTPUT_OBJ_FILES) $(WEBSOCKET_OBJ_FILES)
 	$(COMPILER) $(FLAGS) $(INC_PATHS) $^ -o $(QOSD_OUT)
-
-config: $(CONFIG_OBJ_FILES)
-
-engine: $(ENGINE_OBJ_FILES) $(CONFIG_OBJ_FILES)
-
-output: $(OUTPUT_OBJ_FILES)
-
-websocket: $(WEBSOCKET_OBJ_FILES)
 
 $(OBJ_DIR)/%.o: %.cpp
 	$(COMPILER) $(FLAGS) $(INC_PATHS) -c -o $@ $< 
