@@ -6,6 +6,24 @@
 #include <sstream>
 #include <cstdlib>
 #include <string>
+#include <algorithm>
+#include <cctype>
+#include <locale>
+
+// Trim function to remove leading and trailing whitespace
+std::string trim(const std::string& str) {
+    // Find the first non-whitespace character
+    auto start = str.find_first_not_of(" \t\n\r\f\v");
+    if (start == std::string::npos) {
+        return ""; // String contains only whitespace
+    }
+
+    // Find the last non-whitespace character
+    auto end = str.find_last_not_of(" \t\n\r\f\v");
+
+    // Create a substring from the start to end
+    return str.substr(start, end - start + 1);
+}
 
 int main() {
     bool done = false;
@@ -43,7 +61,9 @@ int main() {
             ss >> cmd;
             std::getline(ss, message);
 
-            endpoint.send(message);
+            std::cout << "Sending message:" + trim(message) << std::endl;
+
+            endpoint.send(trim(message));
         } else if (input.substr(0, 5) == "close") {
             std::stringstream ss(input);
 
