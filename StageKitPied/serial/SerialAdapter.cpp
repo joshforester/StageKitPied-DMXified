@@ -116,12 +116,6 @@ bool SerialAdapter::Init( const char* path, bool surpress_warnings ) {
 
 int SerialAdapter::Write( unsigned char* buffer, unsigned int count )
 {
-#ifdef DEBUG
-  MSG_SERIALADAPTER_DEBUG( "Write.." );
-
-  this->Dump( buffer, count );
-#endif
-
   unsigned int bytes_written = 0;
   int write_amount;
 
@@ -183,12 +177,6 @@ int SerialAdapter::Read( unsigned char* buffer, unsigned int count ) {
       break; // timeout
     }
   }
-
-#ifdef DEBUG
-  MSG_SERIALADAPTER_DEBUG( "Read.." );
-
-  this->Dump( buffer, bytes_read );
-#endif
 
   return bytes_read;
 };

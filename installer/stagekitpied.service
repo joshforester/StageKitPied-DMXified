@@ -1,0 +1,14 @@
+[Unit]
+Description=Stage Kit Pied Xbox360 Stage Kit
+After=multi-user.target systemd-udev-settle.service
+Requires=systemd-udev-settle.service
+Before=graphical.target  # Ensures this service starts before the graphical desktop environment
+
+[Service]
+ExecStart=/opt/StageKitPied/skp
+StandardInput=/dev/null
+StandardOutput=append:/var/log/stagekitpied.log
+StandardError=inherit
+
+[Install]
+WantedBy=multi-user.target

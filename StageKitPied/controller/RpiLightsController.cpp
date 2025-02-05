@@ -105,7 +105,7 @@ RpiLightsController::RpiLightsController( const char* ini_file ) {
 
     // Load the XML file into a MappingConfig object
     try {
-    	dmxifiedMappingConfig = XmlLoader::loadMappingConfig("dmxified_mapping.xml");
+    	dmxifiedMappingConfig = XmlLoader::loadMappingConfig("/opt/StageKitPied/dmxified_mapping.xml");
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << "\n";
     }
@@ -368,6 +368,8 @@ void RpiLightsController::Stop() {
   }
   
   mSerialAdapter.Close();
+
+  this->Handle_RumbleData(SKRUMBLEDATA::SK_NONE, SKRUMBLEDATA::SK_ALL_OFF);
 
   mStageKitManager.End();
 };

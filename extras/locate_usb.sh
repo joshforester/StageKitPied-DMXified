@@ -1,5 +1,13 @@
 #!/bin/bash
 
+#
+# This script will display device files (i.e. /dev/ttyUSB0) and their associated
+# descriptors (i.e. "Performance_Designed_Products_PDP_Home_Stage_Kit_003BB097")
+# while they are currently not "in use" by an application.  That is, when 
+# StageKitPied-DMXified is running, these Stage Kit devices will NOT show up in
+# the list.  When it is not running, you may use this to confirm they are
+# connected and communicating with the Raspberry Pi.
+#
 for sysdevpath in $(find /sys/bus/usb/devices/usb*/ -name dev); do
     (
         syspath="${sysdevpath%/dev}"

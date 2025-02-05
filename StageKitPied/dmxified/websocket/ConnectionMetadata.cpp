@@ -10,7 +10,7 @@ ConnectionMetadata::ConnectionMetadata(websocketpp::connection_hdl hdl, std::str
 
 void ConnectionMetadata::on_open(client * c, websocketpp::connection_hdl hdl) {
     m_status = "Open";
-    MSG_WEBSOCKET_CONNECTIONMETADATA_DEBUG("Connection opened, status set to 'Open' for ID: " + std::to_string(m_id));
+    MSG_WEBSOCKET_CONNECTIONMETADATA_DEBUG("Connection opened, status set to 'Open'.");
 
     client::connection_ptr con = c->get_con_from_hdl(hdl);
     m_server = con->get_response_header("Server");
@@ -18,7 +18,7 @@ void ConnectionMetadata::on_open(client * c, websocketpp::connection_hdl hdl) {
 
 void ConnectionMetadata::on_fail(client * c, websocketpp::connection_hdl hdl) {
     m_status = "Failed";
-    MSG_WEBSOCKET_CONNECTIONMETADATA_DEBUG("Connection failed, status set to 'Failed' for ID: " + std::to_string(m_id));
+    MSG_WEBSOCKET_CONNECTIONMETADATA_DEBUG("Connection failed, status set to 'Failed'.");
 
     client::connection_ptr con = c->get_con_from_hdl(hdl);
     m_server = con->get_response_header("Server");
@@ -27,7 +27,7 @@ void ConnectionMetadata::on_fail(client * c, websocketpp::connection_hdl hdl) {
 
 void ConnectionMetadata::on_close(client * c, websocketpp::connection_hdl hdl) {
     m_status = "Closed";
-    MSG_WEBSOCKET_CONNECTIONMETADATA_DEBUG("Connection closed, status set to 'Closed' for ID: " + std::to_string(m_id));
+    MSG_WEBSOCKET_CONNECTIONMETADATA_DEBUG("Connection closed, status set to 'Closed'.");
 
     client::connection_ptr con = c->get_con_from_hdl(hdl);
     std::stringstream s;
