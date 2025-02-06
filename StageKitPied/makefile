@@ -36,7 +36,7 @@ WEBSOCKET_OBJ_FILES   := $(patsubst $(WEBSOCKET_SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(
 SKP_SRC               := stagekitpied.cpp
 SKP_OBJ_FILES         := $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(SKP_SRC))
 SKP_OUT               := skp
-FLAGS                 := -g -Wall -std=c++11 #-DDEBUG
+FLAGS                 := -g -Wall -std=c++11 -DDEBUG
 LRAPIDXML_PATH        := -I/usr/include/rapidxml/
 LWEBSOCKETPP_PATH     := -I/usr/include/websocketpp/
 LUSB_PATH             := -I/usr/include/libusb-1.0/

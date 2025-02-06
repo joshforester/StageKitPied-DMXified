@@ -100,16 +100,31 @@ RpiLightsController::RpiLightsController( const char* ini_file ) {
       }
     }
     
-    //TODO: dmxified should be read from INI file to set whether or not to create DMXified engine
-	//TODO: sleepTimeMs should be read from INI file if set to initialize FileExistsInputWatcher.
-	//TODO: url should be read from INI file if set to initialize qlcProcessor.
-    //TODO: mapping config file should be read from INI if set to initialize EventEngine
+    if( !mINI_Handler.SetSection( "DMXIFIED" ) ) {
+      MSG_RPLC_INFO( "INI section 'DMXIFIED' not found - Defaulting to disabled." );
+      m_dmxified_enabled = false;
+    } else {
+      int enabled = mINI_Handler.GetTokenValue( "ENABLED" );
+      if( enabled == 1 ) {
+        m_dmxified_enabled = true;
+      } else {
+        m_dmxified_enabled = false;
+      }
 
-    // Load the XML file into a MappingConfig object
-    try {
-    	dmxifiedMappingConfig = XmlLoader::loadMappingConfig("/opt/StageKitPied/dmxified_mapping.xml");
-    } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << "\n";
+      if (m_dmxified_enabled) {
+        m_dmxified_mapping_file = mINI_Handler.GetTokenString( "MAPPING_CONFIG" );
+        m_qlcplus_websocket_url = mINI_Handler.GetTokenString( "QLCPLUS_WEBSOCKET_URL" );
+        m_qlcplus_connect_sleep_time_ms = mINI_Handler.GetTokenValue( "QLCPLUS_CONNECT_SLEEP_TIME_MS" );
+        m_qlcplus_send_sleep_time_ms = mINI_Handler.GetTokenValue( "QLCPLUS_SEND_SLEEP_TIME_MS" );
+        m_file_exists_input_watcher_sleep_time_ms = mINI_Handler.GetTokenValue( "FILE_EXISTS_INPUT_SLEEP_TIME_MS" );
+
+        // Load the XML file into a MappingConfig object
+        try {
+        	mDmxifiedMappingConfig = XmlLoader::loadMappingConfig(m_dmxified_mapping_file);
+        } catch (const std::exception& e) {
+            std::cerr << "Error: " << e.what() << "\n";
+        }
+      }
     }
 
     std::string section_name;
@@ -618,20 +633,28 @@ void RpiLightsController::Handle_SerialDisconnect() {
 
 void RpiLightsController::Handle_RumbleData( const uint8_t left_weight, const uint8_t right_weight ) {
 
-  //TOOD: For now, simply wrap Do_Handle_RumbleData with the exception of the rb3e statement below.
-  //In the future, only do this if DMXified is enabled.  Otherwise, simply call Do_Handle_RumbleData
+  // If DMXified is enabled, use the Event Engine.  Otherwise, simply call Do_Handle_RumbleData
+  if (m_dmxified_enabled) {
 
-  InputEvent inputEvent(
-	skRumbleDataTypeToString(static_cast<SKRUMBLEDATA>(right_weight)),
-	left_weight,
-	right_weight
-  );
+	InputEvent inputEvent(
+	  skRumbleDataTypeToString(static_cast<SKRUMBLEDATA>(right_weight)),
+	  left_weight,
+	  right_weight
+    );
 
-  EventEngine& eventEngine = EventEngine::getInstance(
-  	dmxifiedMappingConfig,
-	*this
-  );
-  eventEngine.handleInputEvent(inputEvent);
+    EventEngine& eventEngine = EventEngine::getInstance(
+  	  mDmxifiedMappingConfig,
+	  *this,
+	  m_qlcplus_websocket_url,
+	  m_file_exists_input_watcher_sleep_time_ms
+    );
+    eventEngine.handleInputEvent(inputEvent);
+
+  } else {
+
+	this->Do_Handle_RumbleData(left_weight, right_weight);
+
+  }
 
   if( m_rb3e_sender_enabled ) {
     mRB3E_Network.SendLightEvent( left_weight, right_weight );

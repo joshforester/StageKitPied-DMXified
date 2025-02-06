@@ -105,7 +105,13 @@ private:
   std::mutex mtx; // an admittedly weak attempt at protecting updates to shared resources
 
 #if !defined(XXSD)
-  MappingConfig	     dmxifiedMappingConfig;
+  bool               m_dmxified_enabled;
+  std::string        m_dmxified_mapping_file;
+  std::string        m_qlcplus_websocket_url;
+  long               m_qlcplus_connect_sleep_time_ms;
+  long               m_qlcplus_send_sleep_time_ms;
+  long               m_file_exists_input_watcher_sleep_time_ms;
+  MappingConfig	     mDmxifiedMappingConfig;
 
   SerialAdapter      mSerialAdapter;
   StageKitManager    mStageKitManager;
