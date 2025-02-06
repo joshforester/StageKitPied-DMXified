@@ -83,6 +83,11 @@ public:
   int GetStatus();
 
 private:
+
+  void CloseWhenUnopenedFile();
+
+  void CloseWhenUnestablishedConnection();
+
   int Read( unsigned char* buffer, unsigned int count );
 
   int Write( unsigned char* buffer, unsigned int count );
@@ -103,6 +108,7 @@ private:
 
   struct timeval m_timeout;
   int m_filedescriptor;
+  bool m_secured;
   unsigned char m_header[ 2 ]; // For debug - should be 2!
   unsigned char m_payload[ 255 ];
   unsigned char m_payload_out[ 257 ];

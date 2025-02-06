@@ -588,15 +588,15 @@ bool RpiLightsController::Handle_SerialConnect() {
 
     bool surpress_warnings = mINI_Handler.GetTokenValue( "SURPRESS_WARNINGS" ) > 0 ? true : false;
 
+	std::string serial_port_1 = mINI_Handler.GetTokenString( "SERIAL_PORT_1" );
+	std::string serial_port_2 = mINI_Handler.GetTokenString( "SERIAL_PORT_2" );
     while (!mSerialAdapter.IsRunning()) {
-		std::string serial_port = mINI_Handler.GetTokenString( "SERIAL_PORT_1" );
-		MSG_RPLC_INFO( "Attempting Serial Adapter connection on '" << serial_port << "'" );
+		MSG_RPLC_INFO( "Attempting Serial Adapter connection on '" << serial_port_1 << "'" );
 
-		if( !mSerialAdapter.Init( serial_port.c_str(), surpress_warnings ) ) {
-		  serial_port = mINI_Handler.GetTokenString( "SERIAL_PORT_2" );
+		if( !mSerialAdapter.Init( serial_port_1.c_str(), surpress_warnings ) ) {
 		  std::this_thread::sleep_for(std::chrono::seconds(2)); // delay for device readiness
-		  MSG_RPLC_INFO( "Attempting Serial Adapter connection on '" << serial_port << "'" );
-		  if(!mSerialAdapter.Init( serial_port.c_str(), surpress_warnings )) {
+		  MSG_RPLC_INFO( "Attempting Serial Adapter connection on '" << serial_port_2 << "'" );
+		  if(!mSerialAdapter.Init( serial_port_2.c_str(), surpress_warnings )) {
 			MSG_RPLC_ERROR( "Unable to find a connected Serial Adapter." );
 			std::this_thread::sleep_for(std::chrono::seconds(5));
 		  }

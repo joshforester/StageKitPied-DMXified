@@ -10,7 +10,7 @@ SerialAdapter::SerialAdapter() {
   m_timeout = {.tv_sec = sec, .tv_usec = usec};
 
   m_poll_timeout_msecs = 10;
-
+  m_secured = false;
 };
 
 SerialAdapter::~SerialAdapter() {
@@ -21,12 +21,21 @@ void SerialAdapter::Close() {
   if( m_filedescriptor != -1 ) {
     // Try to turn the adapter off
     this->Reset();
-
-    close( m_filedescriptor );
-    m_filedescriptor = -1;
-    m_status = -1;
   }
+  this->CloseWhenUnestablishedConnection();
 };
+
+void SerialAdapter::CloseWhenUnestablishedConnection() {
+  if( m_filedescriptor != -1 ) {
+	  close( m_filedescriptor );
+  }
+  this->CloseWhenUnopenedFile();
+}
+
+void SerialAdapter::CloseWhenUnopenedFile() {
+	m_filedescriptor = -1;
+	m_status = -1;
+}
 
 int SerialAdapter::PayloadType() {
   return m_header[ 0 ];
@@ -42,12 +51,14 @@ int SerialAdapter::PayloadLength() {
 
 bool SerialAdapter::Init( const char* path, bool surpress_warnings ) {
   if( m_filedescriptor != -1 ) {
+    MSG_SERIALADAPTER_DEBUG("Called Init on serial adapter with an already open file: " + std::to_string(m_filedescriptor));
     this->Close(); // ensure we aren't in a funky state before attempting to initialize
   }
 
   m_filedescriptor = open( path, O_RDWR | O_NOCTTY | O_NONBLOCK );
   if( m_filedescriptor < 0 ) {
     MSG_SERIALADAPTER_DEBUG("Could not open file " + std::string(path));
+    this->CloseWhenUnopenedFile();
     return false;
   }
 
@@ -55,7 +66,8 @@ bool SerialAdapter::Init( const char* path, bool surpress_warnings ) {
 
   if( tcgetattr( m_filedescriptor, &options ) < 0 ) {
 	MSG_SERIALADAPTER_DEBUG("Could not get serial terminal attributes.");
-	return false;
+	this->CloseWhenUnestablishedConnection();
+    return false;
   }
 
   speed_t baudrate = SERIALADAPTER_DEFAULT_BAUDRATE;
@@ -66,48 +78,63 @@ bool SerialAdapter::Init( const char* path, bool surpress_warnings ) {
 
   if( tcsetattr( m_filedescriptor, TCSANOW, &options ) < 0) {
     MSG_SERIALADAPTER_DEBUG("Could not set serial terminal attributes such as i/o baudrate.");
+    this->CloseWhenUnestablishedConnection();
     return false;
   }
-
-  tcflush( m_filedescriptor, TCIFLUSH );
 
   // Attempt to flush the input buffer
   if (tcflush(m_filedescriptor, TCIFLUSH) == -1) {
       MSG_SERIALADAPTER_ERROR("tcflush() failed with m_filedescriptor " + std::to_string(m_filedescriptor) + " during serial adapter initialization: " + std::to_string(errno));
+      this->CloseWhenUnestablishedConnection();
       return false;
   }
 
+//  TODO:  I was thinking this MAY be necessary for some extreme situations where the adapter's firmware
+//         gets stuck in a non-ready state, so perhaps its best to do this to reset the connnection.
+//         Leaving out for now.
+//  if( !this->Reset() ) {
+//	MSG_SERIALADAPTER_ERROR( "Failed to ensure serial adapter is reset before initializing." );
+//  }
+
   if( !this->GetType() ) {
     MSG_SERIALADAPTER_ERROR( "Failed to get adapter type." );
+    this->Close();
     return false;
   }
 
   if( m_type == ADAPTER_TYPE_X360SK ) {
     MSG_SERIALADAPTER_INFO( "Correct adapter type found = X360SK" );
 
-    // We now know we have the correct serial adapter.  Time to get possessive and ensure nobody else
-    // tries to get access to it (I'm looking at you QLC+!).
-    int result = chmod(path, S_IRUSR | S_IWUSR);
-    if (result == 0) {
-    	MSG_SERIALADAPTER_DEBUG("Set read/write permissions of " + std::string(path) + " to only me.");
-    } else {
-    	MSG_SERIALADAPTER_INFO("Problem setting read/write permissions of " + std::string(path) + " to only me.");
-    }
+    if (!m_secured) {
+      // We now know we have the correct serial adapter.  Time to get possessive and ensure nobody else
+      // tries to get access to it (I'm looking at you QLC+!).
+      int result = chmod(path, S_IRUSR | S_IWUSR);
+      if (result == 0) {
+    	  MSG_SERIALADAPTER_DEBUG("Set read/write permissions of " + std::string(path) + " to only me.");
+      } else {
+    	  MSG_SERIALADAPTER_INFO("Problem setting read/write permissions of " + std::string(path) + " to only me.");
+      }
 
-    result = this->RemoveAcl(path);
-    if (result == 0) {
-    	MSG_SERIALADAPTER_DEBUG("Cleared ACL of " + std::string(path) + ".");
-    } else {
-    	MSG_SERIALADAPTER_INFO("Problem clearing ACL of " + std::string(path) + ".");
+      result = this->RemoveAcl(path);
+      if (result == 0) {
+    	  MSG_SERIALADAPTER_DEBUG("Cleared ACL of " + std::string(path) + ".");
+      } else {
+    	  MSG_SERIALADAPTER_INFO("Problem clearing ACL of " + std::string(path) + ".");
+      }
+
+      m_secured = true;
     }
 
   } else {
     if( m_type == ADAPTER_TYPE_X360 ) {
       MSG_SERIALADAPTER_ERROR( "Unsupported adapter type found = X360" );
+      this->Close();
     } else if( m_type == ADAPTER_TYPE_XONE ) {
       MSG_SERIALADAPTER_ERROR( "Unsupported adapter type found = XONE" );
+      this->Close();
     } else {
       MSG_SERIALADAPTER_ERROR( "Unknown adapter type found." );
+      this->Close();
     }
 
     this->DumpData( true );
@@ -118,6 +145,7 @@ bool SerialAdapter::Init( const char* path, bool surpress_warnings ) {
   // Get version
   if( !this->GetVersion() ) {
     MSG_SERIALADAPTER_ERROR( "Failed to get adapter version." );
+    this->Close();
 
     this->DumpData( true );
 
@@ -127,6 +155,7 @@ bool SerialAdapter::Init( const char* path, bool surpress_warnings ) {
 
   if( !this->Start() ) {
     MSG_SERIALADAPTER_ERROR( "Serial Adapter : ERROR : Failed to start." );
+    this->Close();
     return false;
   }
 

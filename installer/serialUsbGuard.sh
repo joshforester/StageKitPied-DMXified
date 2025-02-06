@@ -1,9 +1,5 @@
 #!/usr/bin/bash
 
-sleep 10
-
-#/bin/udevadm settle
-
 LOGFILE=/var/log/stagekitpied_serialUsbGuard.log
 
 /usr/bin/date >> $LOGFILE
