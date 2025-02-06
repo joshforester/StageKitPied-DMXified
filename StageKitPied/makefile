@@ -36,18 +36,19 @@ WEBSOCKET_OBJ_FILES   := $(patsubst $(WEBSOCKET_SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(
 SKP_SRC               := stagekitpied.cpp
 SKP_OBJ_FILES         := $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(SKP_SRC))
 SKP_OUT               := skp
-FLAGS                 := -g -Wall -std=c++11
+FLAGS                 := -g -Wall -std=c++11 -DDEBUG
 LRAPIDXML_PATH        := -I/usr/include/rapidxml/
 LWEBSOCKETPP_PATH     := -I/usr/include/websocketpp/
 LUSB_PATH             := -I/usr/include/libusb-1.0/
 LUSB_FLAG             := -lusb-1.0
+LACL_FLAG			  := -lacl
 LPTHREAD_FLAG         := -lpthread
 INC_PATHS             := -I./
 
 all: skp
 
 skp: $(CONFIG_OBJ_FILES) $(WEBSOCKET_OBJ_FILES) $(HELPERS_OBJ_FILES) $(STAGEKIT_OBJ_FILES) $(LEDS_OBJ_FILES) $(NETWORK_OBJ_FILES) $(SERIAL_OBJ_FILES) $(CONTROLLER_OBJ_FILES) $(OUTPUT_OBJ_FILES) $(ENGINE_OBJ_FILES) $(SKP_OBJ_FILES)
-	$(COMPILER) $(FLAGS) $(INC_PATHS) $^ -o $(SKP_OUT) $(LUSB_FLAG)
+	$(COMPILER) $(FLAGS) $(INC_PATHS) $^ -o $(SKP_OUT) $(LUSB_FLAG) $(LACL_FLAG) 
 
 config: $(CONFIG_OBJ_FILES)
 

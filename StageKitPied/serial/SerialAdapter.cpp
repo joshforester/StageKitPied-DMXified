@@ -1,5 +1,5 @@
-
 #include "SerialAdapter.h"
+
 
 SerialAdapter::SerialAdapter() {
   m_filedescriptor = -1;
@@ -42,18 +42,20 @@ int SerialAdapter::PayloadLength() {
 
 bool SerialAdapter::Init( const char* path, bool surpress_warnings ) {
   if( m_filedescriptor != -1 ) {
-    return false;
+    this->Close(); // ensure we aren't in a funky state before attempting to initialize
   }
 
   m_filedescriptor = open( path, O_RDWR | O_NOCTTY | O_NONBLOCK );
   if( m_filedescriptor < 0 ) {
+    MSG_SERIALADAPTER_DEBUG("Could not open file " + std::string(path));
     return false;
   }
 
   struct termios options;
 
   if( tcgetattr( m_filedescriptor, &options ) < 0 ) {
-    return false;
+	MSG_SERIALADAPTER_DEBUG("Could not get serial terminal attributes.");
+	return false;
   }
 
   speed_t baudrate = SERIALADAPTER_DEFAULT_BAUDRATE;
@@ -63,10 +65,17 @@ bool SerialAdapter::Init( const char* path, bool surpress_warnings ) {
   cfmakeraw( &options );
 
   if( tcsetattr( m_filedescriptor, TCSANOW, &options ) < 0) {
+    MSG_SERIALADAPTER_DEBUG("Could not set serial terminal attributes such as i/o baudrate.");
     return false;
   }
 
   tcflush( m_filedescriptor, TCIFLUSH );
+
+  // Attempt to flush the input buffer
+  if (tcflush(m_filedescriptor, TCIFLUSH) == -1) {
+      MSG_SERIALADAPTER_ERROR("tcflush() failed with m_filedescriptor " + std::to_string(m_filedescriptor) + " during serial adapter initialization: " + std::to_string(errno));
+      return false;
+  }
 
   if( !this->GetType() ) {
     MSG_SERIALADAPTER_ERROR( "Failed to get adapter type." );
@@ -75,6 +84,23 @@ bool SerialAdapter::Init( const char* path, bool surpress_warnings ) {
 
   if( m_type == ADAPTER_TYPE_X360SK ) {
     MSG_SERIALADAPTER_INFO( "Correct adapter type found = X360SK" );
+
+    // We now know we have the correct serial adapter.  Time to get possessive and ensure nobody else
+    // tries to get access to it (I'm looking at you QLC+!).
+    int result = chmod(path, S_IRUSR | S_IWUSR);
+    if (result == 0) {
+    	MSG_SERIALADAPTER_DEBUG("Set read/write permissions of " + std::string(path) + " to only me.");
+    } else {
+    	MSG_SERIALADAPTER_INFO("Problem setting read/write permissions of " + std::string(path) + " to only me.");
+    }
+
+    result = this->RemoveAcl(path);
+    if (result == 0) {
+    	MSG_SERIALADAPTER_DEBUG("Cleared ACL of " + std::string(path) + ".");
+    } else {
+    	MSG_SERIALADAPTER_INFO("Problem clearing ACL of " + std::string(path) + ".");
+    }
+
   } else {
     if( m_type == ADAPTER_TYPE_X360 ) {
       MSG_SERIALADAPTER_ERROR( "Unsupported adapter type found = X360" );
@@ -380,9 +406,11 @@ bool SerialAdapter::SendInterruptReply( unsigned char* ptr_interrupt_reply, unsi
   return false;
 };
 
-bool SerialAdapter::Poll() {
+int SerialAdapter::Poll() {
   if( m_filedescriptor == -1 ) {
-    return false;
+	MSG_SERIALADAPTER_DEBUG("WARNING* Polling adapter but it's not been established.");
+	m_status = -1;
+	return -1;
   }
 
   int poll_result = poll( m_poll_fds, 1, m_poll_timeout_msecs );
@@ -398,7 +426,7 @@ bool SerialAdapter::Poll() {
           if( m_header[ 0 ] == HEADER_START ) {
             MSG_SERIALADAPTER_INFO( "Adapter replied as started." );
           } else if( m_header[ 0 ] == HEADER_CONTROL_DATA || m_header[ 0 ] == HEADER_OUT_REPORT ) {
-            return true;
+            return 1;
           }
         } else {
           if( !m_surpress_warnings ) {
@@ -421,9 +449,40 @@ bool SerialAdapter::Poll() {
 
       this->Close();
 
-      return false;
+      return 0;
     }
   }
 
-  return false;
+  return 0;
 };
+
+int SerialAdapter::RemoveAcl(const char* path) {
+    // Get the current ACL for the file
+    acl_t acl = acl_get_file(path, ACL_TYPE_ACCESS);
+    if (acl == NULL) {
+        MSG_SERIALADAPTER_INFO("Warning:  Problem getting ACL.");
+        return -1;
+    }
+
+    // Create an empty ACL object
+    acl_t empty_acl = acl_init(1); // Initialize with a single empty ACL entry
+    if (empty_acl == NULL) {
+        MSG_SERIALADAPTER_INFO("Warning: Problem initializing empty ACL");
+        acl_free(acl);
+        return -1;
+    }
+
+    // Set the empty ACL back to the file (removes ACL)
+    int result = acl_set_file(path, ACL_TYPE_ACCESS, empty_acl);
+    if (result == -1) {
+        MSG_SERIALADAPTER_INFO("Warning: Problem setting empty ACL.");
+        acl_free(acl);
+        acl_free(empty_acl);
+        return -1;
+    }
+
+    // Free the ACL object after operation
+    acl_free(acl);
+    acl_free(empty_acl);
+    return 0;
+}

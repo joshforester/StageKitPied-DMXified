@@ -22,6 +22,7 @@
 //
 #include <iostream>
 #include <string>
+#include <chrono>
 #include <cstdlib>  // system
 #include <cstring>  // memcpy
 #include <unistd.h> // readlink
@@ -63,6 +64,8 @@ public:
   long Update( const long time_passed_ms ); // Returns time to sleep in ms
 
   void Stop();
+
+  bool Restart();
 #endif // !XXSD
 
 private:
@@ -153,6 +156,8 @@ private:
   uint16_t           m_sleeptime_strobe;
 
   // NO DATA
+  long               m_noserialdata_ms;
+  long               m_noserialdata_ms_count;
   long               m_nodata_ms;
   long               m_nodata_ms_count;
   uint8_t            m_nodata_red;

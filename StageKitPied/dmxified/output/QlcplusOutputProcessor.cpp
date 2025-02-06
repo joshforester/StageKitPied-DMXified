@@ -11,19 +11,19 @@ QlcplusOutputProcessor::QlcplusOutputProcessor(const std::string& url)
 
 QlcplusOutputProcessor::~QlcplusOutputProcessor() {
     try {
-        std::cout << "Cleaning up QlcplusOutputProcessor\n";
+    	MSG_QLCPLUSOUTPUTPROCESSOR_DEBUG("Cleaning up QlcplusOutputProcessor");
 
         // Ensure the WebSocket connection is closed gracefully
         if (connectionMetadata != nullptr && connectionMetadata->get_status() == "Open") {
             websocketEndpoint.close(websocketpp::close::status::normal, "Cleanup");
-            std::cout << "WebSocket connection closed." << std::endl;
+            MSG_QLCPLUSOUTPUTPROCESSOR_DEBUG("WebSocket connection closed.");
         }
 
         connectionMetadata.reset();  // This will automatically delete the shared_ptr
     } catch (const std::exception& e) {
-        std::cerr << "Exception during QlcplusOutputProcessor cleanup: " << e.what() << std::endl;
+    	MSG_QLCPLUSOUTPUTPROCESSOR_ERROR("Exception during QlcplusOutputProcessor cleanup: " + std::string(e.what()));
     } catch (...) {
-        std::cerr << "Unknown exception during QlcplusOutputProcessor cleanup." << std::endl;
+    	MSG_QLCPLUSOUTPUTPROCESSOR_ERROR("Unknown exception during QlcplusOutputProcessor cleanup.");
     }
 }
 
@@ -43,7 +43,7 @@ void QlcplusOutputProcessor::process(const Output output) {
 		MSG_QLCPLUSOUTPUTPROCESSOR_DEBUG("Sent message: " + data);
         std::this_thread::sleep_for(std::chrono::milliseconds(defaultQlcplusSendWaitTimeMs));
 	} else {
-		std::cerr << "WebSocket connection failed, unable to send message." << std::endl;
+		MSG_QLCPLUSOUTPUTPROCESSOR_ERROR("WebSocket connection failed, unable to send message.");
 	}
 
 }
@@ -59,21 +59,21 @@ void QlcplusOutputProcessor::ensureConnection() {
             isConnected = websocketEndpoint.connect(url);
             std::this_thread::sleep_for(std::chrono::milliseconds(defaultQlcplusConnectionWaitTimeMs));
         } catch (const std::exception& e) {
-            std::cerr << "Exception while connecting to WebSocket: " << e.what() << std::endl;
+        	MSG_QLCPLUSOUTPUTPROCESSOR_ERROR("Exception while connecting to WebSocket: " + std::string(e.what()));
         } catch (...) {
-            std::cerr << "Unknown error while connecting to WebSocket." << std::endl;
+        	MSG_QLCPLUSOUTPUTPROCESSOR_ERROR("Unknown error while connecting to WebSocket.");
         }
 
         if (isConnected) {
             try {
                 connectionMetadata = websocketEndpoint.get_metadata();
                 if (connectionMetadata != nullptr) {
-                    std::cout << "WebSocket connection established." << std::endl;
+                	MSG_QLCPLUSOUTPUTPROCESSOR_DEBUG("WebSocket connection established.");
                 } else {
-                    std::cerr << "Failed to retrieve metadata for connection." << std::endl;
+                	MSG_QLCPLUSOUTPUTPROCESSOR_ERROR("Failed to retrieve metadata for connection.");
                 }
             } catch (const std::exception& e) {
-                std::cerr << "Error retrieving metadata: " << e.what() << std::endl;
+            	MSG_QLCPLUSOUTPUTPROCESSOR_ERROR("Error retrieving metadata: " + std::string(e.what()));
             }
         }
     }
@@ -100,6 +100,6 @@ const std::string QlcplusOutputProcessor::qlcplusOutputToQlcplusWsCommand(const 
 		return "CH|" + absoluteDmxAddress + "|" + value;
 	}
 
-	std::cerr << "Unknown output subtype specified for " << type << "!" << std::endl;
+	MSG_QLCPLUSOUTPUTPROCESSOR_ERROR("Unknown output subtype specified for " + type + "!");
 	return "NOOP";
 }

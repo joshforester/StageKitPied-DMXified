@@ -68,7 +68,7 @@ Programs included in the repo should run on an AARCH64 architecture, as can be d
 Install the library dependencies:
 
 ```
-apt-get install libusb-1.0.0 libwebsocketpp-dev libboost-dev-all libssl-dev librapidxml-dev
+apt-get install libusb-1.0.0-dev libacl1-dev libwebsocketpp-dev libboost-dev-all libssl-dev librapidxml-dev
 ```
 
 After that, should be able to build it with:

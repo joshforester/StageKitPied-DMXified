@@ -18,6 +18,10 @@
 #include <fcntl.h> // file
 #include <termios.h> // termio
 #include <sys/time.h> // timeval
+#include <sys/stat.h> // chmod
+#include <sys/acl.h> // setfacl
+#include <acl/libacl.h> // setfacl
+#include <unistd.h>
 #include <poll.h> // poll
 
 #define SERIALADAPTER_DEBUG 0
@@ -56,7 +60,7 @@ public:
 
   void Close();
 
-  bool Poll();
+  int Poll(); // 0 = no data; 1 = data; -1 = no active serial connection
 
   int PayloadType();
 
@@ -94,6 +98,8 @@ private:
   bool Reset();
 
   bool Start();
+
+  int RemoveAcl(const char* path);
 
   struct timeval m_timeout;
   int m_filedescriptor;

@@ -25,6 +25,8 @@ RpiLightsController::RpiLightsController( const char* ini_file ) {
   m_leds_strobe_speed_current   = 0;
   m_leds_strobe_next_on_ms      = 0;
 
+  m_noserialdata_ms				= 60 * 1000;
+  m_noserialdata_ms_count		= 0;
   m_nodata_ms                   = 10 * 1000;
   m_nodata_ms_count             = 0;
   m_nodata_red                  = 0;
@@ -225,6 +227,12 @@ RpiLightsController::RpiLightsController( const char* ini_file ) {
         m_nodata_brightness = mINI_Handler.GetTokenValue( "NO_DATA_BRIGHTNESS" );
       }
 
+      if( mINI_Handler.SetSection( "NO_SERIAL_DATA" ) ) {
+		m_noserialdata_ms = mINI_Handler.GetTokenValue( "NO_SERIAL_DATA_SECONDS" );
+		m_noserialdata_ms *= 1000;
+		m_noserialdata_ms_count = 0;
+      }
+
       int flash_red        = 0;
       int flash_green      = 255;
       int flash_blue       = 0;
@@ -310,14 +318,14 @@ bool RpiLightsController::Start() {
     return true;
   }
 
-  // SERIAL MODE
-  
   // Use RB3e network data structure to send data out?
   if( m_rb3e_sender_enabled ) {
     if( !mRB3E_Network.StartSender( m_rb3e_target_ip, m_rb3e_target_port ) ) {
       MSG_RPLC_ERROR( "Failed to start networking for NETWORK mode. Running without." );
     }
   }
+
+  // SERIAL MODE
 
   if( mStageKitManager.IsConnected() ) {
     // If already connected, try a reset.
@@ -338,19 +346,23 @@ bool RpiLightsController::Start() {
 
 long RpiLightsController::Update( long time_passed_ms ) {
   
+  m_sleep_time = this->Handle_TimeUpdate( time_passed_ms );
+
   if( m_rb3e_listener_enabled ) {
     this->RB3ENetwork_Poll();
   } else {
     this->SerialAdapter_Poll();
   }
 
-  m_sleep_time = this->Handle_TimeUpdate( time_passed_ms );
 
   // Yeah this isn't right, since we probably had data but that data will reset counter to 0
   // so it'll be close enough :D
   if( m_nodata_ms > 0 ) {
     m_nodata_ms_count += m_sleep_time;
     if( m_nodata_ms_count > m_nodata_ms ) {
+
+  	  //TODO: this would be a good place to send a SK_NODATA event to the engine to prevent lingering lighting effects
+
       mLEDS.SetAllLED( m_nodata_red, m_nodata_green, m_nodata_blue, m_nodata_brightness );
       m_nodata_ms_count = 0;
     }
@@ -374,10 +386,32 @@ void RpiLightsController::Stop() {
   mStageKitManager.End();
 };
 
+bool RpiLightsController::Restart() {
+	//TODO: this (or in Handle_SerialDisconnect) would be a good place to send a SK_NODATA event to the engine to prevent lingering lighting effects
+
+	this->Stop();
+	const bool isStarted = this->Start();
+	if (!isStarted)  {
+		MSG_RPLC_DEBUG("Unable to restart Rpi Lights Controller.");
+	}
+	m_noserialdata_ms_count = 0;
+
+	return isStarted;
+}
 
 void RpiLightsController::SerialAdapter_Poll() {
 
-  if( mSerialAdapter.Poll() ) {
+  const int pollingResult = mSerialAdapter.Poll();
+  if (pollingResult == 0) {
+	if( m_noserialdata_ms > 0 ) {
+	  m_noserialdata_ms_count += m_sleep_time;
+	  MSG_RPLC_DEBUG("m_noserialdata_ms[m_noserialdata_ms_count]:" + std::to_string(m_noserialdata_ms) + "[" + std::to_string(m_noserialdata_ms_count) + "]");
+	  if( m_noserialdata_ms_count > m_noserialdata_ms ) {
+		MSG_RPLC_DEBUG( "Timeout for serial idle exceeded (Xbox off?).  Attempting a serial reconnect.");
+		this->Restart();
+      }
+	}
+  } else if ( pollingResult == 1 ) {
     switch( mSerialAdapter.PayloadType() ) {
       case HEADER_CONTROL_DATA:
         MSG_RPLC_DEBUG( "Received control data payload from serial adapter." );
@@ -397,6 +431,13 @@ void RpiLightsController::SerialAdapter_Poll() {
         MSG_RPLC_INFO( "Skipping unhandled data returned by serial adapter." );
         break;
     }
+
+    // We've received data, so reset the counter.
+	MSG_RPLC_DEBUG("Received serial data.  Resetting serial timeout counter.");
+    m_noserialdata_ms_count = 0;
+  } else if (pollingResult == -1) {
+	  MSG_RPLC_INFO( "Warning: " + std::to_string(pollingResult) + " received from polling serial adapter.  Attempting serial reconnect.");
+	  this->Restart();
   }
 };
 
@@ -468,7 +509,6 @@ void RpiLightsController::StageKit_PollButtons( long time_passed_in_ms ) {
     m_button_check_delay -= time_passed_in_ms;
   } else {
     m_button_check_delay = 100;
-    
     for( uint8_t stagekit_id = 0; stagekit_id < mStageKitManager.AmountOfStageKits(); stagekit_id++ ) {  
       MSG_RPLC_DEBUG( "Testing for Xbox Button on stagekit [ " << +stagekit_id << " ]" );
       if( mStageKitManager.PollButtons( stagekit_id ) ) {
@@ -548,16 +588,19 @@ bool RpiLightsController::Handle_SerialConnect() {
 
     bool surpress_warnings = mINI_Handler.GetTokenValue( "SURPRESS_WARNINGS" ) > 0 ? true : false;
 
-    std::string serial_port = mINI_Handler.GetTokenString( "SERIAL_PORT_1" );
-    MSG_RPLC_INFO( "Attempting Serial Adapter connection on '" << serial_port << "'" );
+    while (!mSerialAdapter.IsRunning()) {
+		std::string serial_port = mINI_Handler.GetTokenString( "SERIAL_PORT_1" );
+		MSG_RPLC_INFO( "Attempting Serial Adapter connection on '" << serial_port << "'" );
 
-    if( !mSerialAdapter.Init( serial_port.c_str(), surpress_warnings ) ) {
-      serial_port = mINI_Handler.GetTokenString( "SERIAL_PORT_2" );
-      MSG_RPLC_INFO( "Attempting Serial Adapter connection on '" << serial_port << "'" );
-      if( !mSerialAdapter.Init( serial_port.c_str(), surpress_warnings ) ) {
-        MSG_RPLC_ERROR( "Unable to find a connected Serial Adapter." );
-        return false;
-      }
+		if( !mSerialAdapter.Init( serial_port.c_str(), surpress_warnings ) ) {
+		  serial_port = mINI_Handler.GetTokenString( "SERIAL_PORT_2" );
+		  std::this_thread::sleep_for(std::chrono::seconds(2)); // delay for device readiness
+		  MSG_RPLC_INFO( "Attempting Serial Adapter connection on '" << serial_port << "'" );
+		  if(!mSerialAdapter.Init( serial_port.c_str(), surpress_warnings )) {
+			MSG_RPLC_ERROR( "Unable to find a connected Serial Adapter." );
+			std::this_thread::sleep_for(std::chrono::seconds(5));
+		  }
+		}
     }
     MSG_RPLC_INFO( "Connected to Serial Adapter." );
 
@@ -575,8 +618,8 @@ void RpiLightsController::Handle_SerialDisconnect() {
 
 void RpiLightsController::Handle_RumbleData( const uint8_t left_weight, const uint8_t right_weight ) {
 
-  //TOOD: For now, simply wrap Do_Handle_RumbleData with the exception of the rb3e statement below.  In the future, plug the EventEngine in here.
-  //this->Do_Handle_RumbleData(left_weight, right_weight);
+  //TOOD: For now, simply wrap Do_Handle_RumbleData with the exception of the rb3e statement below.
+  //In the future, only do this if DMXified is enabled.  Otherwise, simply call Do_Handle_RumbleData
 
   InputEvent inputEvent(
 	skRumbleDataTypeToString(static_cast<SKRUMBLEDATA>(right_weight)),
@@ -735,6 +778,9 @@ long RpiLightsController::Handle_TimeUpdate( long time_passed_ms ) {
   // Attempt to detect a song change by no data for 3 seconds.  Is this long enough?
   if( m_nodata_ms_count >= 3000 ) {
     mStageKitManager.Handle_SongChange();
+
+    //TODO: this would be a good place to send a SK_NODATA event to the engine to prevent lingering lighting effects
+
   }
   return time_to_sleep;
 };

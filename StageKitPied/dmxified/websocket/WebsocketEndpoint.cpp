@@ -2,13 +2,6 @@
 #include "WebsocketEndpoint.h"
 #include "ConnectionMetadata.h"
 
-//#include <websocketpp/config/asio_no_tls_client.hpp>
-//#include <websocketpp/client.hpp>
-//#include <websocketpp/common/thread.hpp>
-//#include <websocketpp/common/memory.hpp>
-//#include <cstdlib>
-//#include <iostream>
-//#include <string>
 
 // Define the static members of WebsocketEndpoint here
 websocketpp::client<websocketpp::config::asio_client> WebsocketEndpoint::m_endpoint;
@@ -47,7 +40,7 @@ WebsocketEndpoint::~WebsocketEndpoint() {
         websocketpp::lib::error_code ec;
         m_endpoint.close(m_metadata->get_hdl(), websocketpp::close::status::normal, "", ec);
         if (ec) {
-            std::cout << "> Error closing connection: " << ec.message() << std::endl;
+        	MSG_WEBSOCKET_WEBSOCKETENDPOINT_ERROR("Error closing connection: " + ec.message());
         }
     }
 }
@@ -58,8 +51,8 @@ bool WebsocketEndpoint::connect(std::string const& uri) {
   client::connection_ptr con = m_endpoint.get_connection(uri, ec);
 
   if (ec) {
-    std::cout << "> Connect initialization error: " << ec.message() << std::endl;
-    return false;
+	MSG_WEBSOCKET_WEBSOCKETENDPOINT_ERROR("Connect initialization error: " + ec.message());
+	return false;
   }
 
   m_metadata = websocketpp::lib::make_shared<ConnectionMetadata>(con->get_handle(), uri);
@@ -96,27 +89,27 @@ bool WebsocketEndpoint::connect(std::string const& uri) {
 
 void WebsocketEndpoint::close(websocketpp::close::status::value code, std::string reason) {
   if (!m_metadata) {
-    std::cout << "> No active connection to close." << std::endl;
+	MSG_WEBSOCKET_WEBSOCKETENDPOINT_DEBUG("No active connection to close.");
     return;
   }
 
   websocketpp::lib::error_code ec;
   m_endpoint.close(m_metadata->get_hdl(), code, reason, ec);
   if (ec) {
-    std::cout << "> Error initiating close: " << ec.message() << std::endl;
+	  MSG_WEBSOCKET_WEBSOCKETENDPOINT_ERROR("Error initiating close: " + ec.message());
   }
 }
 
 void WebsocketEndpoint::send(std::string message) {
   if (!m_metadata) {
-    std::cout << "> No active connection to send message." << std::endl;
+	MSG_WEBSOCKET_WEBSOCKETENDPOINT_DEBUG("No active connection to send message.");
     return;
   }
 
   websocketpp::lib::error_code ec;
   m_endpoint.send(m_metadata->get_hdl(), message, websocketpp::frame::opcode::text, ec);
   if (ec) {
-    std::cout << "> Error sending message: " << ec.message() << std::endl;
+	MSG_WEBSOCKET_WEBSOCKETENDPOINT_ERROR("Error sending message: " + ec.message());
     return;
   }
 
