@@ -1,7 +1,5 @@
 #!/bin/bash
 
-
-
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 
 USAGE="Usage: sudo $0 [SKP lights.ini File] [Mapping Config File] [QLC+ Workspace File]"
@@ -14,7 +12,7 @@ UDEV_RULES_DIR=/etc/udev/rules.d
 SYSTEMD_SERVICE_DIR=/lib/systemd/system
 DEFAULT_SKP_LIGHTSINI_SOURCE_DIR=${SCRIPT_DIR}/../StageKitPied
 DEFAULT_SKP_LIGHTSINI_SOURCE_FILE=lights.ini
-DEFAULT_DMXIFIED_MAPPING_SOURCE_DIR=${SCRIPT_DIR}
+DEFAULT_DMXIFIED_MAPPING_SOURCE_DIR=${SCRIPT_DIR}/../StageKitPied
 DEFAULT_DMXIFIED_MAPPING_SOURCE_FILE=dmxified_mapping.xml
 DEFAULT_QLCPLUS_WORKSPACE_SOURCE_DIR=${SCRIPT_DIR}
 DEFAULT_QLCPLUS_WORKSPACE_SOURCE_FILE=qlcplusSkpDmx.qxw

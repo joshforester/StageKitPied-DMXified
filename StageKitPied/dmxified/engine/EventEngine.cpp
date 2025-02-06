@@ -11,9 +11,13 @@ EventEngine::EventEngine(
 		RpiLightsController&
 		rpiLightsController,
 		const std::string& websocketUrl,
-		const unsigned int fileExistsInputWatcherSleepTimeMs
+		const long qlcplusConnectSleepTimeMs,
+		const long qlcplusSendSleepTimeMs,
+		const long fileExistsInputWatcherSleepTimeMs
 )
-    : mappings(mappings), skProcessor(rpiLightsController), qlcProcessor(websocketUrl) {
+    : mappings(mappings),
+	  skProcessor(rpiLightsController),
+	  qlcProcessor(websocketUrl, qlcplusConnectSleepTimeMs, qlcplusSendSleepTimeMs) {
 
     const std::vector<Input> fileExistsInputs = mappings.getFileExistsInputs();
     for (const auto& fileExistsInput : fileExistsInputs) {
@@ -52,7 +56,7 @@ EventEngine& EventEngine::getInstance(
 		const MappingConfig& mappings,
 		RpiLightsController& rpiLightsController
 ) {
-	return EventEngine::getInstance(mappings, rpiLightsController, "", 0);
+	return EventEngine::getInstance(mappings, rpiLightsController, "", 0, 0, 0);
 }
 
 
@@ -61,7 +65,9 @@ EventEngine& EventEngine::getInstance(
 		const MappingConfig& mappings,
 		RpiLightsController& rpiLightsController,
 		const std::string& websocketUrl,
-		const unsigned int fileExistsInputWatcherSleepTimeMs
+		const long qlcplusConnectSleepTimeMs,
+		const long qlcplusSendSleepTimeMs,
+		const long fileExistsInputWatcherSleepTimeMs
 ) {
     std::lock_guard<std::mutex> lock(mutex);  // Ensure thread safety during initialization
     if (instance == nullptr) {
@@ -69,12 +75,19 @@ EventEngine& EventEngine::getInstance(
     					 ? QlcplusOutputProcessor::defaultQlcplusWebsocketUrl
     					 : websocketUrl;
 
-        // If no value for sleepTimeMs is provided, use the default from FileExistsInputWatcher
-        unsigned int sleepTimeMs = (fileExistsInputWatcherSleepTimeMs == 0)
-                                  ? FileExistsInputWatcher::defaultFileExistsInputWatcherSleepTimeMs
-                                  : fileExistsInputWatcherSleepTimeMs;
+        // If no value for feiw_sleepTimeMs is provided, use the default from FileExistsInputWatcher
+        long feiw_sleepTimeMs = (fileExistsInputWatcherSleepTimeMs == 0)
+                               ? FileExistsInputWatcher::defaultFileExistsInputWatcherSleepTimeMs
+                               : fileExistsInputWatcherSleepTimeMs;
 
-        instance = new EventEngine(mappings, rpiLightsController, url, sleepTimeMs);
+        instance = new EventEngine(
+			mappings,
+			rpiLightsController,
+			url,
+			qlcplusConnectSleepTimeMs,
+			qlcplusSendSleepTimeMs,
+			feiw_sleepTimeMs
+		);
     }
     return *instance;
 }

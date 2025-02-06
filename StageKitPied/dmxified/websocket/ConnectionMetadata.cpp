@@ -50,12 +50,10 @@ websocketpp::connection_hdl ConnectionMetadata::get_hdl() const {
 }
 
 std::string ConnectionMetadata::get_status() const {
-	MSG_WEBSOCKET_CONNECTIONMETADATA_DEBUG("Checking value of m_status");
     if (m_status.empty()) {
         MSG_WEBSOCKET_CONNECTIONMETADATA_ERROR("Status is empty for connection.");
         return "Unknown";  // Fallback if status is empty
     }
-	MSG_WEBSOCKET_CONNECTIONMETADATA_DEBUG("Returning m_status");
     return m_status;
 }
 

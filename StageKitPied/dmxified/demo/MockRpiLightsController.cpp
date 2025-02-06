@@ -1,6 +1,6 @@
 #include "../../controller/RpiLightsController.h"
-
 #include "../config/MappingConfigConsts.h"
+
 
 RpiLightsController::RpiLightsController( const char* ini_file ) {
 };

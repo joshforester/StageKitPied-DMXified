@@ -646,6 +646,8 @@ void RpiLightsController::Handle_RumbleData( const uint8_t left_weight, const ui
   	  mDmxifiedMappingConfig,
 	  *this,
 	  m_qlcplus_websocket_url,
+	  m_qlcplus_connect_sleep_time_ms,
+	  m_qlcplus_send_sleep_time_ms,
 	  m_file_exists_input_watcher_sleep_time_ms
     );
     eventEngine.handleInputEvent(inputEvent);

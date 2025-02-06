@@ -10,6 +10,7 @@
 #include "../config/XmlLoader.h"
 #include "../config/MappingConfig.h"
 #include "../../stagekit/StageKitConsts.h"
+#include "../../controller/RpiLightsController.h"
 
 int main(int argc, char* argv[]) {
 
@@ -78,6 +79,8 @@ int main(int argc, char* argv[]) {
     		config,
 			rpiLightsController,
 			qlcplusWebsocketUrl,
+			QlcplusOutputProcessor::defaultQlcplusConnectSleepTimeMs,
+			QlcplusOutputProcessor::defaultQlcplusSendSleepTimeMs,
 			FileExistsInputWatcher::defaultFileExistsInputWatcherSleepTimeMs
 	);
 

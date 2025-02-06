@@ -23,12 +23,15 @@ public:
 
 	static std::string defaultQlcplusWebsocketUrl;
 
-	// TODO: these might be best placed in the INI config
-	static unsigned int defaultQlcplusConnectionWaitTimeMs;
-	static unsigned int defaultQlcplusSendWaitTimeMs;
+	static unsigned int defaultQlcplusConnectSleepTimeMs;
+	static unsigned int defaultQlcplusSendSleepTimeMs;
 
 	// Constructor that initializes WebSocket endpoint with a URL
-    QlcplusOutputProcessor(const std::string& url = defaultQlcplusWebsocketUrl);
+    QlcplusOutputProcessor(
+    	const std::string& url = defaultQlcplusWebsocketUrl,
+		const long qlcplusConnectSleepTimeMs = defaultQlcplusConnectSleepTimeMs,
+		const long qlcplusSendSleepTimeMs = defaultQlcplusSendSleepTimeMs
+	);
 
 #ifndef EESD
     ~QlcplusOutputProcessor();
@@ -39,6 +42,8 @@ public:
 
 private:
     std::string url;                       // WebSocket URL
+	const long qlcplusConnectSleepTimeMs;
+	const long qlcplusSendSleepTimeMs;
 
 #ifndef EESD
     WebsocketEndpoint websocketEndpoint;  // WebSocket endpoint object

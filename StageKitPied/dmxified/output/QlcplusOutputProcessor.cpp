@@ -2,11 +2,18 @@
 
 
 std::string QlcplusOutputProcessor::defaultQlcplusWebsocketUrl = "ws://127.0.0.1:9999/qlcplusWS";
-unsigned int QlcplusOutputProcessor::defaultQlcplusConnectionWaitTimeMs = 100;
-unsigned int QlcplusOutputProcessor::defaultQlcplusSendWaitTimeMs = 20;
+unsigned int QlcplusOutputProcessor::defaultQlcplusConnectSleepTimeMs = 100;
+unsigned int QlcplusOutputProcessor::defaultQlcplusSendSleepTimeMs = 0;
 
-QlcplusOutputProcessor::QlcplusOutputProcessor(const std::string& url)
-    : url(url), connectionMetadata(nullptr) {
+QlcplusOutputProcessor::QlcplusOutputProcessor(
+		const std::string& url,
+		const long qlcplusConnectSleepTimeMs,
+		const long qlcplusSendSleepTimeMs
+)
+    : url(url),
+      qlcplusConnectSleepTimeMs(qlcplusConnectSleepTimeMs),
+      qlcplusSendSleepTimeMs(qlcplusSendSleepTimeMs),
+	  connectionMetadata(nullptr) {
 }
 
 QlcplusOutputProcessor::~QlcplusOutputProcessor() {
@@ -41,7 +48,7 @@ void QlcplusOutputProcessor::process(const Output output) {
 		std::string data = qlcplusOutputToQlcplusWsCommand(output);
 		websocketEndpoint.send(data);
 		MSG_QLCPLUSOUTPUTPROCESSOR_DEBUG("Sent message: " + data);
-        std::this_thread::sleep_for(std::chrono::milliseconds(defaultQlcplusSendWaitTimeMs));
+        std::this_thread::sleep_for(std::chrono::milliseconds(qlcplusSendSleepTimeMs));
 	} else {
 		MSG_QLCPLUSOUTPUTPROCESSOR_ERROR("WebSocket connection failed, unable to send message.");
 	}
@@ -57,7 +64,7 @@ void QlcplusOutputProcessor::ensureConnection() {
         bool isConnected = false;
         try {
             isConnected = websocketEndpoint.connect(url);
-            std::this_thread::sleep_for(std::chrono::milliseconds(defaultQlcplusConnectionWaitTimeMs));
+            std::this_thread::sleep_for(std::chrono::milliseconds(qlcplusConnectSleepTimeMs));
         } catch (const std::exception& e) {
         	MSG_QLCPLUSOUTPUTPROCESSOR_ERROR("Exception while connecting to WebSocket: " + std::string(e.what()));
         } catch (...) {

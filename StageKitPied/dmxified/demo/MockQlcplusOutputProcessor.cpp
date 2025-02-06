@@ -1,10 +1,15 @@
-#include <iostream>
 #include "../output/QlcplusOutputProcessor.h"
 
 std::string QlcplusOutputProcessor::defaultQlcplusWebsocketUrl = "";
 
-QlcplusOutputProcessor::QlcplusOutputProcessor(const std::string& url)
-    : url(url) {
+QlcplusOutputProcessor::QlcplusOutputProcessor(
+		const std::string& url,
+		const long qlcplusConnectSleepTimeMs,
+		const long qlcplusSendSleepTimeMs
+)
+    : url(url),
+	  qlcplusConnectSleepTimeMs(qlcplusConnectSleepTimeMs),
+	  qlcplusSendSleepTimeMs(qlcplusSendSleepTimeMs) {
 }
 
 void QlcplusOutputProcessor::process(const Output output) {

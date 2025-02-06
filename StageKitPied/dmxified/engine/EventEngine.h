@@ -43,7 +43,9 @@ public:
     		const MappingConfig& mappings,
 			RpiLightsController& rpiLightsController,
 			const std::string& websocketUrl,
-			const unsigned int fileExistsInputWatcherSleepTimeMs
+			const long qlcplusConnectSleepTimeMs,
+			const long qlcplusSendSleepTimeMs,
+			const long fileExistsInputWatcherSleepTimeMs
 	);
 
     // Delete the copy constructor and assignment operator to avoid multiple instances
@@ -62,7 +64,9 @@ private:
     		const MappingConfig& mappings,
 			RpiLightsController& rpiLightsController,
 			const std::string& websocketUrl,
-			const unsigned int fileExistsInputWatcherSleepTimeMs
+			const long qlcplusConnectSleepTimeMs,
+			const long qlcplusSendSleepTimeMs,
+			const long fileExistsInputWatcherSleepTimeMs
 	);
 
     std::string lastInputId;                                                       // Last processed input ID; used for deterring SK_FOG_OFF spam
