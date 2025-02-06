@@ -1,4 +1,8 @@
-#include <signal.h>
+#include <csignal>
+#include <iostream>
+#include <unistd.h>
+#include <thread>
+#include <atomic>
 #include <stdio.h>
 #include <cstring>
 
@@ -12,15 +16,15 @@
 #define MSG_SKP_ERROR( str ) do { std::cout << "StageKitPied : ERROR : " << str << std::endl; } while( false )
 
 // *******
-// sigterm
+// sigterm/sigint
 // *******
-volatile sig_atomic_t done = 0;
+std::atomic<bool> running(true);  // Atomic flag to control the running state
 
-void term( int signum )
-{
-  // Caught signal termination
-  done = 1;
+void signalHandler(int signum) {
+    MSG_SKP_INFO( "Signal (" << signum << ") received. Exiting gracefully..." );
+    running = false;  // Set the flag to false to stop the program loop
 }
+
 
 // ****
 // main
@@ -29,11 +33,10 @@ void term( int signum )
 // Stage Kit Pied
 
 int main(int arc, char *argv[]) {
-  // Setup killswitch
-  struct sigaction action;
-  memset(&action, 0, sizeof(action) );
-  action.sa_handler = term;
-  sigaction(SIGTERM, &action, NULL);
+
+  // Set up signal handling for SIGINT (Ctrl+C) and SIGTERM (systemctl stop)
+  signal(SIGINT, signalHandler);  // For Ctrl+C
+  signal(SIGTERM, signalHandler); // For systemctl stop
 
   int pid = getpid();
 
@@ -70,7 +73,7 @@ int main(int arc, char *argv[]) {
 
 
   // Main loop
-  while( !done ) {
+  while( running ) {
 
     sleep_time_new = lightsController.Update( slept_ms );
 
@@ -78,7 +81,7 @@ int main(int arc, char *argv[]) {
     slept_ms = sleeper.Sleep();
 
     if( console.IsKeyPressed( 0 ) ) {
-      done = true;
+      running = false;
     }
   }
 
