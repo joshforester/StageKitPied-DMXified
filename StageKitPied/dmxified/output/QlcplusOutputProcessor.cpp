@@ -74,9 +74,7 @@ void QlcplusOutputProcessor::ensureConnection() {
         if (isConnected) {
             try {
                 connectionMetadata = websocketEndpoint.get_metadata();
-                if (connectionMetadata != nullptr) {
-                	MSG_QLCPLUSOUTPUTPROCESSOR_DEBUG("WebSocket connection established.");
-                } else {
+                if (connectionMetadata == nullptr) {
                 	MSG_QLCPLUSOUTPUTPROCESSOR_ERROR("Failed to retrieve metadata for connection.");
                 }
             } catch (const std::exception& e) {

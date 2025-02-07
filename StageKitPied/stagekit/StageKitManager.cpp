@@ -1,5 +1,5 @@
-
 #include "StageKitManager.h"
+
 
 StageKitManager::StageKitManager() {
   m_usb_context             = NULL;
@@ -61,6 +61,7 @@ uint8_t StageKitManager::Init() {
       if( device_descriptor.idVendor == STAGEKIT_VID && device_descriptor.idProduct == STAGEKIT_PID ) {
         // Is Stage Kit
         libusb_device_handle* ptr_usb_device_handle;
+        // Create a new thread for opening the device
         if( libusb_open( device, &ptr_usb_device_handle ) == 0 ) {
           MSG_STAGEKITMANAGER_DEBUG( "USB Device = Stage Kit.  With handle = " << ptr_usb_device_handle );
           if( m_stagekit[ m_amount_of_stagekits ].Init( ptr_usb_device_handle ) ) {

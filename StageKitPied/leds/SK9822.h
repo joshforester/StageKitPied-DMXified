@@ -1,16 +1,7 @@
 #ifndef _SK9822_H_
 #define _SK9822_H_
 
-#ifdef DEBUG
-  #define MSG_SK9822_DEBUG( str ) do { std::cout << "SK9822 : DEBUG : " << str << std::endl; } while( false )
-#else
-  #define MSG_SK9822_DEBUG( str ) do { } while ( false )
-#endif
-
-#define MSG_SK9822_ERROR( str ) do { std::cout << "SK9822 : ERROR : " << str << std::endl; } while( false )
-#define MSG_SK9822_INFO( str ) do { std::cout << "SK9822 : INFO : " << str << std::endl; } while( false )
-
-
+#include <thread>
 #include <cstring> // memcpy
 #include <string>
 #include <cstdint>
@@ -19,6 +10,17 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <linux/spi/spidev.h>
+
+
+#ifdef DEBUG
+  #define MSG_SK9822_DEBUG( str ) do { std::cout << std::this_thread::get_id() << "|SK9822 : DEBUG : " << str << std::endl; } while( false )
+#else
+  #define MSG_SK9822_DEBUG( str ) do { } while ( false )
+#endif
+
+#define MSG_SK9822_ERROR( str ) do { std::cerr << std::this_thread::get_id() << "|SK9822 : ERROR : " << str << std::endl; } while( false )
+#define MSG_SK9822_INFO( str ) do { std::cout << std::this_thread::get_id() << "|SK9822 : INFO : " << str << std::endl; } while( false )
+
 
 typedef struct {
   uint8_t m_brightness;  // Range? 0-31 (0x1F)

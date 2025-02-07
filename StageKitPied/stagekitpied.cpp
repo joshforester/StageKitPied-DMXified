@@ -1,19 +1,18 @@
+#include <thread>
 #include <csignal>
 #include <iostream>
 #include <unistd.h>
-#include <thread>
 #include <atomic>
 #include <stdio.h>
 #include <cstring>
 
 #include "helpers/SleepTimer.h"
-#include "helpers/ConsoleInput.h"
 #include "controller/RpiLightsController.h"
 
 #define INI_FILE "lights.ini"
 
-#define MSG_SKP_INFO( str ) do { std::cout << "StageKitPied : INFO : " << str << std::endl; } while( false )
-#define MSG_SKP_ERROR( str ) do { std::cout << "StageKitPied : ERROR : " << str << std::endl; } while( false )
+#define MSG_SKP_INFO( str ) do { std::cout << std::this_thread::get_id() << "|StageKitPied : INFO : " << str << std::endl; } while( false )
+#define MSG_SKP_ERROR( str ) do { std::cerr << std::this_thread::get_id() << "|StageKitPied : ERROR : " << str << std::endl; } while( false )
 
 // *******
 // sigterm/sigint
@@ -22,7 +21,7 @@ std::atomic<bool> running(true);  // Atomic flag to control the running state
 
 void signalHandler(int signum) {
     MSG_SKP_INFO( "Signal (" << signum << ") received. Exiting gracefully..." );
-    running = false;  // Set the flag to false to stop the program loop
+    running.store(false);  // Set the flag to false to stop the program loop
 }
 
 
@@ -40,15 +39,15 @@ int main(int arc, char *argv[]) {
 
   int pid = getpid();
 
-  MSG_SKP_INFO( "Program started with PID = " << pid );
+  MSG_SKP_INFO( "Program launched with PID = " << pid );
 
   RpiLightsController lightsController( INI_FILE );
-  if( !lightsController.Start() ) {
+  while( running.load() && !lightsController.Start() ) {
     MSG_SKP_ERROR( "Unable to start.");
-    //return 0;
+    std::this_thread::sleep_for(std::chrono::seconds(5));
   }
 
-  MSG_SKP_INFO( "Started" );
+  MSG_SKP_INFO( "Started." );
 
   // Sleepy timer
   long sleepyTime = 0;
@@ -60,34 +59,17 @@ int main(int arc, char *argv[]) {
   long slept_ms = 10;
   long sleep_time_new = 10;
 
-  ConsoleInput console;
-
-  if( !console.Start() ) {
-    MSG_SKP_ERROR( "Unable to get console input." );
-  } else {
-    MSG_SKP_INFO( "Press any key to exit program." );
-  }
-
-  console.LineBuffered( false );
-  console.Echo( false );
-
-
   // Main loop
-  while( running ) {
+  while( running.load() ) {
 
     sleep_time_new = lightsController.Update( slept_ms );
 
     sleeper.SetSleepTimeMax( sleep_time_new );
     slept_ms = sleeper.Sleep();
 
-    if( console.IsKeyPressed( 0 ) ) {
-      running = false;
-    }
   }
 
   lightsController.Stop();
-
-  console.Stop();
 
   MSG_SKP_INFO( "Program ended." );
 

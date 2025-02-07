@@ -1,24 +1,26 @@
 #ifndef _STAGEKITMANAGER_H_
 #define _STAGEKITMANAGER_H_
 
-#ifdef DEBUG
-  #define MSG_STAGEKITMANAGER_DEBUG( str ) do { std::cout << "StageKitManager : DEBUG : " << str << std::endl; } while( false )
-#else
-  #define MSG_STAGEKITMANAGER_DEBUG( str ) do { } while ( false )
-#endif
-
-#define MSG_STAGEKITMANAGER_ERROR( str ) do { std::cout << "StageKitManager : ERROR : " << str << std::endl; } while( false )
-#define MSG_STAGEKITMANAGER_INFO( str ) do { std::cout << "StageKitManager : INFO : " << str << std::endl; } while( false )
-
-#define STAGEKIT_VID 0x0E6F
-#define STAGEKIT_PID 0x0103
-
+#include <thread>
 #include <iostream>
 #include <iomanip>
 #include "libusb.h"
 
 #include "stagekit/USB_360StageKit.h"
 #include "stagekit/StageKitConfig.h"
+
+
+#ifdef DEBUG
+  #define MSG_STAGEKITMANAGER_DEBUG( str ) do { std::cout << std::this_thread::get_id() << "|StageKitManager : DEBUG : " << str << std::endl; } while( false )
+#else
+  #define MSG_STAGEKITMANAGER_DEBUG( str ) do { } while ( false )
+#endif
+
+#define MSG_STAGEKITMANAGER_ERROR( str ) do { std::cerr << std::this_thread::get_id() << "|StageKitManager : ERROR : " << str << std::endl; } while( false )
+#define MSG_STAGEKITMANAGER_INFO( str ) do { std::cout << std::this_thread::get_id() << "|StageKitManager : INFO : " << str << std::endl; } while( false )
+
+#define STAGEKIT_VID 0x0E6F
+#define STAGEKIT_PID 0x0103
 
 // Set as 4, because apparently there's only 4 in existence ;D
 #define MAX_STAGEKITS_IN_EXISTENCE 4

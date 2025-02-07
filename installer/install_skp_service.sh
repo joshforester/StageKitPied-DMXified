@@ -147,9 +147,10 @@ echo ""
 # Setup the service.
 cp ${SCRIPT_DIR}/${SKP_SERVICE_NAME}.service ${SYSTEMD_SERVICE_DIR}
 systemctl daemon-reload
-systemctl enable ${SKP_SERVICE_NAME}.service
+#systemctl disable ${SKP_SERVICE_NAME}.service
 
-echo "Startup service installed and enabled during reboot.  It will be started at the end of this script."
+#echo "Startup service installed and enabled during reboot.  It will be started at the end of this script."
+echo "Systemd service installed.  It will be started at the end of this script."
 echo ""
 
 #####################################################

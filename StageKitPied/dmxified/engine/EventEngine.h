@@ -1,18 +1,7 @@
 #ifndef EVENTENGINE_H
 #define EVENTENGINE_H
 
-#ifdef DEBUG
-  #define MSG_EVENTENGINE_DEBUG( str ) do { std::cout << "EventEngine : DEBUG : " << str << std::endl; } while( false )
-#else
-  #define MSG_EVENTENGINE_DEBUG( str ) do { } while ( false )
-#endif
-
-#define MSG_EVENTENGINE_ERROR( str ) do { std::cout << "EventEngine : ERROR : " << str << std::endl; } while( false )
-#define MSG_EVENTENGINE_INFO( str ) do { std::cout << "EventEngine : INFO : " << str << std::endl; } while( false )
-
-// Forward declare FileExistsInputWatcher because the preprocessor will see the vector in private section before include
-class FileExistsInputWatcher;
-
+#include <thread>
 #include <vector>
 #include <string>
 #include <mutex>
@@ -26,6 +15,20 @@ class FileExistsInputWatcher;
 #include "../../stagekit/StageKitConsts.h"
 #include "InputEvent.h"
 #include "PrioritizedOutputOverride.h"
+
+
+#ifdef DEBUG
+  #define MSG_EVENTENGINE_DEBUG( str ) do { std::cout << std::this_thread::get_id() << "|EventEngine : DEBUG : " << str << std::endl; } while( false )
+#else
+  #define MSG_EVENTENGINE_DEBUG( str ) do { } while ( false )
+#endif
+
+#define MSG_EVENTENGINE_ERROR( str ) do { std::cerr << std::this_thread::get_id() << "|EventEngine : ERROR : " << str << std::endl; } while( false )
+#define MSG_EVENTENGINE_INFO( str ) do { std::cout << std::this_thread::get_id() << "|EventEngine : INFO : " << str << std::endl; } while( false )
+
+// Forward declare FileExistsInputWatcher because the preprocessor will see the vector in private section before include
+class FileExistsInputWatcher;
+
 
 class EventEngine {
 public:

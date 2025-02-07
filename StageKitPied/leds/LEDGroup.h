@@ -1,17 +1,20 @@
 #ifndef _LEDGROUP_H_
 #define _LEDGROUP_H_
 
+#include <thread>
+#include <cstdint>
+#include <iostream>
+
+
 #ifdef DEBUG
-  #define MSG_LEDGROUP_DEBUG( str ) do { std::cout << "LEDGroup : DEBUG : " << str << std::endl; } while( false )
+  #define MSG_LEDGROUP_DEBUG( str ) do { std::cout << std::this_thread::get_id() << "|LEDGroup : DEBUG : " << str << std::endl; } while( false )
 #else
   #define MSG_LEDGROUP_DEBUG( str ) do { } while ( false )
 #endif
 
-#define MSG_LEDGROUP_ERROR( str ) do { std::cout << "LEDGroup : ERROR : " << str << std::endl; } while( false )
-#define MSG_LEDGROUP_INFO( str ) do { std::cout << "LEDGroup : INFO : " << str << std::endl; } while( false )
+#define MSG_LEDGROUP_ERROR( str ) do { std::cerr << std::this_thread::get_id() << "|LEDGroup : ERROR : " << str << std::endl; } while( false )
+#define MSG_LEDGROUP_INFO( str ) do { std::cout << std::this_thread::get_id() << "|LEDGroup : INFO : " << str << std::endl; } while( false )
 
-#include <cstdint>
-#include <iostream>
 
 class LEDGroup {
 public:

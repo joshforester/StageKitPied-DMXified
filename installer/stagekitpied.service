@@ -1,12 +1,12 @@
 [Unit]
 Description=Stage Kit Pied Xbox360 Stage Kit
-After=multi-user.target systemd-udev-settle.service
-Requires=systemd-udev-settle.service
+After=multi-user.target systemd-udev-settle.service dev-ttyUSB1.device
+Requires=systemd-udev-settle.service dev-ttyUSB1.device
 Before=graphical.target  # Ensures this service starts before the graphical desktop environment
 
 [Service]
 ExecStart=/opt/StageKitPied/skp
-StandardInput=/dev/null
+ExecStartPre=/usr/bin/udevadm settle --timeout=60
 StandardOutput=append:/var/log/stagekitpied.log
 StandardError=inherit
 

@@ -1,29 +1,28 @@
 #ifndef WEBSOCKET_CONNECTIONMETADATA_H_
 #define WEBSOCKET_CONNECTIONMETADATA_H_
 
-#ifdef DEBUG
-  #define MSG_WEBSOCKET_CONNECTIONMETADATA_DEBUG( str ) do { std::cout << "ConnectionMetadata : DEBUG : " << str << std::endl; } while( false )
-#else
-  #define MSG_WEBSOCKET_CONNECTIONMETADATA_DEBUG( str ) do { } while ( false )
-#endif
-
-#define MSG_WEBSOCKET_CONNECTIONMETADATA_ERROR( str ) do { std::cout << "ConnectionMetadata : ERROR : " << str << std::endl; } while( false )
-#define MSG_WEBSOCKET_CONNECTIONMETADATA_INFO( str ) do { std::cout << "ConnectionMetadata : INFO : " << str << std::endl; } while( false )
-
-//
-#include <websocketpp/config/asio_no_tls_client.hpp>
-#include <websocketpp/client.hpp>
-
-//
-#include <websocketpp/common/thread.hpp>
-#include <websocketpp/common/memory.hpp>
-
-//
+#include <thread>
 #include <cstdlib>
 #include <iostream>
 #include <map>
 #include <string>
 #include <sstream>
+
+#include <websocketpp/config/asio_no_tls_client.hpp>
+#include <websocketpp/client.hpp>
+#include <websocketpp/common/thread.hpp>
+#include <websocketpp/common/memory.hpp>
+
+
+#ifdef DEBUG
+  #define MSG_WEBSOCKET_CONNECTIONMETADATA_DEBUG( str ) do { std::cout << std::this_thread::get_id() << "|ConnectionMetadata : DEBUG : " << str << std::endl; } while( false )
+#else
+  #define MSG_WEBSOCKET_CONNECTIONMETADATA_DEBUG( str ) do { } while ( false )
+#endif
+
+#define MSG_WEBSOCKET_CONNECTIONMETADATA_ERROR( str ) do { std::cerr << std::this_thread::get_id() << "|ConnectionMetadata : ERROR : " << str << std::endl; } while( false )
+#define MSG_WEBSOCKET_CONNECTIONMETADATA_INFO( str ) do { std::cout << std::this_thread::get_id() << "|ConnectionMetadata : INFO : " << str << std::endl; } while( false )
+
 
 typedef websocketpp::client<websocketpp::config::asio_client> client;
 

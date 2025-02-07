@@ -1,22 +1,24 @@
 #ifndef _USB_360STAGEKIT_H_
 #define _USB_360STAGEKIT_H_
 
-#ifdef DEBUG
-  #define MSG_USB360SK_DEBUG( str ) do { std::cout << "USB_360StageKit : DEBUG : " << str << std::endl; } while( false )
-#else
-  #define MSG_USB360SK_DEBUG( str ) do { } while ( false )
-#endif
-
-#define MSG_USB360SK_ERROR( str ) do { std::cout << "USB_360StageKit : ERROR : " << str << std::endl; } while( false )
-#define MSG_USB360SK_INFO( str ) do { std::cout << "USB_360StageKit : INFO : " << str << std::endl; } while( false )
-
-
+#include <thread>
 #include <iostream>
 #include "libusb.h"
 
 #include "stagekit/USB_ControlRequest.h"
 #include "stagekit/StageKitConfig.h"
 #include "stagekit/StageKitConsts.h"
+
+
+#ifdef DEBUG
+  #define MSG_USB360SK_DEBUG( str ) do { std::cout << std::this_thread::get_id() << "|USB_360StageKit : DEBUG : " << str << std::endl; } while( false )
+#else
+  #define MSG_USB360SK_DEBUG( str ) do { } while ( false )
+#endif
+
+#define MSG_USB360SK_ERROR( str ) do { std::cerr << std::this_thread::get_id() << "|USB_360StageKit : ERROR : " << str << std::endl; } while( false )
+#define MSG_USB360SK_INFO( str ) do { std::cout << std::this_thread::get_id() << "|USB_360StageKit : INFO : " << str << std::endl; } while( false )
+
 
 // HID Class-Specific Requests values. See section 7.2 of the HID specifications
 #define HID_GET_REPORT                0x01

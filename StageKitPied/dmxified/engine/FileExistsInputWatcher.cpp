@@ -15,12 +15,12 @@ FileExistsInputWatcher::~FileExistsInputWatcher() {
         // Only attempt to join the thread if it is joinable
         if (watcherThread.joinable()) {
             watcherThread.join();  // Safely join the thread
-            std::cout << "FileExistsInputWatcher thread joined successfully." << std::endl;
+            MSG_FILEEXISTSINPUTWATCHER_DEBUG( "FileExistsInputWatcher thread joined successfully." );
         }
     } catch (const std::exception& e) {
-        std::cerr << "Error during FileExistsInputWatcher cleanup: " << e.what() << std::endl;
+        MSG_FILEEXISTSINPUTWATCHER_ERROR( "Error during FileExistsInputWatcher cleanup: " << e.what() );
     } catch (...) {
-        std::cerr << "Unknown error during FileExistsInputWatcher cleanup." << std::endl;
+        MSG_FILEEXISTSINPUTWATCHER_ERROR( "Unknown error during FileExistsInputWatcher cleanup." );
     }
 }
 
@@ -47,9 +47,9 @@ void FileExistsInputWatcher::watchFile() {
 
             std::this_thread::sleep_for(std::chrono::milliseconds(sleepTimeMs));
         } catch (const std::exception& e) {
-            std::cerr << "Exception in watchFile thread: " << e.what() << std::endl;
+        	MSG_FILEEXISTSINPUTWATCHER_ERROR( "Exception in watchFile thread: " << e.what() );
         } catch (...) {
-            std::cerr << "Unknown exception in watchFile thread." << std::endl;
+        	MSG_FILEEXISTSINPUTWATCHER_ERROR( "Unknown exception in watchFile thread." );
         }
     }
 }

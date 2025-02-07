@@ -11,6 +11,16 @@
 #include "EventEngine.h"
 #include "InputEvent.h"
 
+#ifdef DEBUG
+  #define MSG_FILEEXISTSINPUTWATCHER_DEBUG( str ) do { std::cout << std::this_thread::get_id() << "|FileExistsInputWatcher : DEBUG : " << str << std::endl; } while( false )
+#else
+  #define MSG_FILEEXISTSINPUTWATCHER_DEBUG( str ) do { } while ( false )
+#endif
+
+#define MSG_FILEEXISTSINPUTWATCHER_ERROR( str ) do { std::cerr << std::this_thread::get_id() << "|FileExistsInputWatcher : ERROR : " << str << std::endl; } while( false )
+#define MSG_FILEEXISTSINPUTWATCHER_INFO( str ) do { std::cout << std::this_thread::get_id() << "|FileExistsInputWatcher : INFO : " << str << std::endl; } while( false )
+
+
 class EventEngine;  // Forward declaration
 
 class FileExistsInputWatcher {

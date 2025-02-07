@@ -25,8 +25,8 @@ RpiLightsController::RpiLightsController( const char* ini_file ) {
   m_leds_strobe_speed_current   = 0;
   m_leds_strobe_next_on_ms      = 0;
 
-  m_noserialdata_ms				= 60 * 1000;
-  m_noserialdata_ms_count		= 0;
+  m_noserialdata_ms             = 60 * 1000;
+  m_noserialdata_ms_count       = 0;
   m_nodata_ms                   = 10 * 1000;
   m_nodata_ms_count             = 0;
   m_nodata_red                  = 0;
@@ -405,6 +405,7 @@ bool RpiLightsController::Restart() {
 	//TODO: this (or in Handle_SerialDisconnect) would be a good place to send a SK_NODATA event to the engine to prevent lingering lighting effects
 
 	this->Stop();
+    std::this_thread::sleep_for(std::chrono::seconds(5));
 	const bool isStarted = this->Start();
 	if (!isStarted)  {
 		MSG_RPLC_DEBUG("Unable to restart Rpi Lights Controller.");
@@ -420,7 +421,7 @@ void RpiLightsController::SerialAdapter_Poll() {
   if (pollingResult == 0) {
 	if( m_noserialdata_ms > 0 ) {
 	  m_noserialdata_ms_count += m_sleep_time;
-	  MSG_RPLC_DEBUG("m_noserialdata_ms[m_noserialdata_ms_count]:" + std::to_string(m_noserialdata_ms) + "[" + std::to_string(m_noserialdata_ms_count) + "]");
+	  //MSG_RPLC_DEBUG("m_noserialdata_ms[m_noserialdata_ms_count]:" + std::to_string(m_noserialdata_ms) + "[" + std::to_string(m_noserialdata_ms_count) + "]");
 	  if( m_noserialdata_ms_count > m_noserialdata_ms ) {
 		MSG_RPLC_DEBUG( "Timeout for serial idle exceeded (Xbox off?).  Attempting a serial reconnect.");
 		this->Restart();
@@ -451,7 +452,7 @@ void RpiLightsController::SerialAdapter_Poll() {
 	MSG_RPLC_DEBUG("Received serial data.  Resetting serial timeout counter.");
     m_noserialdata_ms_count = 0;
   } else if (pollingResult == -1) {
-	  MSG_RPLC_INFO( "Warning: " + std::to_string(pollingResult) + " received from polling serial adapter.  Attempting serial reconnect.");
+	  MSG_RPLC_INFO( "Warning: Polling serial adapter failed.  Attempting serial reconnect.");
 	  this->Restart();
   }
 };
@@ -592,6 +593,7 @@ void RpiLightsController::Handle_StagekitDisconnect() {
 bool RpiLightsController::Handle_SerialConnect() {
   if( !mStageKitManager.IsConnected() ) {
     MSG_RPLC_ERROR( "A USB SK360 POD needs to be connected before starting the Serial Adapter." );
+    std::this_thread::sleep_for(std::chrono::seconds(5));
     return false;
   }
 
@@ -603,18 +605,13 @@ bool RpiLightsController::Handle_SerialConnect() {
 
     bool surpress_warnings = mINI_Handler.GetTokenValue( "SURPRESS_WARNINGS" ) > 0 ? true : false;
 
-	std::string serial_port_1 = mINI_Handler.GetTokenString( "SERIAL_PORT_1" );
-	std::string serial_port_2 = mINI_Handler.GetTokenString( "SERIAL_PORT_2" );
-    while (!mSerialAdapter.IsRunning()) {
-		MSG_RPLC_INFO( "Attempting Serial Adapter connection on '" << serial_port_1 << "'" );
+	std::string serial_port = mINI_Handler.GetTokenString( "SERIAL_PORT" );
+    while (running.load() && !mSerialAdapter.IsRunning()) {
+		MSG_RPLC_INFO( "Attempting Serial Adapter connection on '" << serial_port << "'" );
 
-		if( !mSerialAdapter.Init( serial_port_1.c_str(), surpress_warnings ) ) {
-		  std::this_thread::sleep_for(std::chrono::seconds(2)); // delay for device readiness
-		  MSG_RPLC_INFO( "Attempting Serial Adapter connection on '" << serial_port_2 << "'" );
-		  if(!mSerialAdapter.Init( serial_port_2.c_str(), surpress_warnings )) {
-			MSG_RPLC_ERROR( "Unable to find a connected Serial Adapter." );
+		if( !mSerialAdapter.Init( serial_port.c_str(), surpress_warnings ) ) {
+			MSG_RPLC_ERROR( "Failed to find Serial Adapter.  Is it connected?." );
 			std::this_thread::sleep_for(std::chrono::seconds(5));
-		  }
 		}
     }
     MSG_RPLC_INFO( "Connected to Serial Adapter." );
@@ -665,8 +662,7 @@ void RpiLightsController::Handle_RumbleData( const uint8_t left_weight, const ui
 
 
 void RpiLightsController::Do_Handle_RumbleData( const uint8_t left_weight, const uint8_t right_weight ) {
-  // TODO: protect other points of entry ???from additional StageKitPied threads, such as adapter polling threads??? if any
-//  std::lock_guard<std::mutex> lock(mtx);  // Ensure thread-safe access to rumble data updates
+  std::lock_guard<std::mutex> lock(mtx);  // Ensure thread-safe access to rumble data updates (FileExistsInputWatcher)
 
   switch( right_weight ) {
     case SKRUMBLEDATA::SK_LED_RED:

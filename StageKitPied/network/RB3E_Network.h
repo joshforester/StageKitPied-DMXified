@@ -1,15 +1,7 @@
 #ifndef _RB3E_NETWORK_H_
 #define _RB3E_NETWORK_H_
 
-#ifdef DEBUG
-  #define MSG_RB3E_NETWORK_DEBUG( str ) do { std::cout << "RB3E_Network : DEBUG : " << str << std::endl; } while( false )
-#else
-  #define MSG_RB3E_NETWORK_DEBUG( str ) do { } while ( false )
-#endif
-
-#define MSG_RB3E_NETWORK_ERROR( str ) do { std::cout << "RB3E_Network : ERROR : " << str << std::endl; } while( false )
-#define MSG_RB3E_NETWORK_INFO( str ) do { std::cout << "RB3E_Network : INFO : " << str << std::endl; } while( false )
-
+#include <thread>
 #include <iostream>
 #include <fcntl.h>
 #include <sys/socket.h>
@@ -21,6 +13,16 @@
 #include <bitset>
 
 #include "network/RB3E_NetworkHelpers.h"
+
+#ifdef DEBUG
+  #define MSG_RB3E_NETWORK_DEBUG( str ) do { std::cout << std::this_thread::get_id() << "|RB3E_Network : DEBUG : " << str << std::endl; } while( false )
+#else
+  #define MSG_RB3E_NETWORK_DEBUG( str ) do { } while ( false )
+#endif
+
+#define MSG_RB3E_NETWORK_ERROR( str ) do { std::cerr << std::this_thread::get_id() << "|RB3E_Network : ERROR : " << str << std::endl; } while( false )
+#define MSG_RB3E_NETWORK_INFO( str ) do { std::cout << std::this_thread::get_id() << "|RB3E_Network : INFO : " << str << std::endl; } while( false )
+
 
 class RB3E_Network
 {

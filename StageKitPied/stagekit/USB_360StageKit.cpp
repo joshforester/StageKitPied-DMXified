@@ -1,5 +1,5 @@
-
 #include "USB_360StageKit.h"
+
 
 USB_360StageKit::USB_360StageKit() {
   m_ptr_usb_device_handle = NULL;

@@ -1,28 +1,11 @@
 #ifndef _RPILIGHTSCONTROLLER_H_
 #define _RPILIGHTSCONTROLLER_H_
 
-#ifdef DEBUG
-  #if defined(XXSD)
-    #define MSG_RPLC_DEBUG( str ) do { std::cout << "MockRpiLightsController : DEBUG : " << str << std::endl; } while( false )
-  #else
-    #define MSG_RPLC_DEBUG( str ) do { std::cout << "RpiLightsController : DEBUG : " << str << std::endl; } while( false )
-  #endif
-#else
-  #define MSG_RPLC_DEBUG( str ) do { } while ( false )
-#endif
-
-#if defined(XXSD)
-  #define MSG_RPLC_ERROR( str ) do { std::cout << "MockRpiLightsController : ERROR : " << str << std::endl; } while( false )
-  #define MSG_RPLC_INFO( str ) do { std::cout << "MockRpiLightsController : INFO : " << str << std::endl; } while( false )
-#else
-  #define MSG_RPLC_ERROR( str ) do { std::cout << "RpiLightsController : ERROR : " << str << std::endl; } while( false )
-  #define MSG_RPLC_INFO( str ) do { std::cout << "RpiLightsController : INFO : " << str << std::endl; } while( false )
-#endif
-
-//
+#include <thread>
 #include <iostream>
 #include <string>
 #include <chrono>
+#include <atomic>   // for running global variable
 #include <cstdlib>  // system
 #include <cstring>  // memcpy
 #include <unistd.h> // readlink
@@ -43,12 +26,34 @@
 #include "../dmxified/engine/EventEngine.h"
 #include "../dmxified/config/MappingConfig.h"
 #include "../dmxified/config/XmlLoader.h"
-#endif // !XXSD
 
-//
+
+#endif // !XXSD
+#ifdef DEBUG
+  #if defined(XXSD)
+    #define MSG_RPLC_DEBUG( str ) do { std::cout << "MockRpiLightsController : DEBUG : " << str << std::endl; } while( false )
+  #else
+    #define MSG_RPLC_DEBUG( str ) do { std::cout << std::this_thread::get_id() << "|RpiLightsController : DEBUG : " << str << std::endl; } while( false )
+  #endif
+#else
+  #define MSG_RPLC_DEBUG( str ) do { } while ( false )
+#endif
+
+#if defined(XXSD)
+  #define MSG_RPLC_ERROR( str ) do { std::cerr << "MockRpiLightsController : ERROR : " << str << std::endl; } while( false )
+  #define MSG_RPLC_INFO( str ) do { std::cout << "MockRpiLightsController : INFO : " << str << std::endl; } while( false )
+#else
+  #define MSG_RPLC_ERROR( str ) do { std::cerr << std::this_thread::get_id() << "|RpiLightsController : ERROR : " << str << std::endl; } while( false )
+  #define MSG_RPLC_INFO( str ) do { std::cout << std::this_thread::get_id() << "|RpiLightsController : INFO : " << str << std::endl; } while( false )
+#endif
+
 #define USB_DIRECTION_IN 0x80
 #define ALIVE_CHECK_ITR 1                // Check clients
 #define ALIVE_CLEAR_ITR 20               // Remove clients
+
+
+extern std::atomic<bool> running;
+
 
 class RpiLightsController {
 public:
@@ -102,7 +107,7 @@ private:
 
   void Handle_StrobeUpdate( const uint8_t strobe_speed );
 
-  std::mutex mtx; // an admittedly weak attempt at protecting updates to shared resources
+  std::mutex mtx; // attempt at protecting updates to shared resources due to FileExistsInputWatcher
 
 #if !defined(XXSD)
   bool               m_dmxified_enabled;

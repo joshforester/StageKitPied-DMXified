@@ -1,21 +1,23 @@
 #ifndef INI_HANDLER_H_
 #define INI_HANDLER_H_
 
-#ifdef DEBUG
-  #define MSG_INI_DEBUG( str ) do { std::cout << "INI_Handler : DEBUG : " << str << std::endl; } while( false )
-#else
-  #define MSG_INI_DEBUG( str ) do { } while ( false )
-#endif
-
-#define MSG_INI_ERROR( str ) do { std::cout << "INI_Handler : ERROR : " << str << std::endl; } while( false )
-#define MSG_INI_INFO( str ) do { std::cout << "INI_Handler : INFO : " << str << std::endl; } while( false )
-
+#include <thread>
 #include <cstdint>
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <vector>
 #include <memory>
+
+#ifdef DEBUG
+  #define MSG_INI_DEBUG( str ) do { std::cout << std::this_thread::get_id() << "|INI_Handler : DEBUG : " << str << std::endl; } while( false )
+#else
+  #define MSG_INI_DEBUG( str ) do { } while ( false )
+#endif
+
+#define MSG_INI_ERROR( str ) do { std::cerr << std::this_thread::get_id() << "|INI_Handler : ERROR : " << str << std::endl; } while( false )
+#define MSG_INI_INFO( str ) do { std::cout << std::this_thread::get_id() << "|INI_Handler : INFO : " << str << std::endl; } while( false )
+
 
 // The basic token struct
 struct INI_Token

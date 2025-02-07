@@ -1,15 +1,7 @@
 #ifndef QLCPLUSOUTPUTPROCESSOR_H
 #define QLCPLUSOUTPUTPROCESSOR_H
 
-#ifdef DEBUG
-  #define MSG_QLCPLUSOUTPUTPROCESSOR_DEBUG( str ) do { std::cout << "QlcplusOutputProcessor : DEBUG : " << str << std::endl; } while( false )
-#else
-  #define MSG_QLCPLUSOUTPUTPROCESSOR_DEBUG( str ) do { } while ( false )
-#endif
-
-#define MSG_QLCPLUSOUTPUTPROCESSOR_ERROR( str ) do { std::cout << "QlcplusOutputProcessor : ERROR : " << str << std::endl; } while( false )
-#define MSG_QLCPLUSOUTPUTPROCESSOR_INFO( str ) do { std::cout << "QlcplusOutputProcessor : INFO : " << str << std::endl; } while( false )
-
+#include <thread>
 #include <string>
 #include <iostream>
 #include <mutex>                             // For std::mutex
@@ -17,6 +9,16 @@
 #include "../config/MappingConfigConsts.h"   // For translating config
 #include "../websocket/WebsocketEndpoint.h"  // Include your WebsocketEndpoint header
 #include "../websocket/ConnectionMetadata.h" // Include ConnectionMetadata
+
+#ifdef DEBUG
+  #define MSG_QLCPLUSOUTPUTPROCESSOR_DEBUG( str ) do { std::cout << std::this_thread::get_id() << "|QlcplusOutputProcessor : DEBUG : " << str << std::endl; } while( false )
+#else
+  #define MSG_QLCPLUSOUTPUTPROCESSOR_DEBUG( str ) do { } while ( false )
+#endif
+
+#define MSG_QLCPLUSOUTPUTPROCESSOR_ERROR( str ) do { std::cerr << std::this_thread::get_id() << "|QlcplusOutputProcessor : ERROR : " << str << std::endl; } while( false )
+#define MSG_QLCPLUSOUTPUTPROCESSOR_INFO( str ) do { std::cout << std::this_thread::get_id() << "|QlcplusOutputProcessor : INFO : " << str << std::endl; } while( false )
+
 
 class QlcplusOutputProcessor {
 public:

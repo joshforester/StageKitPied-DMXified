@@ -2,15 +2,7 @@
 #ifndef WEBSOCKET_WEBSOCKETENDPOINT_H_
 #define WEBSOCKET_WEBSOCKETENDPOINT_H_
 
-#ifdef DEBUG
-  #define MSG_WEBSOCKET_WEBSOCKETENDPOINT_DEBUG( str ) do { std::cout << "WebsocketEndpoint : DEBUG : " << str << std::endl; } while( false )
-#else
-  #define MSG_WEBSOCKET_WEBSOCKETENDPOINT_DEBUG( str ) do { } while ( false )
-#endif
-
-#define MSG_WEBSOCKET_WEBSOCKETENDPOINT_ERROR( str ) do { std::cout << "WebsocketEndpoint : ERROR : " << str << std::endl; } while( false )
-#define MSG_WEBSOCKET_WEBSOCKETENDPOINT_INFO( str ) do { std::cout << "WebsocketEndpoint : INFO : " << str << std::endl; } while( false )
-
+#include <thread>
 #include "ConnectionMetadata.h"
 #include <websocketpp/config/asio_no_tls_client.hpp>
 #include <websocketpp/client.hpp>
@@ -19,6 +11,16 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
+
+#ifdef DEBUG
+  #define MSG_WEBSOCKET_WEBSOCKETENDPOINT_DEBUG( str ) do { std::cout << std::this_thread::get_id() << "|WebsocketEndpoint : DEBUG : " << str << std::endl; } while( false )
+#else
+  #define MSG_WEBSOCKET_WEBSOCKETENDPOINT_DEBUG( str ) do { } while ( false )
+#endif
+
+#define MSG_WEBSOCKET_WEBSOCKETENDPOINT_ERROR( str ) do { std::cerr << std::this_thread::get_id() << "|WebsocketEndpoint : ERROR : " << str << std::endl; } while( false )
+#define MSG_WEBSOCKET_WEBSOCKETENDPOINT_INFO( str ) do { std::cout << std::this_thread::get_id() << "|WebsocketEndpoint : INFO : " << str << std::endl; } while( false )
+
 
 // NOTE: This class is not thread-safe; please ensure calling classes (such as QlcplusOutputProcessor) are thread-safe.
 class WebsocketEndpoint {

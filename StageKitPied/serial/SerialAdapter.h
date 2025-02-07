@@ -1,15 +1,7 @@
 #ifndef _SERIALADAPTER_H_
 #define _SERIALADAPTER_H_
 
-#ifdef DEBUG
-  #define MSG_SERIALADAPTER_DEBUG( str ) do { std::cout << "SerialAdapter : DEBUG : " << str << std::endl; } while( false )
-#else
-  #define MSG_SERIALADAPTER_DEBUG( str ) do { } while ( false )
-#endif
-
-#define MSG_SERIALADAPTER_ERROR( str ) do { std::cout << "SerialAdapter : ERROR : " << str << std::endl; } while( false )
-#define MSG_SERIALADAPTER_INFO( str ) do { std::cout << "SerialAdapter : INFO : " << str << std::endl; } while( false )
-
+#include <thread>
 #include <iostream>
 #include <unistd.h>
 #include <iomanip>
@@ -23,6 +15,15 @@
 #include <acl/libacl.h> // setfacl
 #include <unistd.h>
 #include <poll.h> // poll
+
+#ifdef DEBUG
+  #define MSG_SERIALADAPTER_DEBUG( str ) do { std::cout << std::this_thread::get_id() << "|SerialAdapter : DEBUG : " << str << std::endl; } while( false )
+#else
+  #define MSG_SERIALADAPTER_DEBUG( str ) do { } while ( false )
+#endif
+
+#define MSG_SERIALADAPTER_ERROR( str ) do { std::cerr << std::this_thread::get_id() << "|SerialAdapter : ERROR : " << str << std::endl; } while( false )
+#define MSG_SERIALADAPTER_INFO( str ) do { std::cout << std::this_thread::get_id() << "|SerialAdapter : INFO : " << str << std::endl; } while( false )
 
 #define SERIALADAPTER_DEBUG 0
 

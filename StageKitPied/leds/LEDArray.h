@@ -1,16 +1,7 @@
 #ifndef _LEDARRAY_H_
 #define _LEDARRAY_H_
 
-#ifdef DEBUG
-  #define MSG_LEDARRAY_DEBUG( str ) do { std::cout << "LEDArray : DEBUG : " << str << std::endl; } while( false )
-#else
-  #define MSG_LEDARRAY_DEBUG( str ) do { } while ( false )
-#endif
-
-#define MSG_LEDARRAY_ERROR( str ) do { std::cout << "LEDArray : ERROR : " << str << std::endl; } while( false )
-#define MSG_LEDARRAY_INFO( str ) do { std::cout << "LEDArray : INFO : " << str << std::endl; } while( false )
-
-
+#include <thread>
 #include <cstdint>
 #include <iostream>
 #include <string>
@@ -20,6 +11,17 @@
 #include "leds/LEDGroup.h"
 #include "leds/SK9822.h"
 #include "stagekit/StageKitConsts.h"
+
+
+#ifdef DEBUG
+  #define MSG_LEDARRAY_DEBUG( str ) do { std::cout << std::this_thread::get_id() << "|LEDArray : DEBUG : " << str << std::endl; } while( false )
+#else
+  #define MSG_LEDARRAY_DEBUG( str ) do { } while ( false )
+#endif
+
+#define MSG_LEDARRAY_ERROR( str ) do { std::cerr << std::this_thread::get_id() << "|LEDArray : ERROR : " << str << std::endl; } while( false )
+#define MSG_LEDARRAY_INFO( str ) do { std::cout << std::this_thread::get_id() << "|LEDArray : INFO : " << str << std::endl; } while( false )
+
 
 class LEDArray {
 public:
