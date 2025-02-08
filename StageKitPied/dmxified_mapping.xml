@@ -132,6 +132,39 @@
 		</outputs>
 	</mapping>
 	<mapping>
+		<input type="stageKitInput" id="IDLE_ON" priority="1" />
+		<outputs>
+			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
+				<widgetId>5</widgetId>
+				<value>1</value>
+			</output>
+			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
+				<widgetId>8</widgetId>
+				<value>1</value>
+			</output>
+			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
+				<widgetId>14</widgetId>
+				<value>1</value>
+			</output>
+			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
+				<widgetId>19</widgetId>
+				<value>1</value>
+			</output>
+			<output type="stageKitOutput" subtype="Handle_LEDUpdate">
+				<value>SK_ALL_OFF</value>
+			</output>
+		</outputs>
+	</mapping>
+	<mapping>
+		<input type="stageKitInput" id="IDLE_OFF" priority="1" />
+		<outputs>
+			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
+				<widgetId>20</widgetId>
+				<value>1</value>
+			</output>
+		</outputs>
+	</mapping>
+	<mapping>
 		<input type="stageKitInput" id="SK_ALL_OFF" priority="1" />
 		<outputs>
 			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
