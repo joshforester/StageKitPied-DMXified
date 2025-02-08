@@ -1,2 +1,2 @@
-SUBSYSTEM=="usb-serial", ATTRS{serial}=="A5069RR4" ACTION=="add|bind|change|online", OWNER="root", GROUP="root", MODE="0600", RUN:="/opt/StageKitPied/udev/serialUsbGuard.sh /dev/%k"
-
+# Match the stage kit serial adapter by serial id
+SUBSYSTEM=="usb-serial", ATTRS{serial}=="A5069RR4" ACTION=="add|bind|change|online", OWNER="root", GROUP="root", MODE="0600", TAG+="systemd" RUN:="/opt/StageKitPied/udev/serialUsbGuard.sh /dev/%k"
