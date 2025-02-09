@@ -169,6 +169,9 @@ private:
   // NO DATA
   long               m_noserialdata_ms;
   long               m_noserialdata_ms_count;
+  long               m_idletime_ms;
+  long               m_idletime_ms_count;
+  bool               m_idle_cleared;
   long               m_nodata_ms;
   long               m_nodata_ms_count;
   uint8_t            m_nodata_red;

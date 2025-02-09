@@ -1,7 +1,7 @@
 [Unit]
 Description=Stage Kit Pied Xbox360 Stage Kit
-After=multi-user.target systemd-udev-settle.service dev-ttyUSB1.device After=dev-input-js0.device
-Requires=systemd-udev-settle.service dev-ttyUSB1.device dev-input-js0.device
+After=multi-user.target systemd-udev-settle.service dev-ttyUSB1.device dev-input-js0.device dev-input-js1.device dev-input-event4.device dev-input-event5.device
+Requires=systemd-udev-settle.service dev-ttyUSB1.device dev-input-js0.device dev-input-js1.device dev-input-event4.device dev-input-event5.device
 Before=graphical.target  # Ensures this service starts before the graphical desktop environment
 
 [Service]

@@ -78,6 +78,9 @@ enum SKRUMBLEDATA {
   SK_LED_RED        = 0x80,  // 1000 0000 - Right weight
   SK_LED_MASK       = 0xE0,  // 1110 0000 - Right weight
   SK_ALL_OFF        = 0xFF,  // 1111 1111 - Right weight
+  SERIAL_RESTART    = 0xFE,  // made up; not an actual SK event
+  IDLE_ON           = 0xFD,  // made up; not an actual SK event
+  IDLE_OFF          = 0xFC,  // made up; not an actual SK event
 };
 
 
@@ -109,6 +112,12 @@ inline const std::string skRumbleDataTypeToString(const SKRUMBLEDATA type) {
             return "SK_LED_MASK";
         case SKRUMBLEDATA::SK_ALL_OFF:
             return "SK_ALL_OFF";
+        case SKRUMBLEDATA::SERIAL_RESTART:
+            return "SERIAL_RESTART";
+        case SKRUMBLEDATA::IDLE_ON:
+            return "IDLE_ON";
+        case SKRUMBLEDATA::IDLE_OFF:
+            return "IDLE_OFF";
         default:
             return "Unknown";
     }
@@ -141,6 +150,12 @@ inline const SKRUMBLEDATA stringToSkRumbleData(std::string str) {
 		return SKRUMBLEDATA::SK_LED_MASK;
 	} else if (str == "SK_ALL_OFF") {
 		return SKRUMBLEDATA::SK_ALL_OFF;
+	} else if (str == "SERIAL_RESTART") {
+		return SKRUMBLEDATA::SERIAL_RESTART;
+	} else if (str == "IDLE_ON") {
+		return SKRUMBLEDATA::IDLE_ON;
+	} else if (str == "IDLE_OFF") {
+		return SKRUMBLEDATA::IDLE_OFF;
 	} else {
 		throw std::runtime_error("Attempting to convert string " + str + " to SKRUMBLEDATA, but it is not a valid type.");
 	}

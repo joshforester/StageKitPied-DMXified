@@ -27,6 +27,9 @@ RpiLightsController::RpiLightsController( const char* ini_file ) {
 
   m_noserialdata_ms             = 60 * 1000;
   m_noserialdata_ms_count       = 0;
+  m_idletime_ms                 = 20 * 1000;
+  m_idletime_ms_count           = 0;
+  m_idle_cleared                = true;
   m_nodata_ms                   = 10 * 1000;
   m_nodata_ms_count             = 0;
   m_nodata_red                  = 0;
@@ -120,9 +123,9 @@ RpiLightsController::RpiLightsController( const char* ini_file ) {
 
         // Load the XML file into a MappingConfig object
         try {
-        	mDmxifiedMappingConfig = XmlLoader::loadMappingConfig(m_dmxified_mapping_file);
+          mDmxifiedMappingConfig = XmlLoader::loadMappingConfig(m_dmxified_mapping_file);
         } catch (const std::exception& e) {
-            std::cerr << "Error: " << e.what() << "\n";
+          MSG_RPLC_ERROR( "Error: " << e.what() );
         }
       }
     }
@@ -248,6 +251,12 @@ RpiLightsController::RpiLightsController( const char* ini_file ) {
 		m_noserialdata_ms_count = 0;
       }
 
+      if ( mINI_Handler.SetSection( "NO_EVENT_DATA" ) ) {
+        m_idletime_ms = mINI_Handler.GetTokenValue( "IDLE_SECONDS" );
+        m_idletime_ms *= 1000;
+        m_idletime_ms_count = 0;
+      }
+
       int flash_red        = 0;
       int flash_green      = 255;
       int flash_blue       = 0;
@@ -369,7 +378,6 @@ long RpiLightsController::Update( long time_passed_ms ) {
     this->SerialAdapter_Poll();
   }
 
-
   // Yeah this isn't right, since we probably had data but that data will reset counter to 0
   // so it'll be close enough :D
   if( m_nodata_ms > 0 ) {
@@ -404,13 +412,47 @@ void RpiLightsController::Stop() {
 bool RpiLightsController::Restart() {
 	//TODO: this (or in Handle_SerialDisconnect) would be a good place to send a SK_NODATA event to the engine to prevent lingering lighting effects
 
-	this->Stop();
+//    mSerialAdapter.Close();
+//
+//    this->Handle_RumbleData(SKRUMBLEDATA::SK_NONE, SKRUMBLEDATA::SERIAL_RESTART);
+//
+//    std::this_thread::sleep_for(std::chrono::seconds(5));
+//
+//    const bool isStarted = this->Handle_SerialConnect();
+//	if (!isStarted)  {
+//		MSG_RPLC_DEBUG("Unable to restart Rpi Lights Controller.");
+//	}
+
+    this->Handle_SerialDisconnect();
+
+    this->Handle_RumbleData(SKRUMBLEDATA::SK_NONE, SKRUMBLEDATA::SERIAL_RESTART);
+
+    if( mStageKitManager.IsConnected() ) {
+      mStageKitManager.End();
+      this->Stagekit_ResetVariables();
+    }
+
     std::this_thread::sleep_for(std::chrono::seconds(5));
-	const bool isStarted = this->Start();
+
+    const bool isStagekitConnected = this->Handle_StagekitConnect();
+    if( !isStagekitConnected ) {
+      MSG_RPLC_ERROR("Unable to connect to Stage Kit.");
+      return false;
+    }
+
+    const bool isSerialConnected = this->Handle_SerialConnect();
+    if( !isSerialConnected ) {
+      MSG_RPLC_ERROR("Unable to connect to Serial Adapter.");
+      return false;
+    }
+
+    const bool isStarted = isStagekitConnected && isSerialConnected;
 	if (!isStarted)  {
 		MSG_RPLC_DEBUG("Unable to restart Rpi Lights Controller.");
 	}
+
 	m_noserialdata_ms_count = 0;
+	m_idletime_ms_count = 0;
 
 	return isStarted;
 }
@@ -449,11 +491,11 @@ void RpiLightsController::SerialAdapter_Poll() {
     }
 
     // We've received data, so reset the counter.
-	MSG_RPLC_DEBUG("Received serial data.  Resetting serial timeout counter.");
+    MSG_RPLC_DEBUG("Received serial data.  Resetting serial timeout counter.");
     m_noserialdata_ms_count = 0;
   } else if (pollingResult == -1) {
-	  MSG_RPLC_INFO( "Warning: Polling serial adapter failed.  Attempting serial reconnect.");
-	  this->Restart();
+	MSG_RPLC_INFO( "Warning: Polling serial adapter failed.  Attempting serial reconnect.");
+	this->Restart();
   }
 };
 
@@ -526,7 +568,7 @@ void RpiLightsController::StageKit_PollButtons( long time_passed_in_ms ) {
   } else {
     m_button_check_delay = 100;
     for( uint8_t stagekit_id = 0; stagekit_id < mStageKitManager.AmountOfStageKits(); stagekit_id++ ) {  
-      MSG_RPLC_DEBUG( "Testing for Xbox Button on stagekit [ " << +stagekit_id << " ]" );
+//      MSG_RPLC_DEBUG( "Testing for Xbox Button on stagekit [ " << +stagekit_id << " ]" );
       if( mStageKitManager.PollButtons( stagekit_id ) ) {
         uint16_t buttons = mStageKitManager.GetButtons( stagekit_id );
         if( ( buttons & SKBUTTON::SK_BUTTON_XBOX ) == SKBUTTON::SK_BUTTON_XBOX ) {
@@ -605,14 +647,14 @@ bool RpiLightsController::Handle_SerialConnect() {
 
     bool surpress_warnings = mINI_Handler.GetTokenValue( "SURPRESS_WARNINGS" ) > 0 ? true : false;
 
-	std::string serial_port = mINI_Handler.GetTokenString( "SERIAL_PORT" );
+    std::string serial_port = mINI_Handler.GetTokenString( "SERIAL_PORT_1" );
     while (running.load() && !mSerialAdapter.IsRunning()) {
-		MSG_RPLC_INFO( "Attempting Serial Adapter connection on '" << serial_port << "'" );
+	  MSG_RPLC_INFO( "Attempting Serial Adapter connection on '" << serial_port << "'" );
 
-		if( !mSerialAdapter.Init( serial_port.c_str(), surpress_warnings ) ) {
-			MSG_RPLC_ERROR( "Failed to find Serial Adapter.  Is it connected?." );
-			std::this_thread::sleep_for(std::chrono::seconds(5));
-		}
+	  if( !mSerialAdapter.Init( serial_port.c_str(), surpress_warnings ) ) {
+		MSG_RPLC_ERROR( "Failed to find Serial Adapter.  Is it connected?." );
+		std::this_thread::sleep_for(std::chrono::seconds(5));
+	  }
     }
     MSG_RPLC_INFO( "Connected to Serial Adapter." );
 
@@ -640,7 +682,7 @@ void RpiLightsController::Handle_RumbleData( const uint8_t left_weight, const ui
     );
 
     EventEngine& eventEngine = EventEngine::getInstance(
-  	  mDmxifiedMappingConfig,
+      mDmxifiedMappingConfig,
 	  *this,
 	  m_qlcplus_websocket_url,
 	  m_qlcplus_connect_sleep_time_ms,
@@ -656,7 +698,15 @@ void RpiLightsController::Handle_RumbleData( const uint8_t left_weight, const ui
   }
 
   if( m_rb3e_sender_enabled ) {
-    mRB3E_Network.SendLightEvent( left_weight, right_weight );
+
+	// ignore made up events
+	if ( ( right_weight != SKRUMBLEDATA::IDLE_ON ) &&
+         ( right_weight != SKRUMBLEDATA::IDLE_OFF ) &&
+         ( right_weight != SKRUMBLEDATA::SERIAL_RESTART ) ) {
+
+      mRB3E_Network.SendLightEvent( left_weight, right_weight );
+
+	}
   }
 };
 
@@ -716,14 +766,58 @@ void RpiLightsController::Do_Handle_RumbleData( const uint8_t left_weight, const
       this->Handle_StrobeUpdate( 0 );
       this->Handle_FogUpdate( false );
       break;
+    case SKRUMBLEDATA::SERIAL_RESTART:
+      MSG_RPLC_DEBUG( "SERIAL_RESTART" );
+      this->Handle_LEDUpdate( SKRUMBLEDATA::SK_NONE, SKRUMBLEDATA::SK_ALL_OFF );
+      this->Handle_StrobeUpdate( 0 );
+      this->Handle_FogUpdate( false );
+      break;
+    case SKRUMBLEDATA::IDLE_ON:
+      MSG_RPLC_DEBUG( "IDLE_ON" );
+      break;
+    case SKRUMBLEDATA::IDLE_OFF:
+      MSG_RPLC_DEBUG( "IDLE_OFF");
+      break;
     default:
       MSG_RPLC_INFO( "Unhandled stagekit data received : " << right_weight );
       break;
   }
 
-  // Anything other than fog off counts as new data since fog off is constantly sent.
-  if( right_weight != SKRUMBLEDATA::SK_FOG_OFF ) {
-    m_nodata_ms_count = 0;
+  // Anything other than FOG_OFF counts as new data since FOG_OFF is constantly sent.
+  // Just in case we aren't DMXified or someone does something weird in the mapping file,
+  // I also include IDLE events.
+  if( (right_weight != SKRUMBLEDATA::SK_FOG_OFF) &&
+      (right_weight != SKRUMBLEDATA::IDLE_ON) &&
+      (right_weight != SKRUMBLEDATA::IDLE_OFF) ) {
+
+	// data was sent, so clear no data status
+	m_nodata_ms_count = 0;
+
+	// reset idle time counter and clear idle status
+    if (!m_idle_cleared) {
+      m_idletime_ms_count = 0;
+      m_idle_cleared = true;
+	  MSG_RPLC_DEBUG( "Non-FOG_OFF event sent; resetting idle time and sending IDLE_OFF.");
+      this->Handle_RumbleData(SKRUMBLEDATA::SK_NONE, SKRUMBLEDATA::IDLE_OFF);
+    }
+
+  // again, ignore FOG_OFF; and serial restart should override the idle counting
+  } else if ( (right_weight != SKRUMBLEDATA::SK_FOG_OFF) &&
+              (right_weight != SKRUMBLEDATA::SERIAL_RESTART) ) {
+
+	// receiving more FOG_OFF (or IDLE stuff) events; only start counting again if idle was cleared
+	if ( m_idle_cleared ) {
+	  if( m_idletime_ms > 0 ) {
+	    m_idletime_ms_count += m_sleep_time;
+	    MSG_RPLC_DEBUG("m_idletime_ms[m_idletime_ms_count]:" + std::to_string(m_idletime_ms) + "[" + std::to_string(m_idletime_ms_count) + "]");
+	    if( m_idletime_ms_count > m_idletime_ms ) {
+		  m_idle_cleared = false;
+		  MSG_RPLC_DEBUG( "Timeout for idle time exceeded.  Sending IDLE_ON.");
+		  this->Handle_RumbleData(SKRUMBLEDATA::SK_NONE, SKRUMBLEDATA::IDLE_ON);
+	    }
+	  }
+	}
+
   }
 }
 

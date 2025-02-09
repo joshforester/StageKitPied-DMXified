@@ -132,6 +132,26 @@
 		</outputs>
 	</mapping>
 	<mapping>
+		<input type="stageKitInput" id="SERIAL_RESTART" priority="1" />
+		<outputs>
+			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
+				<widgetId>5</widgetId>
+				<value>1</value>
+			</output>
+			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
+				<widgetId>8</widgetId>
+				<value>1</value>
+			</output>
+			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
+				<widgetId>14</widgetId>
+				<value>1</value>
+			</output>
+			<output type="stageKitOutput" subtype="Handle_LEDUpdate">
+				<value>SERIAL_RESTART</value>
+			</output>
+		</outputs>
+	</mapping>
+	<mapping>
 		<input type="stageKitInput" id="IDLE_ON" priority="1" />
 		<outputs>
 			<output type="qlcplusOutput" subtype="basicWidgetValueSet">

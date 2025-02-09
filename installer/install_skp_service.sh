@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# TODO: install xbox pod guard
+# TODO: install locate_usb.sh
+
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 
 USAGE="Usage: sudo $0 [SKP lights.ini File] [Mapping Config File] [QLC+ Workspace File]"
