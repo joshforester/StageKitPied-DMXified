@@ -448,6 +448,8 @@ bool RpiLightsController::Restart() {
 		MSG_RPLC_DEBUG("Unable to restart Rpi Lights Controller.");
 	}
 
+
+
 	m_noserialdata_ms_count = 0;
 
 	return isStarted;

@@ -152,8 +152,7 @@ void EventEngine::doHandleInputEvent(const InputEvent& inputEvent) {
 		const std::string inputId = inputEvent.getId();
 		Input input = mappings.getInputById(inputId);
 
-		MSG_EVENTENGINE_DEBUG( "handleInputEvent called; last event[current event]: " << lastInputId << "[" << inputId << "]." );
-
+		MSG_EVENTENGINE_DEBUG("handleInputEvent called; current event[last event]: " << inputId << "[" << lastInputId << "].");
 
 		// Handle idle event
 		bool isIdleEvent = isIdleSkRumbleDataString(inputId);
@@ -176,6 +175,10 @@ void EventEngine::doHandleInputEvent(const InputEvent& inputEvent) {
 			// ignore duplicate idle events:  SK_FOG_OFF-SK_FOG_OFF, IDLE_ON-IDLE_ON, IDLE_OFF-IDLE_OFF, SERIAL_RESTART-SERIAL_RESTART
 			if (isIdleSkRumbleDataString(lastInputId) &&
 			    ((inputId == lastInputId) || (inputId == skRumbleDataTypeToString(SKRUMBLEDATA::SK_FOG_OFF)))) {
+				if (inputId != lastInputId) {
+					lastInputId = inputId;
+				}
+
 				MSG_EVENTENGINE_DEBUG("Ignoring SK_FOG_OFF/idle event spam.");
 				this->processQueuedEvent();
 				return;

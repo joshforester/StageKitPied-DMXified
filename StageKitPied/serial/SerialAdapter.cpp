@@ -151,7 +151,7 @@ bool SerialAdapter::Init( const char* path, bool surpress_warnings ) {
 
     return false;
   }
-  MSG_SERIALADAPTER_INFO( "Adapter version = " << m_version_major << "." << m_version_minor );
+  MSG_SERIALADAPTER_DEBUG( "Adapter version = " << m_version_major << "." << m_version_minor );
 
   if( !this->Start() ) {
     MSG_SERIALADAPTER_ERROR( "Serial Adapter : ERROR : Failed to start." );
@@ -453,7 +453,7 @@ int SerialAdapter::Poll() {
           m_payload_length = m_header[ 1 ];
           this->Read( m_payload, m_payload_length );
           if( m_header[ 0 ] == HEADER_START ) {
-            MSG_SERIALADAPTER_INFO( "Adapter replied as started." );
+            MSG_SERIALADAPTER_DEBUG( "Adapter replied as started." );
           } else if( m_header[ 0 ] == HEADER_CONTROL_DATA || m_header[ 0 ] == HEADER_OUT_REPORT ) {
             return 1;
           }
