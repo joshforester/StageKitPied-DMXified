@@ -27,9 +27,7 @@ RpiLightsController::RpiLightsController( const char* ini_file ) {
 
   m_noserialdata_ms             = 60 * 1000;
   m_noserialdata_ms_count       = 0;
-  m_idletime_ms                 = 20 * 1000;
-  m_idletime_ms_count           = 0;
-  m_idle_cleared                = true;
+  m_idletime_ms                 = EventEngine::defaultNoEventIdleTimeMs * 1000;
   m_nodata_ms                   = 10 * 1000;
   m_nodata_ms_count             = 0;
   m_nodata_red                  = 0;
@@ -254,7 +252,6 @@ RpiLightsController::RpiLightsController( const char* ini_file ) {
       if ( mINI_Handler.SetSection( "NO_EVENT_DATA" ) ) {
         m_idletime_ms = mINI_Handler.GetTokenValue( "IDLE_SECONDS" );
         m_idletime_ms *= 1000;
-        m_idletime_ms_count = 0;
       }
 
       int flash_red        = 0;
@@ -452,7 +449,6 @@ bool RpiLightsController::Restart() {
 	}
 
 	m_noserialdata_ms_count = 0;
-	m_idletime_ms_count = 0;
 
 	return isStarted;
 }
@@ -491,7 +487,6 @@ void RpiLightsController::SerialAdapter_Poll() {
     }
 
     // We've received data, so reset the counter.
-    MSG_RPLC_DEBUG("Received serial data.  Resetting serial timeout counter.");
     m_noserialdata_ms_count = 0;
   } else if (pollingResult == -1) {
 	MSG_RPLC_INFO( "Warning: Polling serial adapter failed.  Attempting serial reconnect.");
@@ -684,6 +679,7 @@ void RpiLightsController::Handle_RumbleData( const uint8_t left_weight, const ui
     EventEngine& eventEngine = EventEngine::getInstance(
       mDmxifiedMappingConfig,
 	  *this,
+	  m_idletime_ms,
 	  m_qlcplus_websocket_url,
 	  m_qlcplus_connect_sleep_time_ms,
 	  m_qlcplus_send_sleep_time_ms,
@@ -712,7 +708,7 @@ void RpiLightsController::Handle_RumbleData( const uint8_t left_weight, const ui
 
 
 void RpiLightsController::Do_Handle_RumbleData( const uint8_t left_weight, const uint8_t right_weight ) {
-  std::lock_guard<std::mutex> lock(mtx);  // Ensure thread-safe access to rumble data updates (FileExistsInputWatcher)
+//  std::lock_guard<std::mutex> lock(mtx);  // Ensure thread-safe access to rumble data updates (FileExistsInputWatcher)
 
   switch( right_weight ) {
     case SKRUMBLEDATA::SK_LED_RED:
@@ -773,9 +769,11 @@ void RpiLightsController::Do_Handle_RumbleData( const uint8_t left_weight, const
       this->Handle_FogUpdate( false );
       break;
     case SKRUMBLEDATA::IDLE_ON:
+      // just here to gracefully handle mapping file misconfiguration
       MSG_RPLC_DEBUG( "IDLE_ON" );
       break;
     case SKRUMBLEDATA::IDLE_OFF:
+        // just here to gracefully handle mapping file misconfiguration
       MSG_RPLC_DEBUG( "IDLE_OFF");
       break;
     default:
@@ -785,40 +783,11 @@ void RpiLightsController::Do_Handle_RumbleData( const uint8_t left_weight, const
 
   // Anything other than FOG_OFF counts as new data since FOG_OFF is constantly sent.
   // Just in case we aren't DMXified or someone does something weird in the mapping file,
-  // I also include IDLE events.
-  if( (right_weight != SKRUMBLEDATA::SK_FOG_OFF) &&
-      (right_weight != SKRUMBLEDATA::IDLE_ON) &&
-      (right_weight != SKRUMBLEDATA::IDLE_OFF) ) {
-
-	// data was sent, so clear no data status
-	m_nodata_ms_count = 0;
-
-	// reset idle time counter and clear idle status
-    if (!m_idle_cleared) {
-      m_idletime_ms_count = 0;
-      m_idle_cleared = true;
-	  MSG_RPLC_DEBUG( "Non-FOG_OFF event sent; resetting idle time and sending IDLE_OFF.");
-      this->Handle_RumbleData(SKRUMBLEDATA::SK_NONE, SKRUMBLEDATA::IDLE_OFF);
-    }
-
-  // again, ignore FOG_OFF; and serial restart should override the idle counting
-  } else if ( (right_weight != SKRUMBLEDATA::SK_FOG_OFF) &&
-              (right_weight != SKRUMBLEDATA::SERIAL_RESTART) ) {
-
-	// receiving more FOG_OFF (or IDLE stuff) events; only start counting again if idle was cleared
-	if ( m_idle_cleared ) {
-	  if( m_idletime_ms > 0 ) {
-	    m_idletime_ms_count += m_sleep_time;
-	    MSG_RPLC_DEBUG("m_idletime_ms[m_idletime_ms_count]:" + std::to_string(m_idletime_ms) + "[" + std::to_string(m_idletime_ms_count) + "]");
-	    if( m_idletime_ms_count > m_idletime_ms ) {
-		  m_idle_cleared = false;
-		  MSG_RPLC_DEBUG( "Timeout for idle time exceeded.  Sending IDLE_ON.");
-		  this->Handle_RumbleData(SKRUMBLEDATA::SK_NONE, SKRUMBLEDATA::IDLE_ON);
-	    }
-	  }
-	}
-
+  // I include all idle events in the if statement.
+  if( isIdleSkRumbleData(static_cast<SKRUMBLEDATA>(right_weight)) ) {
+	m_nodata_ms_count = 0; // data was sent, so clear no data status
   }
+
 }
 
 // Colour = SK colour - From serial
@@ -890,6 +859,8 @@ long RpiLightsController::Handle_TimeUpdate( long time_passed_ms ) {
   // Stagekit manager will deal with fog
   mStageKitManager.Handle_TimeUpdate( time_passed_ms );
   
+  EventEngine::handleTimeUpdate( time_passed_ms );
+
   // Attempt to detect a song change by no data for 3 seconds.  Is this long enough?
   if( m_nodata_ms_count >= 3000 ) {
     mStageKitManager.Handle_SongChange();

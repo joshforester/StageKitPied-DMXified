@@ -4,12 +4,14 @@
 // Initialize the static members
 EventEngine* EventEngine::instance = nullptr;
 std::mutex EventEngine::mutex;
+long EventEngine::defaultNoEventIdleTimeMs = 20;
+
 
 // Constructor
 EventEngine::EventEngine(
 		const MappingConfig& mappings,
-		RpiLightsController&
-		rpiLightsController,
+		RpiLightsController& rpiLightsController,
+		const long noEventIdleTime,
 		const std::string& websocketUrl,
 		const long qlcplusConnectSleepTimeMs,
 		const long qlcplusSendSleepTimeMs,
@@ -18,6 +20,17 @@ EventEngine::EventEngine(
     : mappings(mappings),
 	  skProcessor(rpiLightsController),
 	  qlcProcessor(websocketUrl, qlcplusConnectSleepTimeMs, qlcplusSendSleepTimeMs) {
+
+	lastInputId = skRumbleDataTypeToString(SKRUMBLEDATA::SK_ALL_OFF);
+
+	queuedEvent = SKRUMBLEDATA::SK_NONE;
+
+	time_passed_ms = 0;
+
+	m_idletime_ms = noEventIdleTime;
+	m_idletime_ms_count = 0;
+	m_idle_status_cleared = true;
+
 
     const std::vector<Input> fileExistsInputs = mappings.getFileExistsInputs();
     for (const auto& fileExistsInput : fileExistsInputs) {
@@ -34,7 +47,7 @@ EventEngine::EventEngine(
 }
 
 EventEngine::~EventEngine() {
-    std::cout << "Cleaning up EventEngine..." << std::endl;
+	MSG_EVENTENGINE_INFO( "Cleaning up EventEngine..." );
 
     // Manually delete the static instance if necessary (only if you don't rely on shared_ptr cleanup)
     if (instance != nullptr) {
@@ -56,7 +69,15 @@ EventEngine& EventEngine::getInstance(
 		const MappingConfig& mappings,
 		RpiLightsController& rpiLightsController
 ) {
-	return EventEngine::getInstance(mappings, rpiLightsController, "", 0, 0, 0);
+	return EventEngine::getInstance(
+			mappings,
+			rpiLightsController,
+			EventEngine::defaultNoEventIdleTimeMs,
+			"",
+			0,
+			0,
+			0
+		);
 }
 
 
@@ -64,6 +85,7 @@ EventEngine& EventEngine::getInstance(
 EventEngine& EventEngine::getInstance(
 		const MappingConfig& mappings,
 		RpiLightsController& rpiLightsController,
+		const long noEventIdleTimeMs,
 		const std::string& websocketUrl,
 		const long qlcplusConnectSleepTimeMs,
 		const long qlcplusSendSleepTimeMs,
@@ -83,6 +105,7 @@ EventEngine& EventEngine::getInstance(
         instance = new EventEngine(
 			mappings,
 			rpiLightsController,
+			noEventIdleTimeMs,
 			url,
 			qlcplusConnectSleepTimeMs,
 			qlcplusSendSleepTimeMs,
@@ -90,6 +113,25 @@ EventEngine& EventEngine::getInstance(
 		);
     }
     return *instance;
+}
+
+void EventEngine::incrementTimePassedMs(long incrementBy) {
+	time_passed_ms += incrementBy;
+}
+
+
+void EventEngine::handleTimeUpdate(long timePassed) {
+	if (instance != nullptr) {
+		instance->incrementTimePassedMs(timePassed);
+	}
+}
+
+void EventEngine::handleInputEvent(const InputEvent& inputEvent) {
+	std::lock_guard<std::mutex> lock(mutex); // protect the modification of overrides, outputsToProcess, outputOverrideList, and lastInputId from FileExistsInputWatcher
+
+	if (instance != nullptr) {
+		this->doHandleInputEvent(inputEvent);
+	}
 }
 
 // Handle an InputEvent.  Algorithm:
@@ -103,21 +145,55 @@ EventEngine& EventEngine::getInstance(
 //      process outputs for input
 //      setup any override lists
 //      set lastInputId
-void EventEngine::handleInputEvent(const InputEvent& inputEvent) {
-//	std::lock_guard<std::mutex> lock(mtx); // protect the modification of overrides, outputsToProcess, outputOverrideList, and lastInputId
+void EventEngine::doHandleInputEvent(const InputEvent& inputEvent) {
 
 	try {
 
 		const std::string inputId = inputEvent.getId();
 		Input input = mappings.getInputById(inputId);
 
-		MSG_EVENTENGINE_DEBUG( "handleInputEvent called for inputId " << inputId << "." );
+		MSG_EVENTENGINE_DEBUG( "handleInputEvent called; last event[current event]: " << lastInputId << "[" << inputId << "]." );
 
-		// Ignore SK_FOG_OFF spam
-		if ((inputId == skRumbleDataTypeToString(SKRUMBLEDATA::SK_FOG_OFF)) &&
-			(inputId == lastInputId)) {
-			MSG_EVENTENGINE_DEBUG( "Ignoring SK_FOG_OFF spam." );
-			return;
+
+		// Handle idle event
+		bool isIdleEvent = isIdleSkRumbleDataString(inputId);
+		if (isIdleEvent) {
+
+			// receiving idle event; only start counting again if idle status was cleared recently
+			if ( m_idle_status_cleared ) { // ensure not already in idle status so we don't send duplicate IDLE_ON events
+				if( m_idletime_ms > 0 ) {
+					m_idletime_ms_count += time_passed_ms;
+					time_passed_ms = 0;
+					MSG_EVENTENGINE_DEBUG("m_idletime_ms[m_idletime_ms_count]:" + std::to_string(m_idletime_ms) + "[" + std::to_string(m_idletime_ms_count) + "]");
+					if( m_idletime_ms_count > m_idletime_ms ) {
+						m_idle_status_cleared = false;
+						MSG_EVENTENGINE_DEBUG( "Timeout for idle time exceeded.  Sending IDLE_ON.");
+						this->queueInternalInputEvent(SKRUMBLEDATA::IDLE_ON);
+					}
+				}
+			}
+
+			// ignore duplicate idle events:  SK_FOG_OFF-SK_FOG_OFF, IDLE_ON-IDLE_ON, IDLE_OFF-IDLE_OFF, SERIAL_RESTART-SERIAL_RESTART
+			if (isIdleSkRumbleDataString(lastInputId) &&
+			    ((inputId == lastInputId) || (inputId == skRumbleDataTypeToString(SKRUMBLEDATA::SK_FOG_OFF)))) {
+				MSG_EVENTENGINE_DEBUG("Ignoring SK_FOG_OFF/idle event spam.");
+				this->processQueuedEvent();
+				return;
+			}
+
+		} else { // non-idle event
+
+			// non-idel event, so reset count
+			time_passed_ms = 0;
+			m_idletime_ms_count = 0;
+
+			// first non-idle event; clear idle status
+			if (!m_idle_status_cleared) {
+				m_idle_status_cleared = true;
+				MSG_EVENTENGINE_DEBUG( "First non-idle event; resetting idle time and sending IDLE_OFF.");
+				this->queueInternalInputEvent(SKRUMBLEDATA::IDLE_OFF);
+			}
+
 		}
 
 		// If this is a negation event, populate it accordingly.
@@ -202,13 +278,13 @@ void EventEngine::handleInputEvent(const InputEvent& inputEvent) {
 						MSG_EVENTENGINE_DEBUG("Determined QlcplusProcessor should process.");
 						qlcProcessor.process(outputToProcess);
 					} catch (const std::exception& e) {
-						std::cerr << "Error processing Qlcplus output: " << e.what() << std::endl;
+						MSG_EVENTENGINE_ERROR("Error processing Qlcplus output: " << e.what());
 					} catch (...) {
-						std::cerr << "Unknown error processing Qlcplus output." << std::endl;
+						MSG_EVENTENGINE_ERROR("Unknown error processing Qlcplus output.");
 					}
 					break;
 				default:
-					std::cerr << "Unknown output type!" << std::endl;
+					MSG_EVENTENGINE_ERROR("Unknown output type!");
 					break;
 			}
 
@@ -224,15 +300,39 @@ void EventEngine::handleInputEvent(const InputEvent& inputEvent) {
 		    	}
 		    }
 
-		    // Only doing this to prevent processing of SK_FOG_OFF spam.
-		    lastInputId = inputId;  // Save inputId for comparison with SK_FOG_OFF.
 		}
 
+	    // Only doing this to prevent processing of SK_FOG_OFF spam.
+	    lastInputId = inputId;  // Save inputId for comparison with SK_FOG_OFF.
+
+		this->processQueuedEvent();
+
 	} catch (const std::exception& e) {
-		std::cerr << "Exception in handleInputEvent: " << e.what() << std::endl;
+		MSG_EVENTENGINE_ERROR("Exception in handleInputEvent: ");
 	} catch (...) {
-		std::cerr << "Unknown exception in handleInputEvent." << std::endl;
+		MSG_EVENTENGINE_ERROR("Unknown exception in handleInputEvent.");
 	}
+}
+
+void EventEngine::queueInternalInputEvent(SKRUMBLEDATA eventType) {
+	queuedEvent = eventType;
+}
+
+void EventEngine::processQueuedEvent() {
+
+	if (queuedEvent != SKRUMBLEDATA::SK_NONE) {
+
+		InputEvent event(
+			skRumbleDataTypeToString(queuedEvent),
+			SKRUMBLEDATA::SK_NONE,
+			queuedEvent
+		);
+
+		queuedEvent = SKRUMBLEDATA::SK_NONE; // clear queue
+		this->doHandleInputEvent(event);
+
+	}
+
 }
 
 // Override an existing output override

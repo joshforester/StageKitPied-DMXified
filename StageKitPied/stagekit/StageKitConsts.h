@@ -161,6 +161,25 @@ inline const SKRUMBLEDATA stringToSkRumbleData(std::string str) {
 	}
 }
 
+inline const bool isIdleSkRumbleData(SKRUMBLEDATA type) {
+	switch (type) {
+		case SKRUMBLEDATA::SK_FOG_OFF:
+			return true;
+		case SKRUMBLEDATA::SERIAL_RESTART:
+			return true;
+		case SKRUMBLEDATA::IDLE_ON:
+			return true;
+		case SKRUMBLEDATA::IDLE_OFF:
+			return true;
+		default:
+			return false;
+	}
+}
+
+inline const bool isIdleSkRumbleDataString(std::string str) {
+	return isIdleSkRumbleData(stringToSkRumbleData(str));
+}
+
 inline const SKRUMBLEDATA boolToSkFogRumbleData(bool fog_on_status) {
     if (fog_on_status) {
     	return SKRUMBLEDATA::SK_FOG_ON;

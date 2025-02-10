@@ -30,7 +30,6 @@ public:
 
 private:
     RpiLightsController& rpiLightsController; // Lights controller (reference)
-//    mutable std::mutex mtx;                   // Mutex to protect shared data
 };
 
 #endif // STAGEKITOUTPUTPROCESSOR_H

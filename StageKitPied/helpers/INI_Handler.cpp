@@ -66,9 +66,6 @@ bool INI_Handler::Load( const std::string& filename ) {
   m_section_current = new INI_Section;
   m_section_list.push_back( m_section_current );
 
-
-  MSG_INI_DEBUG( "About to process buffer." );
-
   // Process internal buffer.
   m_has_file_loaded = this->ProcessBuffer();
 
@@ -298,7 +295,6 @@ bool INI_Handler::ProcessBuffer() {
 
       // Ensure its not just a blank line.
       if( ptr_start < ptr_pos ) {
-        MSG_INI_DEBUG( "About to ProcessLine." );
         if( !this->ProcessLine( ptr_start, ptr_pos, lineNumber ) ) {
           return false;
         }

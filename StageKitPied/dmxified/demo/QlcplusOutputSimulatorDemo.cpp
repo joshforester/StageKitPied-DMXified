@@ -78,6 +78,7 @@ int main(int argc, char* argv[]) {
     EventEngine& eventEngine = EventEngine::getInstance(
     		config,
 			rpiLightsController,
+			EventEngine::defaultNoEventIdleTimeMs,
 			qlcplusWebsocketUrl,
 			QlcplusOutputProcessor::defaultQlcplusConnectSleepTimeMs,
 			QlcplusOutputProcessor::defaultQlcplusSendSleepTimeMs,
