@@ -45,7 +45,7 @@ public:
 
   ~USB_360StageKit();
 
-  bool Init( libusb_device_handle* ptr_usb_device_handle );
+  bool Init( libusb_device_handle* ptr_usb_device_handle, bool blink_on_start );
 
   bool IsConnected();
 
@@ -91,6 +91,8 @@ private:
   uint32_t m_buttonstate;
   uint32_t m_buttonstate_old;
   uint16_t m_buttonstate_clicked;
+
+  bool m_blink_on_start;
 
 };
 

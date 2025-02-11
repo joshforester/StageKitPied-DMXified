@@ -138,6 +138,7 @@ private:
   bool               m_serial_connected_to_x360;
 
   uint8_t            m_stagekit_default_config;
+  bool               m_stagekit_blink_on_start;
 
   uint8_t            m_stagekit_colour_red;
   uint8_t            m_stagekit_colour_green;

@@ -10,7 +10,9 @@ USB_360StageKit::~USB_360StageKit() {
   this->End();
 };
 
-bool USB_360StageKit::Init( libusb_device_handle* ptr_usb_device_handle ) {
+bool USB_360StageKit::Init( libusb_device_handle* ptr_usb_device_handle, bool blink_on_start ) {
+  m_blink_on_start = blink_on_start;
+
   if( m_ptr_usb_device_handle ) {
     MSG_USB360SK_ERROR( "Already connected to a Stage Kit" );
     return false;
@@ -45,8 +47,10 @@ bool USB_360StageKit::Init( libusb_device_handle* ptr_usb_device_handle ) {
 
   // When interfaces are claimed the POD likes to blink the status LED.
   // Make them rotate to show pod is active.
-  if( !this->SetStatusLEDs( SKSTATUSLEDS::SK_STATUS_BLINK_ALL ) ) {
-    MSG_USB360SK_ERROR( "Unable to set status LEDs." );
+  if (m_blink_on_start) {
+    if( !this->SetStatusLEDs( SKSTATUSLEDS::SK_STATUS_ON_1 ) ) {
+      MSG_USB360SK_ERROR( "Unable to set status LEDs." );
+    }
   }
 
   return true;
@@ -289,6 +293,7 @@ bool USB_360StageKit::ReleaseInterfaces() {
 };
 
 bool USB_360StageKit::SetStatusLEDs( const uint8_t status_value ) {
+
   int retVal = 0;
   if( m_ptr_usb_device_handle != NULL ) {
     MSG_USB360SK_DEBUG( "USB building out report: Setting status LEDs to '" << +status_value << "'" );

@@ -99,6 +99,7 @@ RpiLightsController::RpiLightsController( const char* ini_file ) {
       if( m_stagekit_default_config > 4 ) {
         m_stagekit_default_config = 0;
       }
+      m_stagekit_blink_on_start = mINI_Handler.GetTokenValue( "BLINK_ON_START" );
     }
     
     if( !mINI_Handler.SetSection( "DMXIFIED" ) ) {
@@ -588,7 +589,7 @@ bool RpiLightsController::Handle_StagekitConnect() {
     mStageKitManager.End();
   }
 
-  if( !mStageKitManager.Init() ) {
+  if( !mStageKitManager.Init(m_stagekit_blink_on_start) ) {
     MSG_RPLC_ERROR( "Unable to connect to a USB SK360 POD." );
 
     return false;

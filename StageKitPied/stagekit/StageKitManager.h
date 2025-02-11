@@ -34,7 +34,7 @@ public:
 
   ~StageKitManager();
 
-  uint8_t Init(); // Returns amount of found stage kits
+  uint8_t Init(bool blink_on_start); // Returns amount of found stage kits
 
   // USB passthrough to StageKit[ 0 ]
   int Send( USB_ControlRequest* ptr_control_request, unsigned short length );
@@ -94,6 +94,7 @@ private:
   long            m_fog_instance_time_current;
   long            m_fog_total_time_current;
 
+  bool            m_blink_on_start;
 };
 
 #endif

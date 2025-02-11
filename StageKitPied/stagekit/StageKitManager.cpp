@@ -23,7 +23,9 @@ StageKitManager::~StageKitManager() {
   this->End();
 };
 
-uint8_t StageKitManager::Init() {
+uint8_t StageKitManager::Init(bool blink_on_start) {
+  m_blink_on_start = blink_on_start;
+
   if( m_usb_context ) {
     MSG_STAGEKITMANAGER_ERROR( "Already Init." );
     return 0;
@@ -64,7 +66,7 @@ uint8_t StageKitManager::Init() {
         // Create a new thread for opening the device
         if( libusb_open( device, &ptr_usb_device_handle ) == 0 ) {
           MSG_STAGEKITMANAGER_DEBUG( "USB Device = Stage Kit.  With handle = " << ptr_usb_device_handle );
-          if( m_stagekit[ m_amount_of_stagekits ].Init( ptr_usb_device_handle ) ) {
+          if( m_stagekit[ m_amount_of_stagekits ].Init( ptr_usb_device_handle, m_blink_on_start ) ) {
             m_amount_of_stagekits++;
           }
         }
