@@ -50,9 +50,10 @@ int SerialAdapter::PayloadLength() {
 };
 
 bool SerialAdapter::Init( const char* path, bool surpress_warnings ) {
+  // ensure we aren't in a funky state before attempting to initialize
   if( m_filedescriptor != -1 ) {
     MSG_SERIALADAPTER_DEBUG("Called Init on serial adapter with an already open file: " + std::to_string(m_filedescriptor));
-    this->Close(); // ensure we aren't in a funky state before attempting to initialize
+    this->Close(); // TODO: is a Reset appropriate here (because one is called in Close), or is CloseWhenUnestablishedConnection?
   }
 
   m_filedescriptor = open( path, O_RDWR | O_NOCTTY | O_NONBLOCK );
@@ -85,16 +86,9 @@ bool SerialAdapter::Init( const char* path, bool surpress_warnings ) {
   // Attempt to flush the input buffer
   if (tcflush(m_filedescriptor, TCIFLUSH) == -1) {
       MSG_SERIALADAPTER_ERROR("tcflush() failed with m_filedescriptor " + std::to_string(m_filedescriptor) + " during serial adapter initialization: " + std::to_string(errno));
-      this->CloseWhenUnestablishedConnection();
+      this->CloseWhenUnestablishedConnection(); // TODO: should we close here or just keep going?
       return false;
   }
-
-//  TODO:  I was thinking this MAY be necessary for some extreme situations where the adapter's firmware
-//         gets stuck in a non-ready state, so perhaps its best to do this to reset the connnection.
-//         Leaving out for now.
-//  if( !this->Reset() ) {
-//	MSG_SERIALADAPTER_ERROR( "Failed to ensure serial adapter is reset before initializing." );
-//  }
 
   if( !this->GetType() ) {
     MSG_SERIALADAPTER_ERROR( "Failed to get adapter type." );

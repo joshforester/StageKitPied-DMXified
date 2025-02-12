@@ -146,9 +146,6 @@
 				<widgetId>14</widgetId>
 				<value>1</value>
 			</output>
-			<output type="stageKitOutput" subtype="Handle_LEDUpdate">
-				<value>SERIAL_RESTART</value>
-			</output>
 		</outputs>
 	</mapping>
 	<mapping>

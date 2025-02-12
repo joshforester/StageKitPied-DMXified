@@ -381,9 +381,6 @@ long RpiLightsController::Update( long time_passed_ms ) {
   if( m_nodata_ms > 0 ) {
     m_nodata_ms_count += m_sleep_time;
     if( m_nodata_ms_count > m_nodata_ms ) {
-
-  	  //TODO: this would be a good place to send a SK_NODATA event to the engine to prevent lingering lighting effects
-
       mLEDS.SetAllLED( m_nodata_red, m_nodata_green, m_nodata_blue, m_nodata_brightness );
       m_nodata_ms_count = 0;
     }
@@ -408,49 +405,11 @@ void RpiLightsController::Stop() {
 };
 
 bool RpiLightsController::Restart() {
-	//TODO: this (or in Handle_SerialDisconnect) would be a good place to send a SK_NODATA event to the engine to prevent lingering lighting effects
-
-//    mSerialAdapter.Close();
-//
-//    this->Handle_RumbleData(SKRUMBLEDATA::SK_NONE, SKRUMBLEDATA::SERIAL_RESTART);
-//
-//    std::this_thread::sleep_for(std::chrono::seconds(5));
-//
-//    const bool isStarted = this->Handle_SerialConnect();
-//	if (!isStarted)  {
-//		MSG_RPLC_DEBUG("Unable to restart Rpi Lights Controller.");
-//	}
-
-    this->Handle_SerialDisconnect();
-
-    this->Handle_RumbleData(SKRUMBLEDATA::SK_NONE, SKRUMBLEDATA::SERIAL_RESTART);
-
-    if( mStageKitManager.IsConnected() ) {
-      mStageKitManager.End();
-      this->Stagekit_ResetVariables();
-    }
-
-    std::this_thread::sleep_for(std::chrono::seconds(5));
-
-    const bool isStagekitConnected = this->Handle_StagekitConnect();
-    if( !isStagekitConnected ) {
-      MSG_RPLC_ERROR("Unable to connect to Stage Kit.");
-      return false;
-    }
-
-    const bool isSerialConnected = this->Handle_SerialConnect();
-    if( !isSerialConnected ) {
-      MSG_RPLC_ERROR("Unable to connect to Serial Adapter.");
-      return false;
-    }
-
-    const bool isStarted = isStagekitConnected && isSerialConnected;
+	this->Stop();
+	const bool isStarted = this->Start();
 	if (!isStarted)  {
 		MSG_RPLC_DEBUG("Unable to restart Rpi Lights Controller.");
 	}
-
-
-
 	m_noserialdata_ms_count = 0;
 
 	return isStarted;
@@ -462,7 +421,6 @@ void RpiLightsController::SerialAdapter_Poll() {
   if (pollingResult == 0) {
 	if( m_noserialdata_ms > 0 ) {
 	  m_noserialdata_ms_count += m_sleep_time;
-	  //MSG_RPLC_DEBUG("m_noserialdata_ms[m_noserialdata_ms_count]:" + std::to_string(m_noserialdata_ms) + "[" + std::to_string(m_noserialdata_ms_count) + "]");
 	  if( m_noserialdata_ms_count > m_noserialdata_ms ) {
 		MSG_RPLC_DEBUG( "Timeout for serial idle exceeded (Xbox off?).  Attempting a serial reconnect.");
 		this->Restart();
@@ -645,7 +603,7 @@ bool RpiLightsController::Handle_SerialConnect() {
 
     bool surpress_warnings = mINI_Handler.GetTokenValue( "SURPRESS_WARNINGS" ) > 0 ? true : false;
 
-    std::string serial_port = mINI_Handler.GetTokenString( "SERIAL_PORT_1" );
+    std::string serial_port = mINI_Handler.GetTokenString( "SERIAL_PORT" );
     while (running.load() && !mSerialAdapter.IsRunning()) {
 	  MSG_RPLC_INFO( "Attempting Serial Adapter connection on '" << serial_port << "'" );
 
@@ -711,7 +669,6 @@ void RpiLightsController::Handle_RumbleData( const uint8_t left_weight, const ui
 
 
 void RpiLightsController::Do_Handle_RumbleData( const uint8_t left_weight, const uint8_t right_weight ) {
-//  std::lock_guard<std::mutex> lock(mtx);  // Ensure thread-safe access to rumble data updates (FileExistsInputWatcher)
 
   switch( right_weight ) {
     case SKRUMBLEDATA::SK_LED_RED:
@@ -766,17 +723,15 @@ void RpiLightsController::Do_Handle_RumbleData( const uint8_t left_weight, const
       this->Handle_FogUpdate( false );
       break;
     case SKRUMBLEDATA::SERIAL_RESTART:
+      // just here to gracefully handle mapping file misconfiguration
       MSG_RPLC_DEBUG( "SERIAL_RESTART" );
-      this->Handle_LEDUpdate( SKRUMBLEDATA::SK_NONE, SKRUMBLEDATA::SK_ALL_OFF );
-      this->Handle_StrobeUpdate( 0 );
-      this->Handle_FogUpdate( false );
       break;
     case SKRUMBLEDATA::IDLE_ON:
       // just here to gracefully handle mapping file misconfiguration
       MSG_RPLC_DEBUG( "IDLE_ON" );
       break;
     case SKRUMBLEDATA::IDLE_OFF:
-        // just here to gracefully handle mapping file misconfiguration
+      // just here to gracefully handle mapping file misconfiguration
       MSG_RPLC_DEBUG( "IDLE_OFF");
       break;
     default:
@@ -784,7 +739,7 @@ void RpiLightsController::Do_Handle_RumbleData( const uint8_t left_weight, const
       break;
   }
 
-  // Anything other than FOG_OFF counts as new data since FOG_OFF is constantly sent.
+  // Anything other than idle events counts as new data since idle events is constantly sent.
   // Just in case we aren't DMXified or someone does something weird in the mapping file,
   // I include all idle events in the if statement.
   if( isIdleSkRumbleData(static_cast<SKRUMBLEDATA>(right_weight)) ) {
@@ -867,9 +822,6 @@ long RpiLightsController::Handle_TimeUpdate( long time_passed_ms ) {
   // Attempt to detect a song change by no data for 3 seconds.  Is this long enough?
   if( m_nodata_ms_count >= 3000 ) {
     mStageKitManager.Handle_SongChange();
-
-    //TODO: this would be a good place to send a SK_NODATA event to the engine to prevent lingering lighting effects
-
   }
   return time_to_sleep;
 };
