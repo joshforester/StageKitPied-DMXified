@@ -1,0 +1,12 @@
+[Unit]
+Description=Foot Spaz Button Monitor Service
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /opt/StageKitPied/switch_touch_file_button.py 12 /opt/StageKitPied/input/footSpazButton.tmp
+Restart=always
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
+
