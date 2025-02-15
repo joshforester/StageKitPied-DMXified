@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Workspace>
-<Workspace xmlns="http://www.qlcplus.org/Workspace" CurrentWindow="VirtualConsole">
+<Workspace xmlns="http://www.qlcplus.org/Workspace" CurrentWindow="FunctionManager">
  <Creator>
   <Name>Q Light Controller Plus</Name>
   <Version>4.12.6</Version>
@@ -49,19 +49,19 @@
   </Fixture>
   <Function ID="0" Type="Scene" Name="SK_LED_RED">
    <Speed FadeIn="0" FadeOut="0" Duration="0"/>
-   <FixtureVal ID="1">0,255,1,255,2,0,3,0,4,0,5,0,6,0</FixtureVal>
+   <FixtureVal ID="1">0,255,1,15,2,0,3,0,4,0,5,0,6,0</FixtureVal>
   </Function>
   <Function ID="1" Type="Scene" Name="SK_LED_BLUE">
    <Speed FadeIn="0" FadeOut="0" Duration="0"/>
-   <FixtureVal ID="1">0,255,1,0,2,0,3,255,4,0,5,0,6,0</FixtureVal>
+   <FixtureVal ID="1">0,255,1,0,2,0,3,15,4,0,5,0,6,0</FixtureVal>
   </Function>
   <Function ID="2" Type="Scene" Name="SK_LED_GREEN">
    <Speed FadeIn="0" FadeOut="0" Duration="0"/>
-   <FixtureVal ID="1">0,255,1,0,2,255,3,0,4,0,5,0,6,0</FixtureVal>
+   <FixtureVal ID="1">0,255,1,0,2,15,3,0,4,0,5,0,6,0</FixtureVal>
   </Function>
   <Function ID="3" Type="Scene" Name="SK_LED_YELLOW">
    <Speed FadeIn="0" FadeOut="0" Duration="0"/>
-   <FixtureVal ID="1">0,255,1,255,2,255,3,0,4,0,5,0,6,0</FixtureVal>
+   <FixtureVal ID="1">0,255,1,10,2,10,3,0,4,0,5,0,6,0</FixtureVal>
   </Function>
   <Function ID="4" Type="Scene" Name="SK_LED_OFF">
    <Speed FadeIn="0" FadeOut="0" Duration="0"/>
@@ -94,11 +94,11 @@
   </Function>
   <Function ID="12" Type="Scene" Name="SK_STOBE_SPEED_4">
    <Speed FadeIn="0" FadeOut="0" Duration="0"/>
-   <FixtureVal ID="1">0,255,1,255,2,255,3,255,4,255,5,0,6,0</FixtureVal>
+   <FixtureVal ID="1">0,255,1,255,2,255,3,255,4,164,5,0,6,0</FixtureVal>
   </Function>
   <Function ID="13" Type="Scene" Name="SPAZ_MODE_ON">
    <Speed FadeIn="0" FadeOut="0" Duration="0"/>
-   <FixtureVal ID="2">0,255,1,255,2,0,3,0,4,0,5,201,6,255</FixtureVal>
+   <FixtureVal ID="2"/>
    <FixtureVal ID="0">0,64,1,15,2,127,3,53,4,0,5,232,6,240,7,147,8,30,9,0</FixtureVal>
   </Function>
   <Function ID="14" Type="Scene" Name="SPAZ_MODE_OFF">
@@ -108,7 +108,7 @@
   </Function>
   <Function ID="15" Type="Scene" Name="IDLE_ON">
    <Speed FadeIn="0" FadeOut="0" Duration="0"/>
-   <FixtureVal ID="2">0,255,1,255,2,0,3,0,4,0,5,0,6,0</FixtureVal>
+   <FixtureVal ID="2">0,255,1,255,2,255,3,255,4,0,5,0,6,0</FixtureVal>
   </Function>
   <Function ID="16" Type="Scene" Name="IDLE_OFF">
    <Speed FadeIn="0" FadeOut="0" Duration="0"/>
@@ -141,7 +141,7 @@
      <BackgroundImage>None</BackgroundImage>
      <Font>Default</Font>
     </Appearance>
-    <WindowState Visible="True" X="30" Y="15" Width="200" Height="330"/>
+    <WindowState Visible="False" X="30" Y="15" Width="200" Height="330"/>
     <AllowChildren>True</AllowChildren>
     <AllowResize>True</AllowResize>
     <ShowHeader>True</ShowHeader>
@@ -150,7 +150,7 @@
     <Collapsed>False</Collapsed>
     <Disabled>False</Disabled>
     <Button Caption="SK_LED_RED" ID="1" Icon="">
-     <WindowState Visible="True" X="30" Y="50" Width="130" Height="35"/>
+     <WindowState Visible="False" X="30" Y="50" Width="130" Height="35"/>
      <Appearance>
       <FrameStyle>None</FrameStyle>
       <ForegroundColor>Default</ForegroundColor>
@@ -163,7 +163,7 @@
      <Intensity Adjust="False">100</Intensity>
     </Button>
     <Button Caption="SK_LED_BLUE" ID="2" Icon="">
-     <WindowState Visible="True" X="30" Y="100" Width="130" Height="35"/>
+     <WindowState Visible="False" X="30" Y="100" Width="130" Height="35"/>
      <Appearance>
       <FrameStyle>None</FrameStyle>
       <ForegroundColor>Default</ForegroundColor>
@@ -176,7 +176,7 @@
      <Intensity Adjust="False">100</Intensity>
     </Button>
     <Button Caption="SK_LED_GREEN" ID="3" Icon="">
-     <WindowState Visible="True" X="30" Y="145" Width="130" Height="35"/>
+     <WindowState Visible="False" X="30" Y="145" Width="130" Height="35"/>
      <Appearance>
       <FrameStyle>None</FrameStyle>
       <ForegroundColor>Default</ForegroundColor>
@@ -189,7 +189,7 @@
      <Intensity Adjust="False">100</Intensity>
     </Button>
     <Button Caption="SK_LED_YELLOW" ID="4" Icon="">
-     <WindowState Visible="True" X="30" Y="195" Width="130" Height="35"/>
+     <WindowState Visible="False" X="30" Y="195" Width="130" Height="35"/>
      <Appearance>
       <FrameStyle>None</FrameStyle>
       <ForegroundColor>Default</ForegroundColor>
@@ -202,7 +202,7 @@
      <Intensity Adjust="False">100</Intensity>
     </Button>
     <Button Caption="SK_LED_OFF" ID="5" Icon="">
-     <WindowState Visible="True" X="30" Y="245" Width="130" Height="35"/>
+     <WindowState Visible="False" X="30" Y="245" Width="130" Height="35"/>
      <Appearance>
       <FrameStyle>None</FrameStyle>
       <ForegroundColor>Default</ForegroundColor>
@@ -223,7 +223,7 @@
      <BackgroundImage>None</BackgroundImage>
      <Font>Default</Font>
     </Appearance>
-    <WindowState Visible="True" X="265" Y="15" Width="200" Height="160"/>
+    <WindowState Visible="False" X="265" Y="15" Width="200" Height="160"/>
     <AllowChildren>True</AllowChildren>
     <AllowResize>True</AllowResize>
     <ShowHeader>True</ShowHeader>
@@ -232,7 +232,7 @@
     <Collapsed>False</Collapsed>
     <Disabled>False</Disabled>
     <Button Caption="SK_FOG_ON" ID="7" Icon="">
-     <WindowState Visible="True" X="40" Y="45" Width="120" Height="40"/>
+     <WindowState Visible="False" X="40" Y="45" Width="120" Height="40"/>
      <Appearance>
       <FrameStyle>None</FrameStyle>
       <ForegroundColor>Default</ForegroundColor>
@@ -245,7 +245,7 @@
      <Intensity Adjust="False">100</Intensity>
     </Button>
     <Button Caption="SK_FOG_OFF" ID="8" Icon="">
-     <WindowState Visible="True" X="40" Y="100" Width="120" Height="40"/>
+     <WindowState Visible="False" X="40" Y="100" Width="120" Height="40"/>
      <Appearance>
       <FrameStyle>None</FrameStyle>
       <ForegroundColor>Default</ForegroundColor>
@@ -266,7 +266,7 @@
      <BackgroundImage>None</BackgroundImage>
      <Font>Default</Font>
     </Appearance>
-    <WindowState Visible="True" X="500" Y="15" Width="220" Height="345"/>
+    <WindowState Visible="False" X="500" Y="15" Width="220" Height="345"/>
     <AllowChildren>True</AllowChildren>
     <AllowResize>True</AllowResize>
     <ShowHeader>True</ShowHeader>
@@ -275,7 +275,7 @@
     <Collapsed>False</Collapsed>
     <Disabled>False</Disabled>
     <Button Caption="SK_STROBE_SPEED_4" ID="10" Icon="">
-     <WindowState Visible="True" X="20" Y="50" Width="175" Height="40"/>
+     <WindowState Visible="False" X="20" Y="50" Width="175" Height="40"/>
      <Appearance>
       <FrameStyle>None</FrameStyle>
       <ForegroundColor>Default</ForegroundColor>
@@ -288,7 +288,7 @@
      <Intensity Adjust="False">100</Intensity>
     </Button>
     <Button Caption="SK_STROBE_SPEED_3" ID="11" Icon="">
-     <WindowState Visible="True" X="20" Y="100" Width="175" Height="45"/>
+     <WindowState Visible="False" X="20" Y="100" Width="175" Height="45"/>
      <Appearance>
       <FrameStyle>None</FrameStyle>
       <ForegroundColor>Default</ForegroundColor>
@@ -301,7 +301,7 @@
      <Intensity Adjust="False">100</Intensity>
     </Button>
     <Button Caption="SK_STROBE_SPEED_2" ID="12" Icon="">
-     <WindowState Visible="True" X="20" Y="155" Width="175" Height="45"/>
+     <WindowState Visible="False" X="20" Y="155" Width="175" Height="45"/>
      <Appearance>
       <FrameStyle>None</FrameStyle>
       <ForegroundColor>Default</ForegroundColor>
@@ -314,7 +314,7 @@
      <Intensity Adjust="False">100</Intensity>
     </Button>
     <Button Caption="SK_STROBE_SPEED_1" ID="13" Icon="">
-     <WindowState Visible="True" X="20" Y="210" Width="170" Height="50"/>
+     <WindowState Visible="False" X="20" Y="210" Width="170" Height="50"/>
      <Appearance>
       <FrameStyle>None</FrameStyle>
       <ForegroundColor>Default</ForegroundColor>
@@ -327,7 +327,7 @@
      <Intensity Adjust="False">100</Intensity>
     </Button>
     <Button Caption="SK_STROBE_OFF" ID="14" Icon="">
-     <WindowState Visible="True" X="30" Y="270" Width="150" Height="40"/>
+     <WindowState Visible="False" X="30" Y="270" Width="150" Height="40"/>
      <Appearance>
       <FrameStyle>None</FrameStyle>
       <ForegroundColor>Default</ForegroundColor>
@@ -348,7 +348,7 @@
      <BackgroundImage>None</BackgroundImage>
      <Font>Default</Font>
     </Appearance>
-    <WindowState Visible="True" X="265" Y="190" Width="200" Height="160"/>
+    <WindowState Visible="False" X="265" Y="190" Width="200" Height="160"/>
     <AllowChildren>True</AllowChildren>
     <AllowResize>True</AllowResize>
     <ShowHeader>True</ShowHeader>
@@ -357,7 +357,7 @@
     <Collapsed>False</Collapsed>
     <Disabled>False</Disabled>
     <Button Caption="SPAZ_MODE_ON" ID="16" Icon="">
-     <WindowState Visible="True" X="40" Y="45" Width="130" Height="45"/>
+     <WindowState Visible="False" X="40" Y="45" Width="130" Height="45"/>
      <Appearance>
       <FrameStyle>None</FrameStyle>
       <ForegroundColor>Default</ForegroundColor>
@@ -370,7 +370,7 @@
      <Intensity Adjust="False">100</Intensity>
     </Button>
     <Button Caption="SPAZ_MODE_OFF" ID="17" Icon="">
-     <WindowState Visible="True" X="40" Y="100" Width="135" Height="45"/>
+     <WindowState Visible="False" X="40" Y="100" Width="135" Height="45"/>
      <Appearance>
       <FrameStyle>None</FrameStyle>
       <ForegroundColor>Default</ForegroundColor>
@@ -391,7 +391,7 @@
      <BackgroundImage>None</BackgroundImage>
      <Font>Default</Font>
     </Appearance>
-    <WindowState Visible="True" X="755" Y="15" Width="195" Height="175"/>
+    <WindowState Visible="False" X="755" Y="15" Width="195" Height="175"/>
     <AllowChildren>True</AllowChildren>
     <AllowResize>True</AllowResize>
     <ShowHeader>True</ShowHeader>
@@ -400,7 +400,7 @@
     <Collapsed>False</Collapsed>
     <Disabled>False</Disabled>
     <Button Caption="IDLE_ON" ID="19" Icon="">
-     <WindowState Visible="True" X="35" Y="55" Width="135" Height="40"/>
+     <WindowState Visible="False" X="35" Y="55" Width="135" Height="40"/>
      <Appearance>
       <FrameStyle>None</FrameStyle>
       <ForegroundColor>Default</ForegroundColor>
@@ -413,7 +413,7 @@
      <Intensity Adjust="False">100</Intensity>
     </Button>
     <Button Caption="IDLE_OFF" ID="20" Icon="">
-     <WindowState Visible="True" X="35" Y="110" Width="135" Height="40"/>
+     <WindowState Visible="False" X="35" Y="110" Width="135" Height="40"/>
      <Appearance>
       <FrameStyle>None</FrameStyle>
       <ForegroundColor>Default</ForegroundColor>

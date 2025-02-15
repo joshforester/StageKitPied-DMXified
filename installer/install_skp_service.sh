@@ -1,7 +1,12 @@
 #!/bin/bash
 
 # TODO: install xbox pod guard
-# TODO: install locate_usb.sh
+# TODO: install run_qlc.sh?
+# TODO: install buttons scripts
+# - locate_usb.sh
+# - kill_skp.sh
+# - run_skp.sh
+# - skp_wrapper.sh
 
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 

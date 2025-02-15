@@ -3,8 +3,9 @@
 #
 # Script for reading GPIO-connected button and when pressed, alternating between
 # running one script and a second script.  In this way, the button acts as a
-# switch.  This script is intended to be used in tandem with a <fileExistsInput>
-# mapping file element.
+# switch.  While this can be used for arbitrary commands, this script in this 
+# package is intended to be used to start/stop the skp service with a physical 
+# button.
 #
 
 import os
@@ -67,4 +68,3 @@ while True:
 
     button.wait_for_release()
     print("Released")
-
