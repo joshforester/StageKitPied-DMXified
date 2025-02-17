@@ -1,12 +1,5 @@
 #!/usr/bin/env python3
 
-#
-# Script for reading GPIO-connected button and when pressed, touches a file named
-# after the GPIO pin to which the button is connected; when released, deletes the
-# file.  This script is intended to be used in tandem with a <fileExistsInput> 
-# mapping file element.
-#
-
 import os
 import argparse
 import signal
@@ -41,20 +34,44 @@ signal.signal(signal.SIGINT, clean_exit)   # Handle Ctrl+C (SIGINT)
 signal.signal(signal.SIGTERM, clean_exit)  # Handle termination signal (SIGTERM)
 
 # Function to create the file corresponding to the button pressed
-def create_file_for_button(pin):
-    file_name = f"button{pin:02d}.tmp"     # Zero-padded 2-digit pin number
-    file_path = os.path.join(directory, file_name)
-    with open(file_path, 'w'):
-        pass
-    print(f"Created {file_path}")
+def create_file_for_button(button):
+    try:
+        # Get the pin number using the `pin` attribute directly (should work with LGPIOPin)
+        pin_number = button.pin._number  # Use the internal `_number` attribute that holds the pin number
+        
+        if pin_number is None:
+            raise ValueError("Unable to retrieve pin number from button.")
+        
+        # Format file name with the correct pin number
+        file_name = f"button{pin_number:02d}.tmp"  # Zero-padded 2-digit pin number
+        file_path = os.path.join(directory, file_name)
+        
+        # Create the file (touch it)
+        with open(file_path, 'w'):
+            pass
+        print(f"Created {file_path}")
+    except Exception as e:
+        print(f"Error creating file for button: {e}")
 
 # Function to remove the file corresponding to the button released
-def remove_file_for_button(pin):
-    file_name = f"button{pin:02d}.tmp"     # Zero-padded 2-digit pin number
-    file_path = os.path.join(directory, file_name)
-    if os.path.exists(file_path):
-        os.remove(file_path)
-        print(f"Removed {file_path}")
+def remove_file_for_button(button):
+    try:
+        # Get the pin number using the `pin` attribute directly
+        pin_number = button.pin._number  # Use the internal `_number` attribute that holds the pin number
+        
+        if pin_number is None:
+            raise ValueError("Unable to retrieve pin number from button.")
+        
+        # Format file name with the correct pin number
+        file_name = f"button{pin_number:02d}.tmp"  # Zero-padded 2-digit pin number
+        file_path = os.path.join(directory, file_name)
+        
+        # Remove the file if it exists
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            print(f"Removed {file_path}")
+    except Exception as e:
+        print(f"Error removing file for button: {e}")
 
 # Check if any files already exist before starting the button loop and remove them
 for pin in args.button_numbers:
@@ -66,10 +83,9 @@ for pin in args.button_numbers:
 
 # Assign the press and release actions for each button
 for button in buttons:
-    button.when_pressed = lambda pin=button.pin: create_file_for_button(pin)
-    button.when_released = lambda pin=button.pin: remove_file_for_button(pin)
+    button.when_pressed = lambda button=button: create_file_for_button(button)
+    button.when_released = lambda button=button: remove_file_for_button(button)
 
 # Main loop to keep the script running
-try:
-    while True:
-        pass  # Main loop keeps running, waiting for button events
+while True:
+    pass  # Main loop keeps running, waiting for button events
