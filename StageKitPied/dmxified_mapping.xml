@@ -202,8 +202,8 @@
 		</outputs>
 	</mapping>
 	<mapping>
-		<input type="fileExistsInput" id="footFogButton" priority="100">
-			<file>/opt/StageKitPied/input/footFogButton.tmp</file>
+		<input type="fileExistsInput" id="footFogButton" priority="300">
+			<file>/opt/StageKitPied/input/button25.tmp</file>
 			<outputOverrideList>
 				<output type="stageKitOutput" subtype="Handle_FogUpdate" />
 			</outputOverrideList>
@@ -219,7 +219,7 @@
 		</outputs>
 	</mapping>
 	<mapping>
-		<input type="fileExistsInput" id="footFogButtonOff" priority="100" />
+		<input type="fileExistsInput" id="footFogButtonOff" priority="300" />
 		<outputs>
 			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
 				<widgetId>8</widgetId>
@@ -231,8 +231,8 @@
 		</outputs>
 	</mapping>
 	<mapping>
-		<input type="fileExistsInput" id="footSpazButton" priority="100">
-			<file>/opt/StageKitPied/input/footSpazButton.tmp</file>
+		<input type="fileExistsInput" id="footSpazButton" priority="150">
+			<file>/opt/StageKitPied/input/button20.tmp</file>
 			<outputOverrideList>
 				<output type="stageKitOutput" subtype="Handle_LEDUpdate" />
 				<output type="stageKitOutput" subtype="Handle_StrobeUpdate" />
@@ -265,10 +265,96 @@
 		</outputs>
 	</mapping>
 	<mapping>
-		<input type="fileExistsInput" id="footSpazButtonOff" priority="100" />
+		<input type="fileExistsInput" id="footSpazButtonOff" priority="150" />
 		<outputs>
 			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
 				<widgetId>17</widgetId>
+				<value>1</value>
+			</output>
+		</outputs>
+	</mapping>
+	<mapping>
+		<input type="fileExistsInput" id="blackLightButton" priority="200">
+			<file>/opt/StageKitPied/input/button19.tmp</file>
+			<outputOverrideList>
+				<output type="stageKitOutput" subtype="Handle_LEDUpdate" />
+				<output type="stageKitOutput" subtype="Handle_StrobeUpdate" />
+				<output type="stageKitOutput" subtype="Handle_FogUpdate" />
+				<output type="qlcplusOutput" subtype="basicWidgetValueSet" />
+				<output type="qlcplusOutput" subtype="setFunctionStatus" />
+				<output type="qlcplusOutput" subtype="simpleDeskChannelSet" />
+			</outputOverrideList>
+		</input>
+		<outputs>
+			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
+				<widgetId>5</widgetId>
+				<value>1</value>
+			</output>
+			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
+				<widgetId>8</widgetId>
+				<value>1</value>
+			</output>
+			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
+				<widgetId>14</widgetId>
+				<value>1</value>
+			</output>
+			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
+				<widgetId>19</widgetId>
+				<value>1</value>
+			</output>
+			<output type="stageKitOutput" subtype="Handle_LEDUpdate">
+				<value>SK_ALL_OFF</value>
+			</output>
+		</outputs>
+	</mapping>
+	<mapping>
+		<input type="fileExistsInput" id="blackLightButtonOff" priority="200" />
+		<outputs>
+			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
+				<widgetId>20</widgetId>
+				<value>1</value>
+			</output>
+		</outputs>
+	</mapping>
+	<mapping>
+		<input type="fileExistsInput" id="soundModeButton" priority="100">
+			<file>/opt/StageKitPied/input/button12.tmp</file>
+			<outputOverrideList>
+				<output type="stageKitOutput" subtype="Handle_LEDUpdate" />
+				<output type="stageKitOutput" subtype="Handle_StrobeUpdate" />
+				<output type="stageKitOutput" subtype="Handle_FogUpdate" />
+				<output type="qlcplusOutput" subtype="basicWidgetValueSet" />
+				<output type="qlcplusOutput" subtype="setFunctionStatus" />
+				<output type="qlcplusOutput" subtype="simpleDeskChannelSet" />
+			</outputOverrideList>
+		</input>
+		<outputs>
+			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
+				<widgetId>5</widgetId>
+				<value>1</value>
+			</output>
+			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
+				<widgetId>8</widgetId>
+				<value>1</value>
+			</output>
+			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
+				<widgetId>14</widgetId>
+				<value>1</value>
+			</output>
+			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
+				<widgetId>19</widgetId>
+				<value>1</value>
+			</output>
+			<output type="stageKitOutput" subtype="Handle_LEDUpdate">
+				<value>SK_ALL_OFF</value>
+			</output>
+		</outputs>
+	</mapping>
+	<mapping>
+		<input type="fileExistsInput" id="soundModeButtonOff" priority="100" />
+		<outputs>
+			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
+				<widgetId>20</widgetId>
 				<value>1</value>
 			</output>
 		</outputs>

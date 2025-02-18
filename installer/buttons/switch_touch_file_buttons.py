@@ -29,7 +29,7 @@ if not os.path.exists(directory):
     os.makedirs(directory)
 
 # Set up the buttons with debounce time
-debounce_time = 0.2  # Debounce time in seconds
+debounce_time = 0.1  # Debounce time in seconds
 buttons = [Button(pin, bounce_time=debounce_time) for pin in args.button_numbers]
 
 # Dictionary to keep track of press counts for each button
