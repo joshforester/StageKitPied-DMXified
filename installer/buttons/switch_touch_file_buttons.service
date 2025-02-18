@@ -3,7 +3,7 @@ Description=Switch Touch File Button Monitor Service
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python3 /opt/StageKitPied/switch_touch_file_buttons.py 23 24
+ExecStart=/usr/bin/python3 /opt/StageKitPied/switch_touch_file_buttons.py 12 19
 Restart=always
 Environment=PYTHONUNBUFFERED=1
 

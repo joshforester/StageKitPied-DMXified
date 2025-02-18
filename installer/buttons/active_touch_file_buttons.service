@@ -3,7 +3,7 @@ Description=Active Touch File Button Monitor Service
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python3 /opt/StageKitPied/active_touch_file_buttons.py 22 27
+ExecStart=/usr/bin/python3 /opt/StageKitPied/active_touch_file_buttons.py 20 25
 Restart=always
 Environment=PYTHONUNBUFFERED=1
 
