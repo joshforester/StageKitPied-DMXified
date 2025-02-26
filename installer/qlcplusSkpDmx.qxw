@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Workspace>
-<Workspace xmlns="http://www.qlcplus.org/Workspace" CurrentWindow="SimpleDesk">
+<Workspace xmlns="http://www.qlcplus.org/Workspace" CurrentWindow="FunctionManager">
  <Creator>
   <Name>Q Light Controller Plus</Name>
   <Version>4.12.6</Version>
@@ -60,22 +60,27 @@
   <Function ID="0" Type="Scene" Name="SK_LED_RED">
    <Speed FadeIn="0" FadeOut="0" Duration="0"/>
    <FixtureVal ID="1">0,255,1,15,2,0,3,0,4,0,5,0,6,0</FixtureVal>
+   <FixtureVal ID="3">0,0,1,0,2,255,3,0,4,255,5,0,6,0,7,0,8,0,9,0,10,0,11,0,12,0,13,0,14,0,15,0,16,0,17,0,18,0,19,0,20,0,21,0,22,0,23,0,24,0,25,0,26,0,27,0,28,0,29,0,30,0,31,0,32,0,33,0,34,0</FixtureVal>
   </Function>
   <Function ID="1" Type="Scene" Name="SK_LED_BLUE">
    <Speed FadeIn="0" FadeOut="0" Duration="0"/>
    <FixtureVal ID="1">0,255,1,0,2,0,3,15,4,0,5,0,6,0</FixtureVal>
+   <FixtureVal ID="3">0,0,1,0,2,255,3,0,4,0,5,0,6,255,7,0,8,0,9,0,10,0,11,0,12,0,13,0,14,0,15,0,16,0,17,0,18,0,19,0,20,0,21,0,22,0,23,0,24,0,25,0,26,0,27,0,28,0,29,0,30,0,31,0,32,0,33,0,34,0</FixtureVal>
   </Function>
   <Function ID="2" Type="Scene" Name="SK_LED_GREEN">
    <Speed FadeIn="0" FadeOut="0" Duration="0"/>
    <FixtureVal ID="1">0,255,1,0,2,15,3,0,4,0,5,0,6,0</FixtureVal>
+   <FixtureVal ID="3">0,0,1,0,2,255,3,0,4,0,5,255,6,0,7,0,8,0,9,0,10,0,11,0,12,0,13,0,14,0,15,0,16,0,17,0,18,0,19,0,20,0,21,0,22,0,23,0,24,0,25,0,26,0,27,0,28,0,29,0,30,0,31,0,32,0,33,0,34,0</FixtureVal>
   </Function>
   <Function ID="3" Type="Scene" Name="SK_LED_YELLOW">
    <Speed FadeIn="0" FadeOut="0" Duration="0"/>
    <FixtureVal ID="1">0,255,1,10,2,10,3,0,4,0,5,0,6,0</FixtureVal>
+   <FixtureVal ID="3">0,0,1,0,2,255,3,0,4,255,5,255,6,0,7,0,8,0,9,0,10,0,11,0,12,0,13,0,14,0,15,0,16,0,17,0,18,0,19,0,20,0,21,0,22,0,23,0,24,0,25,0,26,0,27,0,28,0,29,0,30,0,31,0,32,0,33,0,34,0</FixtureVal>
   </Function>
   <Function ID="4" Type="Scene" Name="SK_LED_OFF">
    <Speed FadeIn="0" FadeOut="0" Duration="0"/>
    <FixtureVal ID="1">0,0,1,0,2,0,3,0,4,0,5,0,6,0</FixtureVal>
+   <FixtureVal ID="3">0,0,1,0,2,0,3,0,4,0,5,0,6,0,7,0,8,0,9,0,10,0,11,0,12,0,13,0,14,0,15,0,16,0,17,0,18,0,19,0,20,0,21,0,22,0,23,0,24,0,25,0,26,0,27,0,28,0,29,0,30,0,31,0,32,0,33,0,34,0</FixtureVal>
   </Function>
   <Function ID="5" Type="Scene" Name="SK_FOG_OFF">
    <Speed FadeIn="0" FadeOut="0" Duration="0"/>
@@ -93,28 +98,34 @@
   <Function ID="9" Type="Scene" Name="SK_STOBE_SPEED_1">
    <Speed FadeIn="0" FadeOut="0" Duration="0"/>
    <FixtureVal ID="1">0,255,1,255,2,255,3,255,4,34,5,0,6,0</FixtureVal>
+   <FixtureVal ID="3">0,0,1,0,2,255,3,34,4,255,5,255,6,255,7,0,8,0,9,0,10,255,11,0,12,0,13,0,14,255,15,0,16,0,17,0,18,255,19,0,20,0,21,0,22,255,23,0,24,0,25,0,26,255,27,0,28,0,29,0,30,255,31,0,32,0,33,0,34,0</FixtureVal>
   </Function>
   <Function ID="10" Type="Scene" Name="SK_STOBE_SPEED_2">
    <Speed FadeIn="0" FadeOut="0" Duration="0"/>
    <FixtureVal ID="1">0,255,1,255,2,255,3,255,4,109,5,0,6,0</FixtureVal>
+   <FixtureVal ID="3">0,0,1,0,2,255,3,109,4,255,5,255,6,255,7,0,8,0,9,0,10,255,11,0,12,0,13,0,14,255,15,0,16,0,17,0,18,255,19,0,20,0,21,0,22,255,23,0,24,0,25,0,26,255,27,0,28,0,29,0,30,255,31,0,32,0,33,0,34,0</FixtureVal>
   </Function>
   <Function ID="11" Type="Scene" Name="SK_STOBE_SPEED_3">
    <Speed FadeIn="0" FadeOut="0" Duration="0"/>
-   <FixtureVal ID="1">0,255,1,255,2,255,3,255,4,181,5,0,6,0</FixtureVal>
+   <FixtureVal ID="1">0,255,1,255,2,255,3,255,4,164,5,0,6,0</FixtureVal>
+   <FixtureVal ID="3">0,0,1,0,2,255,3,164,4,255,5,255,6,255,7,0,8,0,9,0,10,255,11,0,12,0,13,0,14,255,15,0,16,0,17,0,18,255,19,0,20,0,21,0,22,255,23,0,24,0,25,0,26,255,27,0,28,0,29,0,30,255,31,0,32,0,33,0,34,0</FixtureVal>
   </Function>
   <Function ID="12" Type="Scene" Name="SK_STOBE_SPEED_4">
    <Speed FadeIn="0" FadeOut="0" Duration="0"/>
-   <FixtureVal ID="1">0,255,1,255,2,255,3,255,4,164,5,0,6,0</FixtureVal>
+   <FixtureVal ID="1">0,255,1,255,2,255,3,255,4,181,5,0,6,0</FixtureVal>
+   <FixtureVal ID="3">0,0,1,0,2,255,3,181,4,255,5,255,6,255,7,0,8,0,9,0,10,255,11,0,12,0,13,0,14,255,15,0,16,0,17,0,18,255,19,0,20,0,21,0,22,255,23,0,24,0,25,0,26,255,27,0,28,0,29,0,30,255,31,0,32,0,33,0,34,0</FixtureVal>
   </Function>
   <Function ID="13" Type="Scene" Name="SPAZ_MODE_ON">
    <Speed FadeIn="0" FadeOut="0" Duration="0"/>
-   <FixtureVal ID="2"/>
+   <FixtureVal ID="2">0,255,1,255,2,255,3,255,4,0,5,201,6,255</FixtureVal>
    <FixtureVal ID="0">0,64,1,15,2,127,3,53,4,0,5,232,6,240,7,147,8,30,9,0</FixtureVal>
+   <FixtureVal ID="3">0,128,1,0,2,121,3,194,4,12,5,0,6,76,7,0,8,0,9,15,10,10,11,0,12,0,13,15,14,10,15,0,16,0,17,15,18,10,19,0,20,0,21,15,22,10,23,0,24,0,25,15,26,10,27,0,28,0,29,15,30,10,31,0,32,0,33,0,34,0</FixtureVal>
   </Function>
   <Function ID="14" Type="Scene" Name="SPAZ_MODE_OFF">
    <Speed FadeIn="0" FadeOut="0" Duration="0"/>
    <FixtureVal ID="2">0,0,1,0,2,0,3,0,4,0,5,0,6,0</FixtureVal>
    <FixtureVal ID="0">0,0,1,0,2,0,3,0,4,0,5,0,6,0,7,0,8,0,9,0</FixtureVal>
+   <FixtureVal ID="3">0,0,1,0,2,0,3,0,4,0,5,0,6,0,7,0,8,0,9,0,10,0,11,0,12,0,13,0,14,0,15,0,16,0,17,0,18,0,19,0,20,0,21,0,22,0,23,0,24,0,25,0,26,0,27,0,28,0,29,0,30,0,31,0,32,0,33,0,34,0</FixtureVal>
   </Function>
   <Function ID="15" Type="Scene" Name="IDLE_ON">
    <Speed FadeIn="0" FadeOut="0" Duration="0"/>
