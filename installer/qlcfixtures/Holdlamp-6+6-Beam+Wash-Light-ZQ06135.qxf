@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE FixtureDefinition>
+<FixtureDefinition xmlns="http://www.qlcplus.org/FixtureDefinition">
+ <Creator>
+  <Name>Q Light Controller Plus</Name>
+  <Version>4.12.6</Version>
+  <Author>Joshua Forester</Author>
+ </Creator>
+ <Manufacturer>Joshua Forester</Manufacturer>
+ <Model>Holdlamp 6+6 Beam+Wash Light ZQ06135</Model>
+ <Type>Moving Head</Type>
+ <Channel Name="Y motor running">
+  <Group Byte="0">Maintenance</Group>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Y motor speed">
+  <Group Byte="0">Speed</Group>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Total dimming">
+  <Group Byte="0">Intensity</Group>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Stroboscopic speed regulation">
+  <Group Byte="0">Shutter</Group>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Dyed red on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>Red</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Dyed green on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>Green</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Dyed blue on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>Blue</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Beam 1-6 red on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>Red</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Beam 1-6 green on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>Green</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Beam 1-6 blue on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>Blue</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Beam 1-6 white on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>White</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Beam 1 red on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>Red</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Beam 1 green on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>Green</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Beam 1 blue on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>Blue</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Beam 1 white on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>White</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Beam 2 red on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>Red</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Beam 2 green on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>Green</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Beam 2 blue on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>Blue</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Beam 2 white on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>White</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Beam 3 red on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>Red</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Beam 3 green on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>Green</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Beam 3 blue on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>Blue</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Beam 3 white on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>White</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Beam 4 red on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>Red</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Beam 4 green on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>Green</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Beam 4 blue on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>Blue</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Beam 4 white on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>White</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Beam 5 red on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>Red</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Beam 5 green on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>Green</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Beam 5 blue on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>Blue</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Beam 5 white on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>White</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Beam 6 red on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>Red</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Beam 6 green on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>Green</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Beam 6 blue on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>Blue</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Beam 6 white on/off">
+  <Group Byte="0">Intensity</Group>
+  <Colour>White</Colour>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Dye Mode">
+  <Group Byte="0">Effect</Group>
+  <Capability Min="0" Max="21">No effect</Capability>
+  <Capability Min="22" Max="138">Dye auto walking built-in effect (1-9)</Capability>
+  <Capability Min="139" Max="255">Dye sound control built-in effect (1-9)</Capability>
+ </Channel>
+ <Channel Name="Beam Mode">
+  <Group Byte="0">Effect</Group>
+  <Capability Min="0" Max="21">No effect</Capability>
+  <Capability Min="22" Max="138">Beam auto walking built-in effect (1-9)</Capability>
+  <Capability Min="139" Max="255">Beam sound control built-in effect (1-9)</Capability>
+ </Channel>
+ <Channel Name="Speed/sound sensitivity">
+  <Group Byte="0">Maintenance</Group>
+  <Capability Min="0" Max="255"></Capability>
+ </Channel>
+ <Channel Name="Reset">
+  <Group Byte="0">Maintenance</Group>
+  <Capability Min="250" Max="255"></Capability>
+ </Channel>
+ <Mode Name="8-Channel Mode">
+  <Channel Number="0">Y motor running</Channel>
+  <Channel Number="1">Y motor speed</Channel>
+  <Channel Number="2">Total dimming</Channel>
+  <Channel Number="3">Stroboscopic speed regulation</Channel>
+  <Channel Number="4">Dye Mode</Channel>
+  <Channel Number="5">Beam Mode</Channel>
+  <Channel Number="6">Speed/sound sensitivity</Channel>
+  <Channel Number="7">Reset</Channel>
+ </Mode>
+ <Mode Name="15-Channel Mode">
+  <Channel Number="0">Y motor running</Channel>
+  <Channel Number="1">Y motor speed</Channel>
+  <Channel Number="2">Total dimming</Channel>
+  <Channel Number="3">Stroboscopic speed regulation</Channel>
+  <Channel Number="4">Dyed red on/off</Channel>
+  <Channel Number="5">Dyed green on/off</Channel>
+  <Channel Number="6">Dyed blue on/off</Channel>
+  <Channel Number="7">Beam 1-6 red on/off</Channel>
+  <Channel Number="8">Beam 1-6 green on/off</Channel>
+  <Channel Number="9" ActsOn="0">Beam 1-6 blue on/off</Channel>
+  <Channel Number="10">Beam 1-6 white on/off</Channel>
+  <Channel Number="11" ActsOn="0">Dye Mode</Channel>
+  <Channel Number="12">Beam Mode</Channel>
+  <Channel Number="13">Speed/sound sensitivity</Channel>
+  <Channel Number="14" ActsOn="0">Reset</Channel>
+ </Mode>
+ <Mode Name="35-Channel Mode">
+  <Channel Number="0">Y motor running</Channel>
+  <Channel Number="1">Y motor speed</Channel>
+  <Channel Number="2">Total dimming</Channel>
+  <Channel Number="3">Stroboscopic speed regulation</Channel>
+  <Channel Number="4">Dyed red on/off</Channel>
+  <Channel Number="5">Dyed green on/off</Channel>
+  <Channel Number="6">Dyed blue on/off</Channel>
+  <Channel Number="7">Beam 1 red on/off</Channel>
+  <Channel Number="8">Beam 1 green on/off</Channel>
+  <Channel Number="9">Beam 1 blue on/off</Channel>
+  <Channel Number="10">Beam 1 white on/off</Channel>
+  <Channel Number="11">Beam 2 red on/off</Channel>
+  <Channel Number="12">Beam 2 green on/off</Channel>
+  <Channel Number="13">Beam 2 blue on/off</Channel>
+  <Channel Number="14">Beam 2 white on/off</Channel>
+  <Channel Number="15">Beam 3 red on/off</Channel>
+  <Channel Number="16">Beam 3 green on/off</Channel>
+  <Channel Number="17">Beam 3 blue on/off</Channel>
+  <Channel Number="18">Beam 3 white on/off</Channel>
+  <Channel Number="19">Beam 4 red on/off</Channel>
+  <Channel Number="20">Beam 4 green on/off</Channel>
+  <Channel Number="21">Beam 4 blue on/off</Channel>
+  <Channel Number="22">Beam 4 white on/off</Channel>
+  <Channel Number="23">Beam 5 red on/off</Channel>
+  <Channel Number="24">Beam 5 green on/off</Channel>
+  <Channel Number="25">Beam 5 blue on/off</Channel>
+  <Channel Number="26">Beam 5 white on/off</Channel>
+  <Channel Number="27">Beam 6 red on/off</Channel>
+  <Channel Number="28">Beam 6 green on/off</Channel>
+  <Channel Number="29">Beam 6 blue on/off</Channel>
+  <Channel Number="30">Beam 6 white on/off</Channel>
+  <Channel Number="31">Dye Mode</Channel>
+  <Channel Number="32">Beam Mode</Channel>
+  <Channel Number="33">Speed/sound sensitivity</Channel>
+  <Channel Number="34">Reset</Channel>
+ </Mode>
+ <Physical>
+  <Bulb Type="" Lumens="0" ColourTemperature="0"/>
+  <Dimensions Weight="0" Width="940" Height="200" Depth="80"/>
+  <Lens Name="Other" DegreesMin="0" DegreesMax="0"/>
+  <Focus Type="Head" PanMax="0" TiltMax="0"/>
+  <Layout Width="1" Height="6"/>
+  <Technical PowerConsumption="120" DmxConnector="3-pin"/>
+ </Physical>
+</FixtureDefinition>

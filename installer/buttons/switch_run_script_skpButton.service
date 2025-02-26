@@ -3,7 +3,7 @@ Description=Stage Kit Pied Button Monitor Service
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python3 /opt/StageKitPied/switch_run_script_button.py 5 /opt/StageKitPied/kill_skp.sh /opt/StageKitPied/run_skp.sh
+ExecStart=/usr/bin/python3 /opt/StageKitPied/switch_run_script_button.py 5 /opt/StageKitPied/run_skp.sh /opt/StageKitPied/kill_skp.sh
 Restart=always
 Environment=PYTHONUNBUFFERED=1
 

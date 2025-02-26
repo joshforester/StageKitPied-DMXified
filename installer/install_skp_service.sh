@@ -7,6 +7,8 @@
 # - kill_skp.sh
 # - run_skp.sh
 # - skp_wrapper.sh
+# - poweron/poweroff
+# TODO: install fixtures
 
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 

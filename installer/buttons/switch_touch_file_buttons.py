@@ -7,6 +7,7 @@
 # <fileExistsInput> mapping file element.
 #
 
+import time
 import os
 import argparse
 import signal
@@ -95,5 +96,5 @@ for button in buttons:
 
 # Main loop to keep the script running
 while True:
-    pass  # Main loop keeps running, waiting for button events
+    time.sleep(0.1)  # Main loop keeps running, waiting for button events
 

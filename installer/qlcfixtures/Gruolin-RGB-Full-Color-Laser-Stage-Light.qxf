@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE FixtureDefinition>
+<FixtureDefinition xmlns="http://www.qlcplus.org/FixtureDefinition">
+ <Creator>
+  <Name>Q Light Controller Plus</Name>
+  <Version>4.12.6</Version>
+  <Author>Joshua Forester</Author>
+ </Creator>
+ <Manufacturer>Joshua Forester</Manufacturer>
+ <Model>Gruolin RGB Full Color Laser Stage Light</Model>
+ <Type>Laser</Type>
+ <Channel Name="Mode Selection">
+  <Group Byte="0">Effect</Group>
+  <Capability Min="0" Max="63">Closed light mode</Capability>
+  <Capability Min="64" Max="127">Pattern selection mode, after appear the block diagram, push CH2 to select the pattern</Capability>
+  <Capability Min="128" Max="191">Auto mode</Capability>
+  <Capability Min="192" Max="255">Sound mode</Capability>
+ </Channel>
+ <Channel Name="Pattern Submode Selection">
+  <Group Byte="0">Effect</Group>
+  <Capability Min="0" Max="255">Pattern Selection</Capability>
+ </Channel>
+ <Channel Name="Auto Submode Selection">
+  <Group Byte="0">Effect</Group>
+  <Capability Min="0" Max="63">Auto mode 1 (CH1 needs to be 128-191)</Capability>
+  <Capability Min="64" Max="127">Auto mode 2 (CH1 needs to be 128-191)</Capability>
+  <Capability Min="128" Max="191">Auto mode 3 (CH1 needs to be 128-191)</Capability>
+  <Capability Min="192" Max="255">Auto mode 4 (CH1 needs to be 128-191)</Capability>
+ </Channel>
+ <Channel Name="Sound Submode Selection">
+  <Group Byte="0">Effect</Group>
+  <Capability Min="0" Max="63">Sound mode 1 (CH1 needs to be to 192-255)</Capability>
+  <Capability Min="64" Max="127">Sound mode 2 (CH1 needs to be to 192-255)</Capability>
+  <Capability Min="128" Max="191">Sound mode 3 (CH1 needs to be to 192-255)</Capability>
+  <Capability Min="192" Max="255">Sound mode 4 (CH1 needs to be to 192-255)</Capability>
+ </Channel>
+ <Channel Name="Angle Control">
+  <Group Byte="0">Beam</Group>
+  <Capability Min="0" Max="127">Rotation angle selection</Capability>
+  <Capability Min="128" Max="191">Positive rotation speed selection, the greater the value, the faster the speed</Capability>
+  <Capability Min="192" Max="255">Reverse rotation speed selection, the greater the value, the faster the speed</Capability>
+ </Channel>
+ <Channel Name="Horizontal Angle Control">
+  <Group Byte="0">Pan</Group>
+  <Capability Min="0" Max="127">Horizontal flip position selection</Capability>
+  <Capability Min="128" Max="255">Horizontal flip speed selection, the greater the value, the faster the speed</Capability>
+ </Channel>
+ <Channel Name="Vertical Angle Control">
+  <Group Byte="0">Tilt</Group>
+  <Capability Min="0" Max="127">Vertical flip position selection</Capability>
+  <Capability Min="128" Max="255">Vertical flip speed selection, the greater the value, the faster the speed</Capability>
+ </Channel>
+ <Channel Name="Horizontal Position Control">
+  <Group Byte="0">Pan</Group>
+  <Capability Min="0" Max="127">Horizontal position selection</Capability>
+  <Capability Min="128" Max="255">Horizontal movement speed selection, the greater the value, the faster the speed</Capability>
+ </Channel>
+ <Channel Name="Vertical Position Control">
+  <Group Byte="0">Tilt</Group>
+  <Capability Min="0" Max="127">Vertical position selection</Capability>
+  <Capability Min="128" Max="255">Vertical movement speed selection, the greater the value, the faster the speed</Capability>
+ </Channel>
+ <Channel Name="Pattern Size Control">
+  <Group Byte="0">Prism</Group>
+  <Capability Min="0" Max="63">Fixed size, the larger the value, the smaller the pattern</Capability>
+  <Capability Min="64" Max="127">Choose from small to large speed, the higher the value, the faster the speed</Capability>
+  <Capability Min="128" Max="191">Choose from large to small speed, the larger the value, the faster the speed</Capability>
+  <Capability Min="192" Max="255">Size zoom speed selection, the larger the value, the faster the speed</Capability>
+ </Channel>
+ <Channel Name="Color Control">
+  <Group Byte="0">Colour</Group>
+  <Capability Min="8" Max="63">Monochrome color selection</Capability>
+  <Capability Min="64" Max="127">Color selection</Capability>
+  <Capability Min="128" Max="191">Monochrome auto</Capability>
+  <Capability Min="192" Max="255">Color mixing</Capability>
+ </Channel>
+ <Channel Name="Node Control">
+  <Group Byte="0">Gobo</Group>
+  <Capability Min="0" Max="127">The pattern has dots and lines</Capability>
+  <Capability Min="128" Max="255">Dotted pattern, no lines</Capability>
+ </Channel>
+ <Mode Name="10 Channel Pattern Mode">
+  <Channel Number="0">Mode Selection</Channel>
+  <Channel Number="1">Pattern Submode Selection</Channel>
+  <Channel Number="2">Angle Control</Channel>
+  <Channel Number="3">Horizontal Angle Control</Channel>
+  <Channel Number="4">Vertical Angle Control</Channel>
+  <Channel Number="5">Horizontal Position Control</Channel>
+  <Channel Number="6">Vertical Position Control</Channel>
+  <Channel Number="7">Pattern Size Control</Channel>
+  <Channel Number="8">Color Control</Channel>
+  <Channel Number="9">Node Control</Channel>
+ </Mode>
+ <Mode Name="2 Channel Auto Mode">
+  <Channel Number="0">Mode Selection</Channel>
+  <Channel Number="1">Auto Submode Selection</Channel>
+ </Mode>
+ <Mode Name="2 Channel Sound Mode">
+  <Channel Number="0">Mode Selection</Channel>
+  <Channel Number="1">Sound Submode Selection</Channel>
+ </Mode>
+ <Physical>
+  <Bulb Type="" Lumens="0" ColourTemperature="0"/>
+  <Dimensions Weight="0" Width="0" Height="0" Depth="0"/>
+  <Lens Name="Other" DegreesMin="0" DegreesMax="0"/>
+  <Focus Type="Fixed" PanMax="0" TiltMax="0"/>
+  <Technical PowerConsumption="0" DmxConnector="3-pin"/>
+ </Physical>
+</FixtureDefinition>

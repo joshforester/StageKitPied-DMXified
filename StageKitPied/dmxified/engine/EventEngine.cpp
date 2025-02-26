@@ -311,7 +311,7 @@ void EventEngine::doHandleInputEvent(const InputEvent& inputEvent) {
 		this->processQueuedEvent();
 
 	} catch (const std::exception& e) {
-		MSG_EVENTENGINE_ERROR("Exception in handleInputEvent: ");
+		MSG_EVENTENGINE_ERROR("Exception in handleInputEvent: " << e.what());
 	} catch (...) {
 		MSG_EVENTENGINE_ERROR("Unknown exception in handleInputEvent.");
 	}

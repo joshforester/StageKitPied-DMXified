@@ -55,6 +55,7 @@ signal.signal(signal.SIGTERM, clean_exit)  # Handle termination signal (SIGTERM)
 # Wait for button press and execute the bash scripts
 while True:
     button.wait_for_press()
+    button.wait_for_release()
     press_count += 1
 
     if press_count % 2 == 1:
@@ -66,5 +67,3 @@ while True:
         print("THE BUTTON WAS PRESSED (Even press)")
         subprocess.run([bash_script_even], check=True)
 
-    button.wait_for_release()
-    print("Released")

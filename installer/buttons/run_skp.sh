@@ -6,6 +6,13 @@
 # in order to trigger the QLC+ start.
 #
 
+# Set this to empty string if you do not automatically power on your DMX devices
+USE_DMX_POWER_ON="true"
+
+if [ -n "$USE_DMX_POWER_ON" ]; then
+    # Run the command if USE_DMX_POWER_ON is not empty
+    /opt/StageKitPied/power_on_dmx_devices.sh
+fi
 
 sudo /opt/StageKitPied/skp_wrapper.sh
 
