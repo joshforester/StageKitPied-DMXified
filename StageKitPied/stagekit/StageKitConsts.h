@@ -177,7 +177,11 @@ inline const bool isIdleSkRumbleData(SKRUMBLEDATA type) {
 }
 
 inline const bool isIdleSkRumbleDataString(std::string str) {
-	return isIdleSkRumbleData(stringToSkRumbleData(str));
+	try {
+		return isIdleSkRumbleData(stringToSkRumbleData(str));
+	} catch (...) { // exception thrown = a custom type, so not idle event
+		return false;
+	}
 }
 
 inline const SKRUMBLEDATA boolToSkFogRumbleData(bool fog_on_status) {

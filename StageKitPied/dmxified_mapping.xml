@@ -53,10 +53,6 @@
 			<output type="stageKitOutput" subtype="Handle_FogUpdate">
 				<value>true</value>
 			</output>
-			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
-				<widgetId>7</widgetId>
-				<value>1</value>
-			</output>
 		</outputs>
 	</mapping>
 	<mapping>
@@ -64,10 +60,6 @@
 		<outputs>
 			<output type="stageKitOutput" subtype="Handle_FogUpdate">
 				<value>false</value>
-			</output>
-			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
-				<widgetId>8</widgetId>
-				<value>1</value>
 			</output>
 		</outputs>
 	</mapping>
@@ -219,7 +211,11 @@
 		</outputs>
 	</mapping>
 	<mapping>
-		<input type="fileExistsInput" id="footFogButtonOff" priority="300" />
+		<input type="fileExistsInput" id="footFogButtonOff" priority="300">
+			<outputOverrideList>
+				<output type="stageKitOutput" subtype="Handle_FogUpdate" />
+			</outputOverrideList>
+        </input>
 		<outputs>
 			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
 				<widgetId>8</widgetId>
