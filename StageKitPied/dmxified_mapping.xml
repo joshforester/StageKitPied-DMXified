@@ -316,9 +316,6 @@
 		<input type="fileExistsInput" id="soundModeButton" priority="100">
 			<file>/opt/StageKitPied/input/button12.tmp</file>
 			<outputOverrideList>
-				<output type="stageKitOutput" subtype="Handle_LEDUpdate" />
-				<output type="stageKitOutput" subtype="Handle_StrobeUpdate" />
-				<output type="stageKitOutput" subtype="Handle_FogUpdate" />
 				<output type="qlcplusOutput" subtype="basicWidgetValueSet" />
 				<output type="qlcplusOutput" subtype="setFunctionStatus" />
 				<output type="qlcplusOutput" subtype="simpleDeskChannelSet" />
@@ -338,11 +335,8 @@
 				<value>1</value>
 			</output>
 			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
-				<widgetId>19</widgetId>
+				<widgetId>22</widgetId>
 				<value>1</value>
-			</output>
-			<output type="stageKitOutput" subtype="Handle_LEDUpdate">
-				<value>SK_ALL_OFF</value>
 			</output>
 		</outputs>
 	</mapping>
@@ -350,7 +344,7 @@
 		<input type="fileExistsInput" id="soundModeButtonOff" priority="100" />
 		<outputs>
 			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
-				<widgetId>20</widgetId>
+				<widgetId>23</widgetId>
 				<value>1</value>
 			</output>
 		</outputs>
