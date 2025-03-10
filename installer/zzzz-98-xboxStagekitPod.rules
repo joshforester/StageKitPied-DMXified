@@ -1,3 +1,0 @@
-# Match the input device (such as /dev/input/js0)
-SUBSYSTEM=="input", ATTRS{idVendor}=="0e6f", ATTRS{idProduct}=="0103", KERNEL=="event*|js*", ACTION=="add|bind|change|online", OWNER="root", GROUP="root", MODE="0600", TAG+="systemd", RUN:="/opt/StageKitPied/udev/xboxStagekitPodGuard.sh /dev/input/%k"
-

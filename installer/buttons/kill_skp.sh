@@ -17,8 +17,12 @@ fi
 # Now stop QLC+
 QLC_PID=`ps -ef | grep qlcplus | grep web | tr -s ' ' | cut -f2 -d' '`
 
+# Kill QLC+ 
 kill ${QLC_PID} # Kill QLC+
-wait ${QLC_PID} # Wait for the program to terminate
+# Wait for it to terminate
+while kill -0 ${QLC_PID} 2>/dev/null; do
+    sleep 1
+done
 
 # Now stop skp
 sudo systemctl stop stagekitpied

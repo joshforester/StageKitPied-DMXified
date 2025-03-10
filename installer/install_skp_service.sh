@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # TODO: install xbox pod guard
+# - udev service
+# - script
 # TODO: install run_qlc.sh?
 # TODO: install buttons scripts
 # - locate_usb.sh

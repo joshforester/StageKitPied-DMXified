@@ -240,6 +240,10 @@
 		</input>
 		<outputs>
 			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
+				<widgetId>20</widgetId>
+				<value>1</value>
+			</output>
+			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
 				<widgetId>5</widgetId>
 				<value>1</value>
 			</output>
@@ -322,6 +326,10 @@
 			</outputOverrideList>
 		</input>
 		<outputs>
+			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
+				<widgetId>20</widgetId>
+				<value>1</value>
+			</output>
 			<output type="qlcplusOutput" subtype="basicWidgetValueSet">
 				<widgetId>5</widgetId>
 				<value>1</value>
