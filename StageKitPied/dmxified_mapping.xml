@@ -50,17 +50,23 @@
 	<mapping>
 		<input type="stageKitInput" id="SK_FOG_ON" priority="1" />
 		<outputs>
+<!-- I personally am using a fileExistsInput to control fog, so this is no longer necessary. -->
+<!--
 			<output type="stageKitOutput" subtype="Handle_FogUpdate">
 				<value>true</value>
 			</output>
+-->
 		</outputs>
 	</mapping>
 	<mapping>
 		<input type="stageKitInput" id="SK_FOG_OFF" priority="1" />
 		<outputs>
+<!-- I personally am using a fileExistsInput to control fog, so this is no longer necessary. -->
+<!--
 			<output type="stageKitOutput" subtype="Handle_FogUpdate">
 				<value>false</value>
 			</output>
+-->
 		</outputs>
 	</mapping>
 	<mapping>
@@ -232,7 +238,6 @@
 			<outputOverrideList>
 				<output type="stageKitOutput" subtype="Handle_LEDUpdate" />
 				<output type="stageKitOutput" subtype="Handle_StrobeUpdate" />
-				<output type="stageKitOutput" subtype="Handle_FogUpdate" />
 				<output type="qlcplusOutput" subtype="basicWidgetValueSet" />
 				<output type="qlcplusOutput" subtype="setFunctionStatus" />
 				<output type="qlcplusOutput" subtype="simpleDeskChannelSet" />
@@ -279,7 +284,6 @@
 			<outputOverrideList>
 				<output type="stageKitOutput" subtype="Handle_LEDUpdate" />
 				<output type="stageKitOutput" subtype="Handle_StrobeUpdate" />
-				<output type="stageKitOutput" subtype="Handle_FogUpdate" />
 				<output type="qlcplusOutput" subtype="basicWidgetValueSet" />
 				<output type="qlcplusOutput" subtype="setFunctionStatus" />
 				<output type="qlcplusOutput" subtype="simpleDeskChannelSet" />
