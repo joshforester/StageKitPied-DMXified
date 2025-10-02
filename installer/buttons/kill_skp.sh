@@ -25,7 +25,7 @@ fi
 QLC_PID=`ps -ef | grep qlcplus | grep web | tr -s ' ' | cut -f2 -d' '`
 
 # Kill QLC+ 
-kill ${QLC_PID} # Kill QLC+
+kill -9 ${QLC_PID} # Kill QLC+
 # Wait for it to terminate
 while kill -0 ${QLC_PID} 2>/dev/null; do
     sleep 1

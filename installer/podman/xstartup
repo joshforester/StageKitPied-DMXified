@@ -1,0 +1,11 @@
+#!/bin/sh
+export XKL_XMODMAP_DISABLE=1
+unset SESSION_MANAGER
+unset DBUS_SESSION_BUS_ADDRESS
+
+# Apply .Xresources if present
+[ -r $HOME/.Xresources ] && xrdb $HOME/.Xresources
+
+# Start Openbox window manager
+exec openbox-session
+

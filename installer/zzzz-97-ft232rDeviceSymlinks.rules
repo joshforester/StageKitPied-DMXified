@@ -1,0 +1,9 @@
+# Since I have two FT232R chips (DMX adapter and SKP serial adapter), and RPi doesn't create sym links for USB devices,
+# manually create one so that I can pass it to the podman container with some surety.
+
+# FT232R USB UART with serial A5069RR4 (serial adapter)
+SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", ATTRS{serial}=="A5069RR4", SYMLINK+="ftdi-A5069RR4"
+
+# FT232R USB UART with serial A10JGB3H (DMX adapter)
+SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", ATTRS{serial}=="A10JGB3H", SYMLINK+="ftdi-A10JGB3H"
+

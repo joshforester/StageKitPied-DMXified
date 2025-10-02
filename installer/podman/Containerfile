@@ -1,0 +1,60 @@
+# ============================
+# Stage 1: Builder
+# ============================
+FROM arm64v8/ubuntu:22.04 AS builder
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=America/New_York
+
+# Install Openbox, VNC server, QLC+, and required X11/Qt libraries
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+	usbutils net-tools x11-utils \
+        openbox \
+        tigervnc-standalone-server tigervnc-common tigervnc-tools \
+        qlcplus \
+	xauth \
+        x11-xserver-utils xterm \
+        # Required X11/Qt runtime libs
+        libxcb-xinerama0 libxcb-xfixes0 libxcb-icccm4 \
+        libxcb-image0 libxcb-keysyms1 libxcb-randr0 \
+        libxcb-render-util0 libxcb-render0 libxcb-shape0 \
+        libxcb-shm0 libxcb-sync1 libxcb-xkb1 libxkbcommon-x11-0 \
+        libxrender1 libx11-xcb1 libfontconfig1 \
+        libgl1-mesa-glx libglu1-mesa \
+        libqt5widgets5 libqt5gui5 libqt5core5a \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# ============================
+# Stage 2: Runtime
+# ============================
+FROM arm64v8/ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=America/New_York
+
+# Copy installed packages/libraries from builder
+COPY --from=builder /usr /usr
+COPY --from=builder /lib /lib
+COPY --from=builder /etc /etc
+
+# Create QLC+ workspace & fixture folders
+RUN mkdir -p /root/.qlcplus/projects /root/.qlcplus/fixtures
+
+# Copy startup scripts
+COPY xstartup /root/.vnc/xstartup
+RUN chmod +x /root/.vnc/xstartup
+
+COPY start-qlc.sh /start-qlc.sh
+RUN chmod +x /start-qlc.sh
+
+# Expose QLC+ WebSocket & VNC ports
+EXPOSE 10000 5901
+
+# Volumes for projects & fixtures
+VOLUME ["/root/.qlcplus/projects", "/root/.qlcplus/fixtures"]
+
+# Start container
+CMD ["/start-qlc.sh"]
+

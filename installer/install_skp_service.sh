@@ -3,6 +3,9 @@
 # TODO: install xbox pod guard
 # - udev service
 # - script
+# TODO: refactor QLC+ start/stop/etc scripts to use podman approach
+# TODO: install zzzz-97-ft232rDeviceSymlinks.rules to /etc/udev/rules.d to create referencable symlink for podman and skp
+# TODO: podman installation, pull of image for QLC+, and setup
 # TODO: install run_qlc.sh?
 # TODO: install buttons scripts
 # - locate_usb.sh
