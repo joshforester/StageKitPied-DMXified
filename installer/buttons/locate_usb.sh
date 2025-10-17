@@ -20,3 +20,7 @@ for sysdevpath in $(find /sys/bus/usb/devices/usb*/ -name dev); do
         echo "/dev/$devname - $ID_SERIAL"
     )
 done
+
+echo ""
+echo "Showing Serial Adapter and any other potential conflictin adapter links (DMX Adapter can sometimes be shown here if using the same FTDI chip)"
+ls -l /dev/ftdi*

@@ -4,6 +4,7 @@ set -e
 DISPLAY_NUM=:1
 VNC_PORT=5901
 VNC_PASSWD_FILE=/root/.vnc/passwd
+QLCPLUS_WORKSPACE=/root/.qlcplus/projects/qlcplusSkpDmx.qxw
 
 # Clean up old locks (VNC/X crashes leave these behind)
 rm -f /tmp/.X1-lock
@@ -56,5 +57,5 @@ done
 echo "X server is ready, launching QLC+"
 
 # Launch QLC+ in foreground
-qlcplus --web --open /root/.qlcplus/projects/qlcplusSkpDmx2.qxw --operate
+qlcplus --open ${QLCPLUS_WORKSPACE} --web --operate
 

@@ -1,40 +1,34 @@
 #!/bin/bash
 
-# TODO: install xbox pod guard
-# - udev service
-# - script
-# TODO: refactor QLC+ start/stop/etc scripts to use podman approach
-# TODO: install zzzz-97-ft232rDeviceSymlinks.rules to /etc/udev/rules.d to create referencable symlink for podman and skp
 # TODO: podman installation, pull of image for QLC+, and setup
-# TODO: install run_qlc.sh?
 # TODO: install buttons scripts
 # - locate_usb.sh
 # - kill_skp.sh
 # - run_skp.sh
 # - skp_wrapper.sh
 # - poweron/poweroff
-# TODO: install fixtures
 
-SCRIPT_DIR=$(dirname "$(realpath "$0")")
+INSTALLER_DIR=$(dirname "$(realpath "$0")")
+INSTALLER_UDEV_DIR=${INSTALLER_DIR}/udev
+INSTALLER_QLC_DIR=${INSTALLER_DIR}/qlc
 
-USAGE="Usage: sudo $0 [SKP lights.ini File] [Mapping Config File] [QLC+ Workspace File]"
+USAGE="Usage: sudo $0 [SKP lights.ini File] [Mapping Config File] [QLC+ Workspace File] [QLC+ Fixtures Directory]"
+
 SKP_INSTALL_DIR=/opt/StageKitPied
 SKP_INPUT_DIR=${SKP_INSTALL_DIR}/input
 SKP_UDEV_DIR=${SKP_INSTALL_DIR}/udev
-SKP_AUTOSTART_DIR=${SKP_INSTALL_DIR}/autostart
+SKP_QLC_DIR=${SKP_INSTALL_DIR}/qlc
+SKP_QLC_FIXTURES_DIR=${SKP_QLC_DIR}/fixtures
 SKP_SERVICE_NAME=stagekitpied
+QLCPLUS_PODMAN_SERVICE_NAME=qlcplus-podman
 UDEV_RULES_DIR=/etc/udev/rules.d
 SYSTEMD_SERVICE_DIR=/lib/systemd/system
-DEFAULT_SKP_LIGHTSINI_SOURCE_DIR=${SCRIPT_DIR}/../StageKitPied
+DEFAULT_SKP_LIGHTSINI_SOURCE_DIR=${INSTALLER_DIR}/../StageKitPied
 DEFAULT_SKP_LIGHTSINI_SOURCE_FILE=lights.ini
-DEFAULT_DMXIFIED_MAPPING_SOURCE_DIR=${SCRIPT_DIR}/../StageKitPied
+DEFAULT_DMXIFIED_MAPPING_SOURCE_DIR=${INSTALLER_DIR}/../StageKitPied
 DEFAULT_DMXIFIED_MAPPING_SOURCE_FILE=dmxified_mapping.xml
-DEFAULT_QLCPLUS_WORKSPACE_SOURCE_DIR=${SCRIPT_DIR}
+DEFAULT_QLCPLUS_WORKSPACE_SOURCE_DIR=${INSTALLER_DIR}
 DEFAULT_QLCPLUS_WORKSPACE_SOURCE_FILE=qlcplusSkpDmx.qxw
-
-# Determine autostart directory
-USER_HOME=$(eval echo ~${SUDO_USER})
-USER_AUTOSTART_DIR=${USER_HOME}/.config/autostart
 
 # Check if the script is running as root, since service install requires it.
 if [ "$EUID" -ne 0 ]; then
@@ -46,6 +40,14 @@ fi
 # Function to check if a file exists
 file_exists() {
     if [[ ! -f "$1" ]]; then
+        echo "ERROR: $1 does not exist." 1>&2
+        exit 1
+    fi
+}
+
+# Function to check if a file exists
+dir_exists() {
+    if [[ ! -d "$1" ]]; then
         echo "ERROR: $1 does not exist." 1>&2
         exit 1
     fi
@@ -80,16 +82,21 @@ if [[ $# -eq 0 ]]; then
     DMXIFIED_MAPPING_SOURCE_FILE="$DEFAULT_DMXIFIED_MAPPING_SOURCE_FILE"
     QLCPLUS_WORKSPACE_SOURCE_DIR="$DEFAULT_QLCPLUS_WORKSPACE_SOURCE_DIR"
     QLCPLUS_WORKSPACE_SOURCE_FILE="$DEFAULT_QLCPLUS_WORKSPACE_SOURCE_FILE"
-elif [[ $# -eq 3 ]]; then
+    QLCPLUS_FIXTURES_SOURCE_DIR="$DEFAULT_QLCPLUS_FIXTURES_SOURCE_DIR" 
+elif [[ $# -eq 4 ]]; then
     # Check if the files exist
     file_exists "$1"
     file_exists "$2"
     file_exists "$3"
+    dir_exists "$4"
 
     # Parse each file to get PATH and FILE parts
     read -r SKP_LIGHTSINI_SOURCE_DIR SKP_LIGHTSINI_SOURCE_FILE <<< $(parse_path_and_file "$1")
     read -r DMXIFIED_MAPPING_SOURCE_DIR DMXIFIED_MAPPING_SOURCE_FILE <<< $(parse_path_and_file "$2")
     read -r QLCPLUS_WORKSPACE_SOURCE_DIR QLCPLUS_WORKSPACE_SOURCE_FILE <<< $(parse_path_and_file "$3")
+    
+    # Set dir to provided, existing one
+    QLCPLUS_FIXTURES_SOURCE_DIR="$4"
 
     # Ensure SKP_LIGHTSINI_SOURCE_FILE is "lights.ini"
     if [[ "$SKP_LIGHTSINI_SOURCE_FILE" != "lights.ini" ]]; then
@@ -98,9 +105,16 @@ elif [[ $# -eq 3 ]]; then
        exit 1
     fi
 
+    # Ensure QLCPLUS_WORKSPACE_SOURCE_FILE is "qlcplusSkpDmx.qxw"
+    if [[ "$QLCPLUS_WORKSPACE_SOURCE_FILE" != "qlcplusSkpDmx.qxw" ]]; then
+       echo "ERROR: The [QLC+ Workspace File] must be 'qlcplusSkpDmx.qxw', but got '$QLCPLUS_WORKSPACE_SOURCE_FILE'." 1>&2
+       echo "${USAGE}" 1>&2
+       exit 1
+    fi
+
 else
     # Incorrect number of arguments
-    echo "ERROR: You must pass exactly 3 arguments or none." 1>&2
+    echo "ERROR: You must pass exactly 4 arguments or none." 1>&2
     echo "${USAGE}" 1>&2
     exit 1
 fi
@@ -116,13 +130,13 @@ systemctl stop ${SKP_SERVICE_NAME}
 
 # Setup the program in its place.
 mkdir -p ${SKP_INSTALL_DIR}
-cp ${SCRIPT_DIR}/../StageKitPied/skp ${SKP_INSTALL_DIR}
+cp ${INSTALLER_DIR}/../StageKitPied/skp ${SKP_INSTALL_DIR}
 cp ${SKP_LIGHTSINI_SOURCE_DIR}/${SKP_LIGHTSINI_SOURCE_FILE} ${SKP_INSTALL_DIR}
-cp ${SCRIPT_DIR}/../StageKitPied/leds1.ini ${SKP_INSTALL_DIR}
-cp ${SCRIPT_DIR}/../StageKitPied/leds2.ini ${SKP_INSTALL_DIR}
-cp ${SCRIPT_DIR}/../StageKitPied/leds3.ini ${SKP_INSTALL_DIR}
-cp ${SCRIPT_DIR}/../StageKitPied/leds4.ini ${SKP_INSTALL_DIR}
-cp ${SCRIPT_DIR}/../StageKitPied/leds5.ini ${SKP_INSTALL_DIR}
+cp ${INSTALLER_DIR}/../StageKitPied/leds1.ini ${SKP_INSTALL_DIR}
+cp ${INSTALLER_DIR}/../StageKitPied/leds2.ini ${SKP_INSTALL_DIR}
+cp ${INSTALLER_DIR}/../StageKitPied/leds3.ini ${SKP_INSTALL_DIR}
+cp ${INSTALLER_DIR}/../StageKitPied/leds4.ini ${SKP_INSTALL_DIR}
+cp ${INSTALLER_DIR}/../StageKitPied/leds5.ini ${SKP_INSTALL_DIR}
 cp ${DMXIFIED_MAPPING_SOURCE_DIR}/${DMXIFIED_MAPPING_SOURCE_FILE} ${SKP_INSTALL_DIR}
 
 chmod 770 ${SKP_INSTALL_DIR}/skp
@@ -142,15 +156,44 @@ echo ""
 
 #####################################################
 
+# Create symlinks for FT232R/ftdi chips so we can pass in a predictably-named DMX output device to the QLC+ container. 
+mkdir -p ${SKP_UDEV_DIR}
+UDEV_FT232RUSBRULE_FILE=zzzz-97-ft232rDeviceSymlinks.rules
+cp ${INSTALLER_UDEV_DIR}/${UDEV_FT232RUSBRULE_FILE} ${UDEV_RULES_DIR}
+chmod 440 ${UDEV_RULES_DIR}/${UDEV_FT232RUSBRULE_FILE}
+udevadm control --reload
+
+echo "udev rule installed predictably symlink FT232R/ftdi USB devices."
+echo ""
+
+#####################################################
+
+# Setup udev to use perms to gatekeep the Xbox StageKit Light Pods from anything else
+# because we are paranoid and only want skp to access them. 
+mkdir -p ${SKP_UDEV_DIR}
+UDEV_XBOXSTAGEKITPODGUARDRULE_SCRIPT=xboxStageKitPodGuard.sh
+cp ${INSTALLER_UDEV_DIR}/${UDEV_XBOXSTAGEKITPODGUARDRULE_SCRIPT} ${SKP_UDEV_DIR}
+chmod 770 ${SKP_UDEV_DIR}/${UDEV_XBOXSTAGEKITPODGUARDRULE_SCRIPT}
+
+UDEV_XBOXSTAGEKITPODGUARDRULE_FILE=zzzz-98-xboxStageKitPodGuard.rules
+cp ${INSTALLER_UDEV_DIR}/${UDEV_XBOXSTAGEKITGUARDRULE_FILE} ${UDEV_RULES_DIR}
+chmod 440 ${UDEV_RULES_DIR}/${UDEV_XBOXSTAGEKITGUARDRULE_FILE}
+udevadm control --reload
+
+echo "udev rule installed to prevent anything but StageKitPied from claiming Xbox Light Pods."
+echo ""
+
+#####################################################
+
 # Setup udev to use perms to gatekeep the serial adapter from Qlcplus
 # treating it like a DMX adapter with an FT232R chip.
 mkdir -p ${SKP_UDEV_DIR}
 UDEV_SERIALUSBGUARDRULE_SCRIPT=serialUsbGuard.sh
-cp ${SCRIPT_DIR}/serialUsbGuard.sh ${SKP_UDEV_DIR}
+cp ${INSTALLER_UDEV_DIR}/${UDEV_SERIALUSBGUARDRULE_SCRIPT} ${SKP_UDEV_DIR}
 chmod 770 ${SKP_UDEV_DIR}/${UDEV_SERIALUSBGUARDRULE_SCRIPT}
 
 UDEV_SERIALUSBGUARDRULE_FILE=zzzz-99-serialUsbGuard.rules
-cp ${SCRIPT_DIR}/${UDEV_SERIALUSBGUARDRULE_FILE} ${UDEV_RULES_DIR}
+cp ${INSTALLER_UDEV_DIR}/${UDEV_SERIALUSBGUARDRULE_FILE} ${UDEV_RULES_DIR}
 chmod 440 ${UDEV_RULES_DIR}/${UDEV_SERIALUSBGUARDRULE_FILE}
 udevadm control --reload
 
@@ -159,42 +202,55 @@ echo ""
 
 #####################################################
 
-# Setup the service.
-cp ${SCRIPT_DIR}/${SKP_SERVICE_NAME}.service ${SYSTEMD_SERVICE_DIR}
-systemctl daemon-reload
-#systemctl disable ${SKP_SERVICE_NAME}.service
+# Setup the QLC workspace
 
-#echo "Startup service installed and enabled during reboot.  It will be started at the end of this script."
-echo "Systemd service installed.  It will be started at the end of this script."
+mkdir -p ${SKP_QLC_DIR}
+chown ${SUDO_USER}:${SUDO_USER} ${SKP_QLC_DIR}
+
+cp ${QLCPLUS_WORKSPACE_SOURCE_DIR}/${QLCPLUS_WORKSPACE_SOURCE_FILE} ${SKP_QLC_DIR}
+chown ${SUDO_USER}:${SUDO_USER} ${SKP_QLC_DIR}/${QLCPLUS_WORKSPACE_SOURCE_FILE}
+chmod 440 ${SKP_QLC_DIR}/${QLCPLUS_WORKSPACE_SOURCE_FILE}
+
+echo "Qlcplus workspace installed using ${QLCPLUS_WORKSPACE_SOURCE_DIR}/${QLCPLUS_WORKSPACE_SOURCE_FILE} to ${SKP_QLC_DIR}."
 echo ""
 
 #####################################################
 
-# Setup the QLC launcher
-QLCPLUS_AUTOLAUNCHER_CONFIG=runqlc.desktop
-TMP_FILE=/tmp/${QLCPLUS_AUTOLAUNCHER_CONFIG}
-echo "[Desktop Entry]" > ${TMP_FILE}
-echo "Type=Application" >> ${TMP_FILE}
-echo "Exec=${SKP_AUTOSTART_DIR}/runQlc.sh ${SKP_AUTOSTART_DIR}/${QLCPLUS_WORKSPACE_SOURCE_FILE}" >> ${TMP_FILE}
-mkdir -p ${USER_AUTOSTART_DIR}
-mv ${TMP_FILE} ${USER_AUTOSTART_DIR}
-chown ${SUDO_USER}:${SUDO_USER} ${USER_AUTOSTART_DIR}/${QLCPLUS_AUTOLAUNCHER_CONFIG}
-chmod 440 ${USER_AUTOSTART_DIR}/${QLCPLUS_AUTOLAUNCHER_CONFIG}
+# Setup the QLC fixtures
 
-QLCPLUS_AUTOLAUNCHER=runQlc.sh
-mkdir -p ${SKP_AUTOSTART_DIR}
-chown ${SUDO_USER}:${SUDO_USER} ${SKP_AUTOSTART_DIR}
-cp ${SCRIPT_DIR}/${QLCPLUS_AUTOLAUNCHER} ${SKP_AUTOSTART_DIR}
-chown ${SUDO_USER}:${SUDO_USER} ${SKP_AUTOSTART_DIR}/${QLCPLUS_AUTOLAUNCHER}
-chmod 770 ${USER_AUTOSTART_DIR}/${QLCPLUS_AUTOLAUNCHER}
+mkdir -p ${SKP_QLC_DIR}
+chown ${SUDO_USER}:${SUDO_USER} ${SKP_QLC_DIR}
 
-cp ${QLCPLUS_WORKSPACE_SOURCE_DIR}/${QLCPLUS_WORKSPACE_SOURCE_FILE} ${SKP_AUTOSTART_DIR}
-chown ${SUDO_USER}:${SUDO_USER} ${SKP_AUTOSTART_DIR}/${QLCPLUS_WORKSPACE_SOURCE_FILE}
-chmod 440 ${SKP_AUTOSTART_DIR}/${QLCPLUS_WORKSPACE_SOURCE_FILE}
+cp -a ${QLCPLUS_FIXTURES_SOURCE_DIR} ${SKP_QLC_FIXTURES_DIR}
+chown -R ${SUDO_USER}:${SUDO_USER} ${SKP_QLC_FIXTURES_DIR}
+chmod -R 440 ${SKP_QLC_FIXTURES_DIR}
 
-echo "Qlcplus autostart scripts installed using ${QLCPLUS_WORKSPACE_SOURCE_DIR}/${QLCPLUS_WORKSPACE_SOURCE_FILE}."
-echo "Please set your Raspberry Pi graphical desktop to autologin for user ${SUDO_USER}."
+echo "Qlcplus fixtures installed using ${QLCPLUS_FIXTURES_SOURCE_DIR} to ${SKP_QLC_FIXTURES_DIR}."
 echo ""
+
+#####################################################
+
+# Setup the service.
+cp ${INSTALLER_DIR}/${QLCPLUS_PODMAN_SERVICE_NAME}.service ${SYSTEMD_SERVICE_DIR}
+systemctl daemon-reload
+
+echo "Systemd service for QLC+ Podman Container installed.  It will be started at the end of this script."
+echo ""
+
+#####################################################
+
+# Setup the service.
+cp ${INSTALLER_DIR}/${SKP_SERVICE_NAME}.service ${SYSTEMD_SERVICE_DIR}
+systemctl daemon-reload
+#systemctl disable ${SKP_SERVICE_NAME}.service
+
+echo "Systemd service for StageKitPied installed.  It will be started at the end of this script."
+echo ""
+
+#####################################################
+
+echo "Starting ${QLCPLUS_PODMAN_SERVICE_NAME} service."
+systemctl start ${QLCPLUS_PODMAN_SERVICE_NAME}
 
 #####################################################
 

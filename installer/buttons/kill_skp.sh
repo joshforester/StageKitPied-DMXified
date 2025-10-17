@@ -1,8 +1,7 @@
 #!/bin/bash
 
 #
-# Script for stopping QLC+ and skp in that order.  Note this assumes
-# QLC+ has been started with the --web option.
+# Script for stopping QLC+ and skp in that order. 
 #
 
 # Set this to empty string if you do not automatically power off your DMX devices
@@ -21,15 +20,9 @@ if [ -n "$USE_DMX_POWER_OFF" ]; then
     /opt/StageKitPied/power_off_dmx_devices.sh
 fi
 
-# Now stop QLC+
-QLC_PID=`ps -ef | grep qlcplus | grep web | tr -s ' ' | cut -f2 -d' '`
 
-# Kill QLC+ 
-kill -9 ${QLC_PID} # Kill QLC+
-# Wait for it to terminate
-while kill -0 ${QLC_PID} 2>/dev/null; do
-    sleep 1
-done
+# Stop QLC+ Container
+sudo systemctl stop qlcplus-podman
 
 # Now stop skp
 sudo systemctl stop stagekitpied

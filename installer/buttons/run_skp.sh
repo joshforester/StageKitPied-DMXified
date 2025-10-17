@@ -1,9 +1,7 @@
 #!/bin/bash
 
 #
-# Script for launching skp and QLC+ in the proper order.  Note this script
-# relies on .config/autostart/qlcplus.desktop being set and restarts lightdm
-# in order to trigger the QLC+ start.
+# Script for launching skp and QLC+ in the proper order. 
 #
 
 SKPD_PATH=/opt/StageKitPied
@@ -45,6 +43,8 @@ if [ -n "$USE_LED_DRUMKIT" ]; then
     sudo systemctl start leddrumkit 
 fi
 
+sudo systemctl start qlcplus-podman
+
 sudo $SKPD_PATH/skp_wrapper.sh
 
 # Loop until the service is active
@@ -60,4 +60,3 @@ while true; do
     fi
 done
 
-sudo systemctl restart lightdm
