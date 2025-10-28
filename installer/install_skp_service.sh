@@ -168,8 +168,8 @@ echo ""
 
 #####################################################
 
-# Setup udev to use perms to gatekeep the Xbox StageKit Light Pods from anything else
-# because we are paranoid and only want skp to access them. 
+# Setup udev to use perms to gate-keep the Xbox StageKit Light Pods from anything else because we are paranoid and only
+# want skp to access them.
 mkdir -p ${SKP_UDEV_DIR}
 UDEV_XBOXSTAGEKITPODGUARDRULE_SCRIPT=xboxStageKitPodGuard.sh
 cp ${INSTALLER_UDEV_DIR}/${UDEV_XBOXSTAGEKITPODGUARDRULE_SCRIPT} ${SKP_UDEV_DIR}
@@ -185,8 +185,7 @@ echo ""
 
 #####################################################
 
-# Setup udev to use perms to gatekeep the serial adapter from Qlcplus
-# treating it like a DMX adapter with an FT232R chip.
+# Setup udev to use perms to gate-keep the serial adapter from QLC+, treating it like a DMX adapter with an FT232R chip.
 mkdir -p ${SKP_UDEV_DIR}
 UDEV_SERIALUSBGUARDRULE_SCRIPT=serialUsbGuard.sh
 cp ${INSTALLER_UDEV_DIR}/${UDEV_SERIALUSBGUARDRULE_SCRIPT} ${SKP_UDEV_DIR}
@@ -197,7 +196,7 @@ cp ${INSTALLER_UDEV_DIR}/${UDEV_SERIALUSBGUARDRULE_FILE} ${UDEV_RULES_DIR}
 chmod 440 ${UDEV_RULES_DIR}/${UDEV_SERIALUSBGUARDRULE_FILE}
 udevadm control --reload
 
-echo "udev rule installed to prevent Qlcplus from claiming FT232R serial adapter."
+echo "udev rule installed to prevent QLC+ from claiming FT232R serial adapter."
 echo ""
 
 #####################################################
@@ -211,12 +210,12 @@ cp ${QLCPLUS_WORKSPACE_SOURCE_DIR}/${QLCPLUS_WORKSPACE_SOURCE_FILE} ${SKP_QLC_DI
 chown ${SUDO_USER}:${SUDO_USER} ${SKP_QLC_DIR}/${QLCPLUS_WORKSPACE_SOURCE_FILE}
 chmod 440 ${SKP_QLC_DIR}/${QLCPLUS_WORKSPACE_SOURCE_FILE}
 
-echo "Qlcplus workspace installed using ${QLCPLUS_WORKSPACE_SOURCE_DIR}/${QLCPLUS_WORKSPACE_SOURCE_FILE} to ${SKP_QLC_DIR}."
+echo "QLC+ workspace installed using ${QLCPLUS_WORKSPACE_SOURCE_DIR}/${QLCPLUS_WORKSPACE_SOURCE_FILE} to ${SKP_QLC_DIR}."
 echo ""
 
 #####################################################
 
-# Setup the QLC fixtures
+# Setup the QLC+ fixtures
 
 mkdir -p ${SKP_QLC_DIR}
 chown ${SUDO_USER}:${SUDO_USER} ${SKP_QLC_DIR}
@@ -225,7 +224,7 @@ cp -a ${QLCPLUS_FIXTURES_SOURCE_DIR} ${SKP_QLC_FIXTURES_DIR}
 chown -R ${SUDO_USER}:${SUDO_USER} ${SKP_QLC_FIXTURES_DIR}
 chmod -R 440 ${SKP_QLC_FIXTURES_DIR}
 
-echo "Qlcplus fixtures installed using ${QLCPLUS_FIXTURES_SOURCE_DIR} to ${SKP_QLC_FIXTURES_DIR}."
+echo "QLC+ fixtures installed using ${QLCPLUS_FIXTURES_SOURCE_DIR} to ${SKP_QLC_FIXTURES_DIR}."
 echo ""
 
 #####################################################
@@ -242,7 +241,6 @@ echo ""
 # Setup the service.
 cp ${INSTALLER_DIR}/${SKP_SERVICE_NAME}.service ${SYSTEMD_SERVICE_DIR}
 systemctl daemon-reload
-#systemctl disable ${SKP_SERVICE_NAME}.service
 
 echo "Systemd service for StageKitPied installed.  It will be started at the end of this script."
 echo ""
@@ -256,4 +254,3 @@ systemctl start ${QLCPLUS_PODMAN_SERVICE_NAME}
 
 echo "Starting ${SKP_SERVICE_NAME} service."
 systemctl start ${SKP_SERVICE_NAME}
-

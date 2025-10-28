@@ -1,32 +1,128 @@
-# StageKitPied
-Rock Band Stage Kit Pied is a highly configurable interface that runs on the Raspberry Pi platform.  It sits between an xbox 360 and the Rock Band Stage Kit (released by PDP) to read the lighting cues from the Harmonix games "Rock Band 2" and "Rock Band 3", which it then uses to switch on & off LEDs in a large LED strip array.
+# StageKitPied-DMXified
 
-WARNING: INI file has changed!  Please use new INI and copy over the settings you need.  Below INI file details are not up-to-date, see comments in the new INI file.
+**Rock Band Stage Kit Pied - DMXified** is a highly configurable interface that runs on the Raspberry Pi platform.  It sits
+between an Xbox 360 and the Rock Band StageKit (released by PDP) to read the lighting cues from the Harmonix games
+"Rock Band 2" and "Rock Band 3", which it then uses to:
+* repeat those lighting cues to up to four (4) Rock Band StageKit Light Pods
+* switch on & off LEDs in a large LED strip array
+* configure arbitrary lighting cues to **_any_** DMX devices (lighting & lasers, cold sparks, flames, etc etc etc) via a
+QLC+ workspace
 
-UPDATE 24/05/2023 : Lucky enough to own more than 1 Stage Kit?  Now connect up to 4 to the Raspberry Pi & have perfectly synched lights on all of them.  Light pass-through has now been enabled.  This means you can now use the Stage Kit in All Instrument Mode if running in RB3e mode.
+Separately, this software can send arbitrary lighting cues to DMX devices based on the presence or absence of a file on
+the Raspberry Pi file system, and includes scripts for creating/deleting files based on buttons connected to the
+Raspberry Pi. This is immediately useful when configuring these scripts with, say, a pedalboard/stompbox (pushing a
+button creates a file on the Raspberry Pi, whose presence is in turn configured to put DMX devices in "Sound Mode",
+black light mode, or whatever you choose via QLC+).  The included scripts can handle:
+* hold-release buttons
+* toggle button press (a button that acts as a switch)
+* toggle button for running arbitrary commands (for example, starting and stopping StageKitPied)
 
-UPDATE 25/04/2023 : No Stage Kit?  Well that's not a problem if you're using RB3Enhanced (https://github.com/RBEnhanced/RB3Enhanced)  To be able to use the RB3Enhanced data please read the RB3Enhanced section at the bottom of this readme.  Thanks go out to the RB3Enhanced devs for highlighting the relevent data they can send out over UDP.
+No PDP StageKit/Serial Adapter?  Well that's not a problem if you're using RB3Enhanced
+(https://github.com/RBEnhanced/RB3Enhanced).  To be able to use the RB3Enhanced data, please read the RB3Enhanced
+section in this README.  Thanks go out to the RB3Enhanced devs for highlighting the relevant data they can send out over
+UDP.
 
+## Examples of it in Action
 
-## Examples of it in action
-[![Example 1](https://img.youtube.com/vi/fq0_RiIjsV8/0.jpg)](https://www.youtube.com/watch?v=fq0_RiIjsV8)  [![Example 2](https://img.youtube.com/vi/q-61C9YkRUw/0.jpg)](https://www.youtube.com/watch?v=q-61C9YkRUw)
+### Multiple Stage Kit Light Pods:
+
+TODO: insert video[s] links here for multiple PDP StageKit Pods running with StageKitPied-DMXified
+
+### LED Strip Array Examples:
+
+[![Example 1](https://img.youtube.com/vi/fq0_RiIjsV8/0.jpg)](https://www.youtube.com/watch?v=fq0_RiIjsV8)
+
+[![Example 2](https://img.youtube.com/vi/q-61C9YkRUw/0.jpg)](https://www.youtube.com/watch?v=q-61C9YkRUw)
+
+### DMX Devices:
+
+TODO: insert video[s] links here for DMX devices running with StageKitPied-DMXified
+
+### Button-Triggered Effects (using file-monitoring capabilities):
+
+TODO: insert video[s] links here for button-box triggering effects
 
 # WARNING
-**You attempt any of this at your own risk.  Incorrectly wiring and powering electronics can result in fires or even worse.**
+
+**You attempt any of this at your own risk.  Incorrectly wiring and powering electronics can result in fires or even
+worse.**
 
 **You have been warned!**
 
-## Build the LED Array
-###### Hardware
-Rock Band Stage Kit - Released by PDP.  Just the light POD on it's own will do.
+# Build the System
 
-Raspberry Pi - Version 1 should be enough, default Raspbian OS.
+## Hardware Summary
 
-SK9822 LEDs - I'm using 60 per M but any configuration should be ok.
+### Base Requirement:
 
-PSU - The SK9822 LEDs are 0.06amp per segment (each segment has 3 leds @ 0.02amp).  So 70 segments is 70 x 0.06 = 4.2amp.
+* Raspberry Pi - Version 1 should be enough, default Raspbian OS, but it's been tested using Version 5.
 
-###### Wiring it up
+### Standard Configuration
+
+_(not required if using [RBEnhanced](https://github.com/RBEnhanced/RB3Enhanced))_
+* Serial Adapter (see below)
+* Rock Band Stage Kit - Released by PDP.  Just the light POD on its own will do.
+
+### LED Strip Arrays:
+
+_(optional add-on)_
+* SK9822 LEDs - I'm using 60 per M but any configuration should be ok.
+* PSU - The SK9822 LEDs are 0.06amp per segment (each segment has 3 leds @ 0.02amp). So 70 segments is 70 x 0.06 = 4.2amp.
+
+### DMX Lighting Equipment:
+
+_(optional, but this is where things get fun--here, we put the DMXified in StageKitPied-DMXified)_
+* A DMX output adapter for the Raspberry Pi (typically USB).  Not endorsing, but I use
+[this Jhoinrch FT232RNL-based adapter](https://www.amazon.com/dp/B0D5YN6PMG).
+* **_ANY_** DMX device[s]
+
+### External Buttons
+
+_(optional, if using the file-based triggers)_
+* Any GPIO-connected button for the Raspberry Pi
+
+## Building the Serial Adapter
+
+### Hardware
+
+**Left**: Serial Adapter = FTDI-FT232RL, **Right**: Pro Micro = ATMEGA32U4 5V 16MHz.
+
+![FTDI-FT232RL](https://user-images.githubusercontent.com/127441225/224138326-7562e701-adcd-4776-a003-dd04618f61b9.PNG)  ![ProMicro-ATMEGA32U4](https://user-images.githubusercontent.com/127441225/224138343-69b9a5ba-e82e-4e15-a11f-e3460c5fc5dc.PNG)
+
+If selectable voltage, then ensure the jumper is set to 5V (Green box in pic)
+
+### Connection
+
+- Connect the Serial Adapter GROUND to Pro Micro GROUND (Grey box in pics)
+- Connect the Serial Adapter TX to Pro Micro RX1 (Purple box in pics)
+- Connect the Serial Adapter RX to Pro Micro TX0 (Orange box in pics)
+
+### Installing the Firmware
+
+#### Install GIMX
+
+Thankfully GIMX 8.0 makes this bit super easy. :)
+
+Get it from here: https://github.com/matlo/GIMX/releases/tag/v8.0
+
+In the installation directory firmware directory:
+> Windows Default = "C:\Program Files\GIMX\firmware"
+
+Either compile the firmware yourself, or use the compiled firmware file `gimx-adapter/atmega32u4.hex`.
+
+- Connect the Serial Adapter (FTDI-FT232RL) to the PC via USB.
+- Open GIMX
+- Click `"Help"` -> `"Update Firmware"`
+- Select `"atmega32u4.hex"` then click `"Load"`
+- Follow the instructions to load the firmware onto the Pro Micro.
+
+_**Note:** I had trouble with this step while building my Serial Adapter.  Ultimately, I resorted to using the following
+[avrdude](https://github.com/avrdudes/avrdude) and command:
+```
+#> avrdude.exe -p atmega32u4 -c avr109 -P COM5 -D -U flash:w:firmware/atmega32u4.hex -C avrdude.conf
+```
+
+### Building LED Strip Arrays (Optional)
 
 **Ensure you use the correct fuse ratings on the LED strips!**
 
@@ -43,131 +139,151 @@ Connect the SK9822...
  - C(lock) : SPI SCLK (GPIO 11) on the Raspberry Pi.
  - D(ata) : SPI MOSI (GPIO 10) on the Raspberry Pi.
  - 5V : Positive output on PSU.
- 
-## Build the adapter
-###### Hardware
-Left: Serial Adapter = FTDI-FT232RL     Right: Pro Micro = ATMEGA32U4 5V 16MHz.
 
-![FTDI-FT232RL](https://user-images.githubusercontent.com/127441225/224138326-7562e701-adcd-4776-a003-dd04618f61b9.PNG)  ![ProMicro-ATMEGA32U4](https://user-images.githubusercontent.com/127441225/224138343-69b9a5ba-e82e-4e15-a11f-e3460c5fc5dc.PNG)
+# Setting up the Stage Kit Pied - DMXified Software
 
-If selectable voltage, then ensure the jumper is set to 5V (Green box in pic)
+## Installing the Software
 
-## Connection
- - Connect the Serial Adapter GROUND to Pro Micro GROUND (Grey box in pics)
- - Connect the Serial Adapter TX to Pro Micro RX1 (Purple box in pics)
- - Connect the Serial Adapter RX to Pro Micro TX0 (Orange box in pics)
+* **For 32-bit OS only:** You can use the included 'skp' program as well as the `*.ini` files and the `dmxified_mapping.xml`
+files from the `StageKitPied` directory.  Thus, you can skip the compilation step.
+* **Or/Otherwise:** Please compile from the source on your Raspberry Pi using the following command in the `StageKitPied` 
+directory:
+> #> make
 
-## Installing the Firmware
-###### Install GIMX
-Thankfully GIMX 8.0 makes this bit super easy :)
+Then, run the following command from within the `installer` directory:
+```
+#> ./install_skp_service.sh
+Usage: sudo ./install_skp_service [SKP lights.ini File] [Mapping Config File] [QLC+ Workspace File] [QLC+ Fixtures Directory]
+```
+which as shown above will show you a Usage printout.
 
-Get it from here: https://github.com/matlo/GIMX/releases/tag/v8.0
+Here's an explanation of the arguments:
+* **[SKP lights.ini File]** - the main configuration file for the software, which handles configuration of
+StageKitPied, PDP StageKit[s] with DMX devices, LED Strip Arrays (optionally with RB3Enhanced).
+* **[Mapping Config File]** - if using DMX devices or buttons, this is the configuration file for them.
+* **[QLC+ Workspace File]** - if using DMX, this is the QLC+ workspace whose Widgets are referenced by the Mapping
+Config File.
+* **[QLC+ Fixtures Directory]** - if using DMX, this is the directory where your QLC+ Fixture files are stored.
 
-In the install directory firmware folder
-> Windows Default = "C:\Program Files\GIMX\firmware"
+The values I used are:
+```
+#> sudo ./install_skp_service.sh ../StageKitPied/lights.ini ../StageKitPied/dmxified_mapping.xml qlc/qlcplusSkpDmx.qxw qlc/fixtures
+```
 
-Either compile the firmware yourself, or use this compiled firmware file found in the gimx-adapter folder
-> atmega32u4.hex
+**_Note_**: _The installer must be run as root because it installs system services that must be run as root, most
+notably StageKitPied._
 
+## Edit the lights.ini File
 
-- Connect the Serial Adapter (FTDI-FT232RL) to the PC via USB.
-- Open GIMX
-- Click "Help" -> "Update Firmware"
-- Select "atmega32u4.hex" then click "Load"
-- Follow the instructions to load the firmware onto the Pro Micro.
+This is the main configuration file, and used to configure multiple devices/configuration scenarios.  Ultimately, all
+the different lighting setups (PDP StageKit[s], RB3Enhanced, LED Strip Arrays, DMX devices/buttons) begin here for
+configuration.  The `lights.ini` file is heavily commented itself, so one should be able to figure it out from there,
+but we can go over some that are commonly changed from the defaults here.
 
-## Setting up the StageKitPied software
-###### Installing the software
-For 32 bit OS only : You can use the included 'skp' program, just copy that & the ini files from the 'StageKitPied' folder.
-Or/Otherwise: Please compile from the source.
+In the `[STAGEKIT_CONFIG]` section, you can enable pass-through to the PDP StageKit for the following items:
+- Xbox 360 LED Status
+- PDP StageKit Pod lights
+- PDP StageKit Fog
+- PDP StageKit Strobe
 
-Place them into any folder you want to use on the Raspberry Pi, just ensure the ini files are in the same directory as the program.
+If you want the PDP StageKit Pod to go dark, set those to 0 and then there's no needs to have the Fog/Strobe unit out.
 
-###### Edit the lights.ini file
-In the [LEDS] section
- - Enter in the amount of LEDS you have in the LED_AMOUNT=xxx
- - Enter in the INI_DEFAULT=x for the LED settings ini file you want.  Included is 5 examples.
- 
-In the [STAGEKIT] section, you can enable pass-through to the POD for the following items :-
- - Xbox LED Status
- - Stage Kit POD lights
- - Stage Kit Fog
- - Stage Kit Strobe
- 
-If you want the POD to go dark, set those to 0 and then there's no needs to have the FOG/Strobe unit out.
+In the `[LEDS]` section (if using an LED Strip Array):
+ - Enter the amount of LEDs you have in the `LED_AMOUNT=xxx`
+ - Enter the `INI_DEFAULT=x` for the LED settings INI file you want.  Included is 5 examples (`ledsX.ini`).
 
-There's other settings but the other defaults should be ok for most.
+In the `[DMXIFIED]` section (if using DMX devices):
+- Enter the location of the mapping file if different from the one provided during install.
 
-###### Edit the leds(x).ini
-[SK_COLOURS]
+There's other settings, but the other defaults should be ok for most.
+
+## Edit the leds(x).ini
+
+If using an LED Strip Array, you may find these files in `/opt/StageKitPied`:
+
+`[SK_COLOURS]`
  - Stores the basic led colour values for RED, GREEN, BLUE, YELLOW & STROBE.
 
-[RED_GROUP_X] [GREEN_GROUP_X] [BLUE_GROUP_X] [YELLOW_GROUP_X]
-There are 8 sections for each of these, where X corresponds to the 8 colour leds on the actual Stage Kit POD.
- - BRIGHTNESS=xx : How bright do want these?  Values are 0 (off) to 15 (max)
- - AMOUNT=xx : The amount of leds that are in this grouping.
- - LEDS=xx,xx,xx : Comma seperated led numbers that are in this group.
+`[RED_GROUP_X]` `[GREEN_GROUP_X]` `[BLUE_GROUP_X]` `[YELLOW_GROUP_X]`
+There are 8 sections for each of these, where `X` corresponds to the 8 colour LEDs on the actual PDP StageKit POD.
+ - `BRIGHTNESS=xx` : How bright do want these?  Values are 0 (off) to 15 (max)
+ - `AMOUNT=xx` : The amount of LEDs that are in this grouping.
+ - `LEDS=xx,xx,xx` : Comma separated LED numbers that are in this group.
 
-[STROBE]
- - BRIGHTNESS=xx : How bright do want the strobe?  Values are 0 (off) to 15 (max)
- - LEDS_ALL=0 : Set this to 1 for the strobe to use every led.
- - LEDS_AUTO=0 : Set this to 1 and the program will work out which leds are not assigned to the colours and use them for strobe.
- - AMOUNT=xx : If manually setting the leds to use as strobe, enter how many there are.
- - LEDS=xx,xx : Comma seperated led numbers that are to be used for the strobe.
+`[STROBE]`
+ - `BRIGHTNESS=xx` : How bright do want the strobe?  Values are 0 (off) to 15 (max)
+ - `LEDS_ALL=0` : Set this to 1 for the strobe to use every LED.
+ - `LEDS_AUTO=0` : Set this to 1 and the program will work out which LEDs are not assigned to the colours and use them
+for strobe.
+ - `AMOUNT=xx` : If manually setting the LEDs to use as strobe, enter how many there are.
+ - `LEDS=xx,xx` : Comma-separated LED numbers that are to be used for the strobe.
 
-## Connecting everything
- - Connect the Pro Micro USB side to the X360.
- - Connect the Serial Adapter USB side to the Raspberry Pi.
- - Connect the Stage Kit light POD to the Raspberry Pi.
- - Run the Stage Kit Pied program with the command
-   > sudo ./skp
- 
- Note: root is required to access the USB PDP Stage Kit device.
+## Edit the DMXifed Mapping File
 
-## Notes
-The StageKitPied program needs root access to be able to use the USB ports.
+If using DMX devices, you may find this file in `/opt/StageKitPied/dmxified_mapping.xml`:
 
-The Light Show does not work in practice mode.
-
-The Stage Kit light POD will not show LEDS unless it has power via the PS/2 port by either :-
- - A PS/2 to USB cable connected to a minimum 1amp power source.
- - Using the Fog/Strobe unit.
- 
-The reason for all the different led INI files was due to an earlier version that allowed switching on the fly.
- - This probably won't be added back.
-
-## Known Issues
-  The StageKitPied program will generate warnings from the serial adapter, these can be surpressed in the lights.ini.
-  
-  The StageKitPied program will generate warnings from the USB connection, these are very infrequent & can be ignored.
+This file is documented further in `dmxified/README.md`.
 
 ## RB3Enhanced
-  To run with RB3Enhanced, then a PDP Stage Kit is not required and the above adapter is also not required.
-  
-  Create the LED Array as mentioned above.
-  
-  Edit the lights.ini to enable RB3E mode.
-  
-   [RB3E]
-   
-    
-   - ENABLED=1 : Set this to 1 to make the program listen for the RB3Enhanced data stream.
-    
-   - SOURCE_IP=0.0.0.0 : Leave this as 0.0.0.0 to listen out for any IP on your, or set it to the IP of the X360.
-    
-   - LISTENING_PORT=21070 : Default port that RB3Enhanced will send to. 
-    
-  Edit the RB3Enhanced rb3.ini section
-  
-   [Events]
-   
-   - EnableEvents = true : Set this to true for events to be sent over the network.
-    
-   - BroadcastTarget = 255.255.255.255 : This is broadcast to all IP on your network.  If you know your raspberry pi IP then you can set this here.
-    
-  Ensure that all the StageKitPied ini files are in the same folder as the skp program and then run it
-  
-   > ./skp
-    
-  Note: Root is not required.
-  
+
+To run with RB3Enhanced, then a PDP StageKit and the Serial Adapter are not required.  This setup is untested with DMX
+devices.
+
+Create the LED Strip Array as mentioned above.
+
+Edit the `lights.ini` to enable `RB3E` mode:
+
+`[RB3E]`
+- `ENABLED=1`: Set this to 1 to make the program listen for the RB3Enhanced data stream.
+- `SOURCE_IP=0.0.0.0`: Leave this as 0.0.0.0 to listen out for any IP on your network, or set it to the IP of the
+Xbox 360.
+- `LISTENING_PORT=21070`: Default port that RB3Enhanced will send to.
+
+Edit the RB3Enhanced `rb3.ini` section (_**Note:** this file is part of RB3Enhanced, not StageKitPied-DMXified_):
+
+`[Events]`
+- `EnableEvents = true`: Set this to true for events to be sent over the network.
+- `BroadcastTarget = 255.255.255.255`: This is broadcast to all IP on your network.  If you know your Raspberry Pi IP,
+then you can set this here.
+
+_**Note:** If running using RB3Enhanced, root is not required since the program does not need to access USB for the PDP
+StageKit Pod[s] or the Serial Adapter.  Thus, as an alternative to running StageKitPied-DMXified program as a system
+service, you could run it as a standalone program.  To do so, ensure that all the StageKitPied-DMXified INI files are in
+the same folder as the `skp` program and then simply run it as follows:_
+
+> ./skp
+
+# Physically Connecting Everything
+
+- Connect the Pro Micro USB side to the Xbox 360.
+- Connect the Serial Adapter USB side to the Raspberry Pi.
+- Connect the PDP StageKit Pod to the Raspberry Pi.
+- Connect the DMX Output Adapter to the Raspberry Pi.
+- Run the Stage Kit Pied - DMXified program with the command
+  >sudo systemctl start stagekitpied
+ 
+_**Note:** root is required to access the USB PDP StageKit device, so sudo is used for starting the stagekitpied
+service._
+
+# Notes
+
+The PDP StageKit Pod will not show LEDs unless it has power via the PS/2 port by either:
+- Using the Fog/Strobe unit per original boxing.
+- A PS/2 to USB cable connected to a minimum 1amp power source (I have one of these
+[PS/2 to USB adapters](https://www.amazon.com/dp/B0D6QLMVF7) and [this cable](https://www.amazon.com/dp/B005J1LEZK)
+plugged into a USB power brick).
+
+The StageKitPied program needs root access to be able to use the USB ports.
+
+The light show does not work in Rock Band Practice Mode.
+
+The reason for all the different led INI files was due to an earlier version that allowed switching on the fly, which
+probably won't be added back.
+
+# Known Issues
+
+The StageKitPied-DMXified program will generate warnings from the Serial Adapter, these can be suppressed in the
+`lights.ini`.
+
+The StageKitPied-DMXified program will generate warnings from the USB connection, these are very infrequent and can be
+ignored.
