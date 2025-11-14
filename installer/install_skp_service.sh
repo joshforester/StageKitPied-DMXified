@@ -180,7 +180,7 @@ cp ${INSTALLER_UDEV_DIR}/${UDEV_XBOXSTAGEKITGUARDRULE_FILE} ${UDEV_RULES_DIR}
 chmod 440 ${UDEV_RULES_DIR}/${UDEV_XBOXSTAGEKITGUARDRULE_FILE}
 udevadm control --reload
 
-echo "udev rule installed to prevent anything but StageKitPied from claiming Xbox Light Pods."
+echo "udev rule installed to prevent anything but StageKitPied-DMXified from claiming Xbox Light Pods."
 echo ""
 
 #####################################################
@@ -242,7 +242,7 @@ echo ""
 cp ${INSTALLER_DIR}/${SKP_SERVICE_NAME}.service ${SYSTEMD_SERVICE_DIR}
 systemctl daemon-reload
 
-echo "Systemd service for StageKitPied installed.  It will be started at the end of this script."
+echo "Systemd service for StageKitPied-DMXified installed.  It will be started at the end of this script."
 echo ""
 
 #####################################################

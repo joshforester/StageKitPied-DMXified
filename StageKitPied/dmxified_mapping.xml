@@ -129,6 +129,14 @@
 			</output>
 		</outputs>
 	</mapping>
+    <mapping>
+        <input type="stageKitInput" id="SK_LED_MASK" priority="1" />
+        <outputs>
+            <output type="stageKitOutput" subtype="Handle_LEDUpdate">
+                <value>SK_LED_MASK</value>
+            </output>
+        </outputs>
+    </mapping>
 	<mapping>
 		<input type="stageKitInput" id="SERIAL_RESTART" priority="1" />
 		<outputs>

@@ -1,6 +1,6 @@
 # StageKitPied-DMXified
 
-**Rock Band Stage Kit Pied - DMXified** is a highly configurable interface that runs on the Raspberry Pi platform.  It sits
+**Rock Band StageKitPied-DMXified** is a highly configurable interface that runs on the Raspberry Pi platform.  It sits
 between an Xbox 360 and the Rock Band StageKit (released by PDP) to read the lighting cues from the Harmonix games
 "Rock Band 2" and "Rock Band 3", which it then uses to:
 * repeat those lighting cues to up to four (4) Rock Band StageKit Light Pods
@@ -15,7 +15,7 @@ button creates a file on the Raspberry Pi, whose presence is in turn configured 
 black light mode, or whatever you choose via QLC+).  The included scripts can handle:
 * hold-release buttons
 * toggle button press (a button that acts as a switch)
-* toggle button for running arbitrary commands (for example, starting and stopping StageKitPied)
+* toggle button for running arbitrary commands (for example, starting and stopping StageKitPied-DMXified)
 
 No PDP StageKit/Serial Adapter?  Well that's not a problem if you're using RB3Enhanced
 (https://github.com/RBEnhanced/RB3Enhanced).  To be able to use the RB3Enhanced data, please read the RB3Enhanced
@@ -51,6 +51,12 @@ worse.**
 
 # Build the System
 
+TODO:  Show system architecture diagram with the components in straight stage kit pod setup
+
+TODO:  Show system architecture diagram with the components in straight stage kit pod setup + DMX devices
+
+TODO:  Show system architecture diagram with the components in straight stage kit pod setup + DMX devices + button box
+
 ## Hardware Summary
 
 ### Base Requirement:
@@ -67,7 +73,8 @@ _(not required if using [RBEnhanced](https://github.com/RBEnhanced/RB3Enhanced))
 
 _(optional add-on)_
 * SK9822 LEDs - I'm using 60 per M but any configuration should be ok.
-* PSU - The SK9822 LEDs are 0.06amp per segment (each segment has 3 leds @ 0.02amp). So 70 segments is 70 x 0.06 = 4.2amp.
+* PSU - The SK9822 LEDs are 0.06amp per segment (each segment has 3 leds @ 0.02amp). So 70 segments is 70 x 0.06 =
+4.2amp.
 
 ### DMX Lighting Equipment:
 
@@ -117,7 +124,7 @@ Either compile the firmware yourself, or use the compiled firmware file `gimx-ad
 - Follow the instructions to load the firmware onto the Pro Micro.
 
 _**Note:** I had trouble with this step while building my Serial Adapter.  Ultimately, I resorted to using the following
-[avrdude](https://github.com/avrdudes/avrdude) and command:
+[avrdude](https://github.com/avrdudes/avrdude) command (the "COM5" value for where the serial adapter is, might need to change for your setup)_:
 ```
 #> avrdude.exe -p atmega32u4 -c avr109 -P COM5 -D -U flash:w:firmware/atmega32u4.hex -C avrdude.conf
 ```
@@ -144,10 +151,10 @@ Connect the SK9822...
 
 ## Installing the Software
 
-* **For 32-bit OS only:** You can use the included 'skp' program as well as the `*.ini` files and the `dmxified_mapping.xml`
-files from the `StageKitPied` directory.  Thus, you can skip the compilation step.
-* **Or/Otherwise:** Please compile from the source on your Raspberry Pi using the following command in the `StageKitPied` 
-directory:
+* **For 32-bit OS only:** You can use the included 'skp' program as well as the `*.ini` files and the
+`dmxified_mapping.xml` files from the `StageKitPied` directory.  Thus, you can skip the compilation step.
+* **Or/Otherwise:** Please compile from the source on your Raspberry Pi using the following command in the
+`StageKitPied` directory:
 > #> make
 
 Then, run the following command from within the `installer` directory:
@@ -159,7 +166,7 @@ which as shown above will show you a Usage printout.
 
 Here's an explanation of the arguments:
 * **[SKP lights.ini File]** - the main configuration file for the software, which handles configuration of
-StageKitPied, PDP StageKit[s] with DMX devices, LED Strip Arrays (optionally with RB3Enhanced).
+StageKitPied-DMXified, PDP StageKit[s] with DMX devices, LED Strip Arrays (optionally with RB3Enhanced).
 * **[Mapping Config File]** - if using DMX devices or buttons, this is the configuration file for them.
 * **[QLC+ Workspace File]** - if using DMX, this is the QLC+ workspace whose Widgets are referenced by the Mapping
 Config File.
@@ -171,7 +178,7 @@ The values I used are:
 ```
 
 **_Note_**: _The installer must be run as root because it installs system services that must be run as root, most
-notably StageKitPied._
+notably StageKitPied-DMXified._
 
 ## Edit the lights.ini File
 
@@ -273,7 +280,7 @@ The PDP StageKit Pod will not show LEDs unless it has power via the PS/2 port by
 [PS/2 to USB adapters](https://www.amazon.com/dp/B0D6QLMVF7) and [this cable](https://www.amazon.com/dp/B005J1LEZK)
 plugged into a USB power brick).
 
-The StageKitPied program needs root access to be able to use the USB ports.
+The StageKitPied-DMXified program needs root access to be able to use the USB ports.
 
 The light show does not work in Rock Band Practice Mode.
 

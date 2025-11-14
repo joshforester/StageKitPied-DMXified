@@ -53,7 +53,7 @@ bool SerialAdapter::Init( const char* path, bool surpress_warnings ) {
   // ensure we aren't in a funky state before attempting to initialize
   if( m_filedescriptor != -1 ) {
     MSG_SERIALADAPTER_DEBUG("Called Init on serial adapter with an already open file: " + std::to_string(m_filedescriptor));
-    this->Close(); // TODO: is a Reset appropriate here (because one is called in Close), or is CloseWhenUnestablishedConnection?
+    this->Close(); // TODO: is a Reset appropriate here (because one is called in Close), or is CloseWhenUnestablishedConnection? could this account for crashes?
   }
 
   m_filedescriptor = open( path, O_RDWR | O_NOCTTY | O_NONBLOCK );
@@ -86,7 +86,7 @@ bool SerialAdapter::Init( const char* path, bool surpress_warnings ) {
   // Attempt to flush the input buffer
   if (tcflush(m_filedescriptor, TCIFLUSH) == -1) {
       MSG_SERIALADAPTER_ERROR("tcflush() failed with m_filedescriptor " + std::to_string(m_filedescriptor) + " during serial adapter initialization: " + std::to_string(errno));
-      this->CloseWhenUnestablishedConnection(); // TODO: should we close here or just keep going?
+      this->CloseWhenUnestablishedConnection(); // TODO: should we close here or just keep going?  could this account for crashes?
       return false;
   }
 

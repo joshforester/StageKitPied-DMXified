@@ -1,7 +1,7 @@
 #include "QlcplusOutputProcessor.h"
 
 
-std::string QlcplusOutputProcessor::defaultQlcplusWebsocketUrl = "ws://127.0.0.1:9999/qlcplusWS";
+std::string QlcplusOutputProcessor::defaultQlcplusWebsocketUrl = "ws://localhost:10000/qlcplusWS";
 unsigned int QlcplusOutputProcessor::defaultQlcplusConnectSleepTimeMs = 100;
 unsigned int QlcplusOutputProcessor::defaultQlcplusSendSleepTimeMs = 0;
 

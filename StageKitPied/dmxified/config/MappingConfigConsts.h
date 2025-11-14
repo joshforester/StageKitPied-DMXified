@@ -43,7 +43,6 @@ inline const std::string outputTypeToString(OUTPUT_TYPE type) {
     }
 }
 
-
 inline const OUTPUT_TYPE stringToOutputType(std::string str) {
 	if (str == "stageKitOutput") {
 		return OUTPUT_TYPE::stageKitOutput;
