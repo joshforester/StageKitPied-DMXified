@@ -51,11 +51,17 @@ worse.**
 
 # Build the System
 
+## Simple Architecture for Rock Band StageKit Light Pod[s]
+
 TODO:  Show system architecture diagram with the components in straight stage kit pod setup
+
+## DMXified Architecture for Rock Band StageKit Light Pod[s] + DMX Device[s]
 
 TODO:  Show system architecture diagram with the components in straight stage kit pod setup + DMX devices
 
-TODO:  Show system architecture diagram with the components in straight stage kit pod setup + DMX devices + button box
+## Button-Controlled DMXified Architecture for Rock Band StageKit Light Pod[s] + DMX Devices[s] + Button Box
+
+![ButtonControlledDMXifiedArchitecture.png](docs/ButtonControlledDMXifiedArchitecture.png)
 
 ## Hardware Summary
 
@@ -94,7 +100,7 @@ _(optional, if using the file-based triggers)_
 
 **Left**: Serial Adapter = FTDI-FT232RL, **Right**: Pro Micro = ATMEGA32U4 5V 16MHz.
 
-![FTDI-FT232RL](https://user-images.githubusercontent.com/127441225/224138326-7562e701-adcd-4776-a003-dd04618f61b9.PNG)  ![ProMicro-ATMEGA32U4](https://user-images.githubusercontent.com/127441225/224138343-69b9a5ba-e82e-4e15-a11f-e3460c5fc5dc.PNG)
+![FTDI-FT232RL.png](docs/FTDI-FT232RL.png)  ![ProMicro-ATMEGA32U4.png](docs/ProMicro-ATMEGA32U4.png)
 
 If selectable voltage, then ensure the jumper is set to 5V (Green box in pic)
 
