@@ -240,6 +240,10 @@ If using DMX devices, you may find this file installed into `/opt/StageKitPied/d
 
 This file is documented further in [StageKitPied/dmxified/README.md](StageKitPied/dmxified/README.md).
 
+Customizing this file and/or validating your setup will be GREATLY assisted by using the applications in the
+[StageKitPied/dmxified/demo](StageKitPied/dmxified/demo) folder, which are documented in
+[StageKitPied/dmxified/demo/README.md](StageKitPied/dmxified/demo/README.md).
+
 ## RB3Enhanced
 
 To run with RB3Enhanced, then a PDP StageKit and the Serial Adapter are not required.  This setup is untested with DMX
