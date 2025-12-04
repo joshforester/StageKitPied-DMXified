@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 
 #
-# Script for reading GPIO-connected button and when pressed, touches a file named
-# after the GPIO pin to which the button is connected; when pressed a second time, 
-# deletes the file.  This script is intended to be used in tandem with a 
+# Script for reading GPIO-connected button and when pressed, touches a file named after the GPIO pin to which the button
+# is connected; when pressed a second time, deletes the file.  This script is intended to be used in tandem with a
 # <fileExistsInput> mapping file element.
 #
 

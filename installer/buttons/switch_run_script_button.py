@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 
 #
-# Script for reading GPIO-connected button and when pressed, alternating between
-# running one script and a second script.  In this way, the button acts as a
-# switch.  While this can be used for arbitrary commands, this script in this 
-# package is intended to be used to start/stop the skp service with a physical 
-# button.
+# Script for reading GPIO-connected button and when pressed, alternating between running one script and a second script.
+# In this way, the button acts as a switch.  While this can be used for arbitrary commands, this script in this package
+# is intended to be used to start/stop the skp service with a physical button.
 #
 
 import os

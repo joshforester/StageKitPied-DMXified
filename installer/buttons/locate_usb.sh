@@ -22,5 +22,5 @@ for sysdevpath in $(find /sys/bus/usb/devices/usb*/ -name dev); do
 done
 
 echo ""
-echo "Showing Serial Adapter and any other potential conflictin adapter links (DMX Adapter can sometimes be shown here if using the same FTDI chip)"
+echo "Showing Serial Adapter and any other potential conflicting adapter links (DMX Adapter can sometimes be shown here if using the same FTDI chip)"
 ls -l /dev/ftdi*

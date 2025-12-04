@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# TODO: podman installation, pull of image for QLC+, and setup
+# TODO: publish image for QLC+
+# TODO: podman installation, pull image for QLC+, and setup
 # TODO: install buttons scripts
 # - locate_usb.sh
 # - kill_skp.sh

@@ -1,4 +1,5 @@
-# Currently this makefile lives in DMXified/demo, so we need to go 2 parent directories up to get project root.
+# Currently this makefile lives in StageKitPied/dmxified/demo, so we need to go 2 parent directories up to get project
+# root.
 PROJECT_ROOT = $(dir $(abspath $(lastword $(MAKEFILE_LIST))))../../
 
 $(info PROJECT_ROOT = $(PROJECT_ROOT))

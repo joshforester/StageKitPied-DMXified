@@ -1,8 +1,8 @@
 # StageKitPied-DMXified
 
-**Rock Band StageKitPied-DMXified** is a highly configurable interface that runs on the Raspberry Pi platform.  It sits
-between an Xbox 360 and the Rock Band StageKit (released by PDP) to read the lighting cues from the Harmonix games
-"Rock Band 2" and "Rock Band 3", which it then uses to:
+_**StageKitPied-DMXified**_ is a highly configurable interface that runs on the Raspberry Pi platform.  It sits between
+an Xbox 360 and the Rock Band StageKit (released by PDP) to read the lighting cues from the Harmonix games "Rock Band 2"
+and "Rock Band 3", which it then uses to:
 * repeat those lighting cues to up to four (4) Rock Band StageKit Light Pods
 * switch on & off LEDs in a large LED strip array
 * configure arbitrary lighting cues to **_any_** DMX devices (lighting & lasers, cold sparks, flames, etc etc etc) via a
@@ -15,7 +15,7 @@ button creates a file on the Raspberry Pi, whose presence is in turn configured 
 black light mode, or whatever you choose via QLC+).  The included scripts can handle:
 * hold-release buttons
 * toggle button press (a button that acts as a switch)
-* toggle button for running arbitrary commands (for example, starting and stopping StageKitPied-DMXified)
+* toggle button for running arbitrary commands (for example, starting and stopping _**StageKitPied-DMXified**_)
 
 No PDP StageKit/Serial Adapter?  Well that's not a problem if you're using RB3Enhanced
 (https://github.com/RBEnhanced/RB3Enhanced).  To be able to use the RB3Enhanced data, please read the RB3Enhanced
@@ -26,7 +26,7 @@ UDP.
 
 ### Multiple Stage Kit Light Pods:
 
-TODO: insert video[s] links here for multiple PDP StageKit Pods running with StageKitPied-DMXified
+TODO: insert video[s] links here for multiple PDP StageKit Pods running with _**StageKitPied-DMXified**_
 
 ### LED Strip Array Examples:
 
@@ -36,7 +36,7 @@ TODO: insert video[s] links here for multiple PDP StageKit Pods running with Sta
 
 ### DMX Devices:
 
-TODO: insert video[s] links here for DMX devices running with StageKitPied-DMXified
+TODO: insert video[s] links here for DMX devices running with _**StageKitPied-DMXified**_
 
 ### Button-Triggered Effects (using file-monitoring capabilities):
 
@@ -51,13 +51,15 @@ worse.**
 
 # Build the System
 
+Below are some diagrams representing various setups possible with _**StageKitPied-DMXified**_, from simple to more robust. 
+
 ## Simple Architecture for Rock Band StageKit Light Pod[s]
 
-TODO:  Show system architecture diagram with the components in straight stage kit pod setup
+![StageKitArchitecture.png](docs/StageKitArchitecture.png)
 
 ## DMXified Architecture for Rock Band StageKit Light Pod[s] + DMX Device[s]
 
-TODO:  Show system architecture diagram with the components in straight stage kit pod setup + DMX devices
+![DMXifiedArchitecture.png](docs/DMXifiedArchitecture.png)
 
 ## Button-Controlled DMXified Architecture for Rock Band StageKit Light Pod[s] + DMX Devices[s] + Button Box
 
@@ -84,7 +86,7 @@ _(optional add-on)_
 
 ### DMX Lighting Equipment:
 
-_(optional, but this is where things get fun--here, we put the DMXified in StageKitPied-DMXified)_
+_(optional, but this is where things get fun--here, we put the DMXified in **StageKitPied-DMXified**)_
 * A DMX output adapter for the Raspberry Pi (typically USB).  Not endorsing, but I use
 [this Jhoinrch FT232RNL-based adapter](https://www.amazon.com/dp/B0D5YN6PMG).
 * **_ANY_** DMX device[s]
@@ -157,13 +159,14 @@ Connect the SK9822...
 
 ## Installing the Software
 
-* **For 32-bit OS only:** You can use the included 'skp' program as well as the `*.ini` files and the
-`dmxified_mapping.xml` files from the `StageKitPied` directory.  Thus, you can skip the compilation step.
+* **For 32-bit OS only:** You can use the included, compiled `StageKitPied/skp` program as well as the `*.ini` files and
+[StageKitPied/dmxified_mapping.xml](StageKitPied/dmxified_mapping.xml) configuration file.  Thus, you can skip the
+compilation step.
 * **Or/Otherwise:** Please compile from the source on your Raspberry Pi using the following command in the
-`StageKitPied` directory:
+[StageKitPied](StageKitPied) directory:
 > #> make
 
-Then, run the following command from within the `installer` directory:
+Then, run the following command from within the [installer](installer) directory:
 ```
 #> ./install_skp_service.sh
 Usage: sudo ./install_skp_service [SKP lights.ini File] [Mapping Config File] [QLC+ Workspace File] [QLC+ Fixtures Directory]
@@ -172,7 +175,7 @@ which as shown above will show you a Usage printout.
 
 Here's an explanation of the arguments:
 * **[SKP lights.ini File]** - the main configuration file for the software, which handles configuration of
-StageKitPied-DMXified, PDP StageKit[s] with DMX devices, LED Strip Arrays (optionally with RB3Enhanced).
+_**StageKitPied-DMXified**_, PDP StageKit[s] with DMX devices, LED Strip Arrays (optionally with RB3Enhanced).
 * **[Mapping Config File]** - if using DMX devices or buttons, this is the configuration file for them.
 * **[QLC+ Workspace File]** - if using DMX, this is the QLC+ workspace whose Widgets are referenced by the Mapping
 Config File.
@@ -184,14 +187,14 @@ The values I used are:
 ```
 
 **_Note_**: _The installer must be run as root because it installs system services that must be run as root, most
-notably StageKitPied-DMXified._
+notably **StageKitPied-DMXified**._
 
 ## Edit the lights.ini File
 
 This is the main configuration file, and used to configure multiple devices/configuration scenarios.  Ultimately, all
 the different lighting setups (PDP StageKit[s], RB3Enhanced, LED Strip Arrays, DMX devices/buttons) begin here for
-configuration.  The `lights.ini` file is heavily commented itself, so one should be able to figure it out from there,
-but we can go over some that are commonly changed from the defaults here.
+configuration.  The [StageKitPied/lights.ini](StageKitPied/lights.ini) file is heavily commented itself, so one should
+be able to figure it out from there, but we can go over some that are commonly changed from the defaults here.
 
 In the `[STAGEKIT_CONFIG]` section, you can enable pass-through to the PDP StageKit for the following items:
 - Xbox 360 LED Status
@@ -233,9 +236,9 @@ for strobe.
 
 ## Edit the DMXifed Mapping File
 
-If using DMX devices, you may find this file in `/opt/StageKitPied/dmxified_mapping.xml`:
+If using DMX devices, you may find this file installed into `/opt/StageKitPied/dmxified_mapping.xml`:
 
-This file is documented further in `dmxified/README.md`.
+This file is documented further in [StageKitPied/dmxified/README.md](StageKitPied/dmxified/README.md).
 
 ## RB3Enhanced
 
@@ -244,7 +247,7 @@ devices.
 
 Create the LED Strip Array as mentioned above.
 
-Edit the `lights.ini` to enable `RB3E` mode:
+Edit the [StageKitPied/lights.ini](StageKitPied/lights.ini) to enable `RB3E` mode:
 
 `[RB3E]`
 - `ENABLED=1`: Set this to 1 to make the program listen for the RB3Enhanced data stream.
@@ -252,7 +255,7 @@ Edit the `lights.ini` to enable `RB3E` mode:
 Xbox 360.
 - `LISTENING_PORT=21070`: Default port that RB3Enhanced will send to.
 
-Edit the RB3Enhanced `rb3.ini` section (_**Note:** this file is part of RB3Enhanced, not StageKitPied-DMXified_):
+Edit the RB3Enhanced `rb3.ini` section (_**Note:** this file is part of RB3Enhanced, not **StageKitPied-DMXified**_):
 
 `[Events]`
 - `EnableEvents = true`: Set this to true for events to be sent over the network.
@@ -260,9 +263,9 @@ Edit the RB3Enhanced `rb3.ini` section (_**Note:** this file is part of RB3Enhan
 then you can set this here.
 
 _**Note:** If running using RB3Enhanced, root is not required since the program does not need to access USB for the PDP
-StageKit Pod[s] or the Serial Adapter.  Thus, as an alternative to running StageKitPied-DMXified program as a system
-service, you could run it as a standalone program.  To do so, ensure that all the StageKitPied-DMXified INI files are in
-the same folder as the `skp` program and then simply run it as follows:_
+StageKit Pod[s] or the Serial Adapter.  Thus, as an alternative to running **StageKitPied-DMXified** program as a system
+service, you could run it as a standalone program.  To do so, ensure that all the **StageKitPied-DMXified** INI files
+are in the same folder as the `skp` program and then simply run it as follows:_
 
 > ./skp
 
@@ -286,7 +289,7 @@ The PDP StageKit Pod will not show LEDs unless it has power via the PS/2 port by
 [PS/2 to USB adapters](https://www.amazon.com/dp/B0D6QLMVF7) and [this cable](https://www.amazon.com/dp/B005J1LEZK)
 plugged into a USB power brick).
 
-The StageKitPied-DMXified program needs root access to be able to use the USB ports.
+The _**StageKitPied-DMXified**_ program needs root access to be able to use the USB ports.
 
 The light show does not work in Rock Band Practice Mode.
 
@@ -295,8 +298,8 @@ probably won't be added back.
 
 # Known Issues
 
-The StageKitPied-DMXified program will generate warnings from the Serial Adapter, these can be suppressed in the
-`lights.ini`.
+The _**StageKitPied-DMXified**_ program will generate warnings from the Serial Adapter, these can be suppressed in the
+[StageKitPied/lights.ini](StageKitPied/lights.ini).
 
-The StageKitPied-DMXified program will generate warnings from the USB connection, these are very infrequent and can be
-ignored.
+The _**StageKitPied-DMXified**_ program will generate warnings from the USB connection, these are very infrequent and
+can be ignored.

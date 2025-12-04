@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+#
+# Script for reading GPIO-connected button and when pressed, touches a file named after the GPIO pin to which the button
+# is connected; when released, deletes the file.  This script is intended to be used in tandem with a <fileExistsInput>
+# mapping file element.
+#
+
 import time
 import os
 import argparse

@@ -1,18 +1,18 @@
 # Introduction
 
-StageKitPied-DMXified is an expansion of capability of StageKitPied that allows one to map the Xbox 360 lighting,
+_**StageKitPied-DMXified**_ is an expansion of capability of StageKitPied that allows one to map the Xbox 360 lighting,
 strobe, and fogger instructions sent to the Rock Band StageKit to arbitrary DMX device instructions.  Additionally, one
 can map the presence/absence of files on the file system to arbitrary DMX device instructions.  
 
 Since the most intuitive use of this latter feature is a stomp/button box attached to the GPIO pins of the Raspberry Pi
-running StageKitPied-DMXified, system service scripts that create and delete files based on GPIO-wired button presses
-are provided in this code for your convenience.  This feature is, however, not limited to button boxes.  Since the input
-is simply the absence/presence of a file, any input (i.e. a web service, home automation device, someone
+running _**StageKitPied-DMXified**_, system service scripts that create and delete files based on GPIO-wired button
+presses are provided in this code for your convenience.  This feature is, however, not limited to button boxes.  Since
+the input is simply the absence/presence of a file, any input (i.e. a web service, home automation device, someone
 interactively creating/removing the file at a command prompt, etc.) can be used to trigger a mapped DMX output.
 
 Because both Xbox Rock Band Stage Kit instructions and file absence/presence can be competing inputs for lighting
-instructions sent to DMX devices, the mapping configuration for StageKitPied-DMXified also supports the overriding of
-conflicting instructions via a prioritization configuration.
+instructions sent to DMX devices, the mapping configuration for _**StageKitPied-DMXified**_ also supports the overriding
+of conflicting instructions via a prioritization configuration.
 
 ## Getting Started
 
@@ -20,17 +20,18 @@ conflicting instructions via a prioritization configuration.
 
 Because this configuration is powerful, it can be complicated to get it exactly how you want it.  My personal
 mapping file, QLC Workspace, and QLC Fixture files are in the codebase as a working example.  Additionally, I do my best
-to document the format StageKitPied-DMXified expects of the mapping file expects here.
+to document the format _**StageKitPied-DMXified**_ expects of the mapping file expects here.
 
 ### Testing/Demo Applications
 
-There are standalone demo applications in the `demo` folder whose usage is documented in `dmxified/demo/README.md`.
+There are standalone demo applications in the `demo` folder whose usage is documented in
+[StageKitPied/dmxified/demo/README.md](demo/README.md).
 
 These applications can assist to:
-* ensure StageKitPied-DMXified can connect to your QLC+ instance
+* ensure _**StageKitPied-DMXified**_ can connect to your QLC+ instance
 * vet your mapping file's syntax
-* perform a "dry-run" to show how StageKitPied-DMXified would process a specified series of input events given your
-mapping file
+* perform a "dry-run" to show how _**StageKitPied-DMXified**_ would process a specified series of input events given
+your mapping file
 * perform an actual run with your lighting setup given a specified series of input events
 
 The standalone applications' usage is documented in the aforementioned README, and each of the standalone demo
@@ -48,21 +49,22 @@ Instruction types are `Handle_LEDUpdate`, `Handle_StrobeUpdate`, and `Handle_Fog
 values in a QLC Workspace virtual console, channel values in the QLC+ simple desk, or using functions within a QLC+
 Workspace respectively.
 
-_**Note:**  For DMX device outputs, StageKitPied-DMXified simply interfaces with a containerized QLC+ instance running
+_**Note:**  For DMX device outputs, **StageKitPied-DMXified** simply interfaces with a containerized QLC+ instance running
 on the Raspberry Pi set up during install.  Because QLC+ is robust software built to manage and control DMX devices, it
 is expected that you create a workspace there, then reference controls within it for devices, scenes, animations, etc.
-via a QLC+ instruction in the StageKitPied-DMXified mapping file._
+via a QLC+ instruction in the **StageKitPied-DMXified** mapping file._
 
 ## Examples
 
-The mapping file that I personally use and that is installed by default can be found at `dmxified_mapping.xml`.  Below
-are a few examples from it alongside an explanation.
+The mapping file that I personally use and that is installed by default can be found at
+[StageKitPied/dmxified_mapping.xml](../dmxified_mapping.xml).  Below are a few examples from it alongside an
+explanation.
 
 ### Example 1 - Standard Stage Kit Input
 
 #### Configuration
 
-Below is an example of a standard Stage Kit Input, in which StageKitPied-DMXified is receiving an `SK_LED_BLUE`
+Below is an example of a standard Stage Kit Input, in which _**StageKitPied-DMXified**_ is receiving an `SK_LED_BLUE`
 instruction:
 
 ```xml
@@ -90,9 +92,9 @@ elements with the same/higher `priority` value in the event of an `output` confl
 ##### Stage Kit Instruction
 
 For the `stageKitOutput`, a `subtype` of `Handle_LEDUpdate` is used for
-PDP StageKit Pod LED updates, and StageKitPied-DMXified does the correct thing when it comes to processing the exact LED
-updates that are contained within the Xbox Stage Kit instruction input (which specific LEDs to update on the pod and so
-forth).
+PDP StageKit Pod LED updates, and _**StageKitPied-DMXified**_ does the correct thing when it comes to processing the
+exact LED updates that are contained within the Xbox Stage Kit instruction input (which specific LEDs to update on the
+pod and so forth).
 
 For a full list of the potential `subtype` for the `Handle_LEDUpdate` instruction refer to Example 3 Outputs section
 below.
@@ -100,13 +102,14 @@ below.
 ##### QLC+ Instruction
 
 For the `qlcplusOutput`, a `subtype` of `basicWidgetValueSet` is used with a `widgetId` of `2` and a `value` of `1`.
-This instructs StageKitPied-DMXified to use its Websocket connection to QLC+ to send a command set the value of widget
-`2` in the QLC Workspace Virtual Console to `1`.  Since in my QLC Workspace (files in `installer/qlc`), the widget with
-an `id` of `2` is a button, this Websocket call is simply setting the button state to 'on'.
+This instructs _**StageKitPied-DMXified**_ to use its Websocket connection to QLC+ to send a command set the value of
+widget `2` in the QLC Workspace Virtual Console to `1`.  Since in my QLC Workspace (files in
+[installer/qlc](../../installer/qlc)), the widget with an `id` of `2` is a button, this Websocket call is simply setting
+the button state to 'on'.
 
 Without going into the details of the QLC+ Workspace file since it is beyond the scope of this documentation, the
 `widgetId` this `qlcplusOutput` is referencing can be found in the workspace file (also XML).  For example, here is the
-corresponding section in `installer/qlc/qlcplusSkpDmx.qxw`:
+corresponding section in [installer/qlc/qlcplusSkpDmx.qxw](../../installer/qlc/qlcplusSkpDmx.qxw):
 
 ```
 <Button Caption="SK_LED_BLUE" ID="2" Icon="">
@@ -129,19 +132,21 @@ In my QLC+ Workspace setup, this button toggles a function (`<Function ID="1">` 
 well as my bar lights.  It additionally turns off all other light colors.
 
 I find that using a simple button widget, and attaching it to a more function in the QLC+ Workspace allows for a simple
-StageKitPied-DMXified mapping file, while allowing for a robust set of DMX commands via the function and still allows
-manually testing the effect via the QLC+ Virtual Console since I can interactively press the button as well. Further, I
-can VNC into my QLC+ container and see the status of the widgets live (the buttons will flicker on and off as
-StageKitPied-DMXified is sending QLC+ commands over its Websocket API).  That said, StageKitPied-DMXified allows for
-mapping to controlling functions or basic channel values as well, so feel free to design your setup however you desire.
+_**StageKitPied-DMXified**_ mapping file, while allowing for a robust set of DMX commands via the function and still
+allows manually testing the effect via the QLC+ Virtual Console since I can interactively press the button as well.
+Further, I can VNC into my QLC+ container and see the status of the widgets live (the buttons will flicker on and off as
+_**StageKitPied-DMXified**_ is sending QLC+ commands over its Websocket API).  That said, _**StageKitPied-DMXified**_
+allows for mapping to controlling functions or basic channel values as well, so feel free to design your setup however
+you desire.
 
 ### Example 2 - File Input
 
 Below I show an example stemming from my use of a button box hard-wired to GPIO on my Raspberry Pi, whereby button
-presses are received by a service (`installer/switch_touch_file_buttons.service`) that creates/deletes a file.  
-That file's creation/deletion is configured by the mapping file (shown below) to turn all of my DMX devices into
-"Sound Mode" (a common setting on DMX devices that listens for beats in the music and illuminates in a pre-configured
-way set by the DMX device's manufacturer).  
+presses are received by a service
+([installer/buttons/switch_touch_file_buttons.service](../../installer/buttons/switch_touch_file_buttons.service)) that
+creates/deletes a file.  That file's creation/deletion is configured by the mapping file (shown below) to turn all of my
+DMX devices into "Sound Mode" (a common setting on DMX devices that listens for beats in the music and illuminates in a
+pre-configured way set by the DMX device's manufacturer).  
 
 _Sound Mode (generic response to music) is not as cool as the Xbox 360 Stage Kit instructions (specifically coded to
 songs), but some custom songs do not have StageKit instructions programmed in, so I have this button because it is better than
@@ -149,9 +154,9 @@ idling lights._
 
 #### Configuration
 
-Below is an example of a File Input, in which StageKitPied-DMXified is monitoring the creation and deletion of a file on
-the Raspberry Pi's file system.  Take note that for `input` elements of `type=fileExistsInput`, there must always be two
-`mapping` elements:  one for the file creation and one for its deletion.  
+Below is an example of a File Input, in which _**StageKitPied-DMXified**_ is monitoring the creation and deletion of a
+file on the Raspberry Pi's file system.  Take note that for `input` elements of `type=fileExistsInput`, there must
+always be two `mapping` elements:  one for the file creation and one for its deletion.  
 
 The creation `mapping` may have any `id` you specify, whereas the deletion `mapping` must have the same name as the
 corresponding creation `mapping`, but with the string "Off" appended to it.  For example, below you will see the `id` of
@@ -218,7 +223,8 @@ for creation, and the `input` with `id` of "soundModeButtonOff" is monitoring `/
 deletion.
 
 In my case, this file is tied to a file created/deleted when I press (for creation) and press again (for deletion) a
-button on my button box (via the configured `installer/buttons/switch_touch_file_buttons.service`).
+button on my button box (via the configured
+[installer/buttons/switch_touch_file_buttons.service](../../installer/buttons/switch_touch_file_buttons.service)).
 
 ##### Output Override List
 
@@ -233,12 +239,12 @@ I'm effectively clearing out QLC+ configuration here, then setting it via the `o
 
 #### Outputs
 
-For the QLC+ Workspace that ships with StageKitPied-DMXified (and the one I personally used), the Virtual Console simply
-contains multiple groups of buttons.  These groups control DMX lights, fog, and strobe pretty much one-to-one with Xbox
-Stage Kit instructions.  Separately on the Virtual Console, I have special button groups that turn on/off lighting
-functions that I have specially configured for buttons on my button box and also for idling.  So in my setup, when I
-press the button for "Sound Mode", I first want to turn off all lights, fog, strobe, and idle functions in QLC+.  Then,
-I want to turn on my "Sound Mode" programming.
+For the QLC+ Workspace that ships with _**StageKitPied-DMXified**_ (and the one I personally used), the Virtual Console
+simply contains multiple groups of buttons.  These groups control DMX lights, fog, and strobe pretty much one-to-one
+with Xbox Stage Kit instructions.  Separately on the Virtual Console, I have special button groups that turn on/off
+lighting functions that I have specially configured for buttons on my button box and also for idling.  So in my setup,
+when I press the button for "Sound Mode", I first want to turn off all lights, fog, strobe, and idle functions in QLC+.
+Then, I want to turn on my "Sound Mode" programming.
 
 Given the explanation of purpose above, you will see from the mapping that there are a lot of `output` elements of with
 a `subtype` value of "basicWidgetValueSet" whose `value` subelement is set to "1".  That is because I have buttons in
@@ -260,7 +266,7 @@ As explained in Example 1.
 
 #### Configuration
 
-Below is an example of a nullified Stage Kit Input, in which StageKitPied-DMXified is receiving an `SK_FOG_ON`
+Below is an example of a nullified Stage Kit Input, in which _**StageKitPied-DMXified**_ is receiving an `SK_FOG_ON`
 instruction:
 
 ```xml
@@ -289,14 +295,15 @@ moot point, since no `outputs` are configured for this `mapping`.
 
 As seen above, the outputs are commented out.  Normally, a `stagetKitInput` with a `SK_FOG_ON` subtype would be mapped
 to a `Handle_FogUpdate`.  I have disabled any action here because I did not want the Xbox Stage Kit to blow fog unless I
-explicitly ask it to via the button box I created for StageKitPied-DMXified.  As such, fogger control is configured via
-a `fileExistsInput` tied to a file created/deleted when I press or release a button on my button box (via the configured
-`installer/buttons/active_touch_file_buttons.service`).  Any instructions from the Xbox for the fogger are nullified by
-the configuration here.
+explicitly ask it to via the button box I created for _**StageKitPied-DMXified**_.  As such, fogger control is
+configured via a `fileExistsInput` tied to a file created/deleted when I press or release a button on my button box (via
+the configured
+[installer/buttons/active_touch_file_buttons.service](../../installer/buttons/active_touch_file_buttons.service)).  Any
+instructions from the Xbox for the fogger are nullified by the configuration here.
 
 _**Note:**  It is mandatory to include a configuration for **ALL** instructions that the Xbox may send to
-StageKitPied-DMXified, even if they are nullifying by the `mapping`, as seen here.  Below is a complete list of
-instructions that the Xbox will send to StageKitPied-DMXified:_
+**StageKitPied-DMXified**, even if they are nullifying by the `mapping`, as seen here.  Below is a complete list of
+instructions that the Xbox will send to **StageKitPied-DMXified**:_
 
 * SK_FOG_ON
 * SK_FOG_OFF
@@ -312,7 +319,8 @@ instructions that the Xbox will send to StageKitPied-DMXified:_
 * SK_LED_MASK
 * SK_ALL_OFF
 
-And 3 more custom instructions that StageKitPied-DMXified creates and will need to be configured in the mapping file:
+And 3 more custom instructions that _**StageKitPied-DMXified**_ creates and will need to be configured in the mapping
+file:
 
 * SERIAL_RESTART
 * IDLE_ON
@@ -320,17 +328,17 @@ And 3 more custom instructions that StageKitPied-DMXified creates and will need 
 
 ### Example 4 - Idle On
 
-The following events are made up by StageKitPied-DMXified and never actually sent by the Xbox.  That said, it is useful
-to have lighting feedback for when they occur and/or can improve the gameplay experience:
+The following events are made up by _**StageKitPied-DMXified**_ and never actually sent by the Xbox.  That said, it is
+useful to have lighting feedback for when they occur and/or can improve the gameplay experience:
 * IDLE_ON
 * IDLE_OFF
 * SERIAL_RESTART
 
 #### Configuration
 
-Below is an example of a StageKitPied-DMXified-generated Stage Kit Input instruction for `IDLE_ON` (for more info on the
-conditions in which this event occurs, please see the comments in the `lights.ini` file, `[NO_EVENT_DATA]` section,
-above the `IDLE_SECONDS` setting):
+Below is an example of a _**StageKitPied-DMXified**_-generated Stage Kit Input instruction for `IDLE_ON` (for more info
+on the conditions in which this event occurs, please see the comments in [StageKitPied/lights.ini](../lights.ini),
+`[NO_EVENT_DATA]` section, above the `IDLE_SECONDS` setting):
 
 ```xml
 <mapping>
@@ -367,9 +375,9 @@ idling, and breaking that idle event relies on any non-FOG_OFF event, this is th
 
 #### Outputs
 
-In this setup, after 20 seconds of no non-FOG_OFF events being sent to StageKitPied-DMXified (again, set in the
-`lights.ini` file referenced in the Example 4 intro), we are assuming the game is idling between songs or otherwise in a
-menu screen or something.
+In this setup, after 20 seconds of no non-FOG_OFF events being sent to _**StageKitPied-DMXified**_ (again, set in the
+[StageKitPied/lights.ini](../lights.ini) file referenced in the Example 4 intro), we are assuming the game is idling
+between songs or otherwise in a menu screen or something.
 
 As a result, I clear the light, fog, and strobe DMX settings and turn on the UV/black lights via buttons in my QLC+
 virtual console.  Since the Rock Band room is pretty dark, I find the UV/black lights are a good transition without
