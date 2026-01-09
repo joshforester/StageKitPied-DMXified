@@ -1,9 +1,11 @@
 #!/bin/bash
 
+CONTAINER_NAME=qlcplus-vnc-openbox
+
 echo "Destroying QLC+ container."
 
-podman stop qlcplus-vnc-openbox
-podman rm qlcplus-vnc-openbox
+podman stop ${CONTAINER_NAME}
+podman rm ${CONTAINER_NAME}
 
 echo "Destroying QLC+ container complete."
 

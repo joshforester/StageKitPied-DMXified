@@ -1,6 +1,17 @@
 #!/bin/bash
 
-/opt/StageKitPied/podman/destroy_podman.sh
+SKPD_DIR=/opt/StageKitPied
+SKPD_QLC_DIR=/opt/StageKitPied
+SKPD_PODMAN_DIR=${SKPD_DIR}/podman
+
+USB_TO_DMX_ADAPTER_SERIAL=A10JGB3H
+CONTAINER_NAME=qlcplus-vnc-openbox
+
+HOST_IP=$(ip route get 1.1.1.1 2>/dev/null | awk '{print $7; exit}')
+VNC_PORT=5901
+QLC_PORT=10000
+
+${SKPD_PODMAN_DIR}/destroy_podman.sh
 
 echo "Launching QLC+ container."
 
@@ -16,16 +27,20 @@ echo "Launching QLC+ container."
 #
 podman run -d \
   --privileged \
-  --name qlcplus-vnc-openbox \
+  --name ${CONTAINER_NAME} \
   -e VNC_PASSWORD=qlcplus \
-  -p 5901:5901 \
-  -p 10000:9999 \
-  -v /opt/StageKitPied/qlc:/root/.qlcplus/projects \
-  -v /opt/StageKitPied/qlc/fixtures:/root/.qlcplus/fixtures \
-  --device /dev/ftdi-A10JGB3H:/dev/ftdi-A10JGB3H \
+  -p ${VNC_PORT}:${VNC_PORT} \
+  -p ${QLC_PORT}:9999 \
+  -v ${SKPD_QLC_DIR}:/root/.qlcplus/projects \
+  -v ${SKPD_QLC_DIR}/fixtures:/root/.qlcplus/fixtures \
+  --device /dev/ftdi-${USB_TO_DMX_ADAPTER_SERIAL}:/dev/ftdi-${USB_TO_DMX_ADAPTER_SERIAL} \
   -v /dev/serial:/dev/serial \
   -v /dev/bus/usb:/dev/bus/usb \
   --log-level=debug \
-  localhost/qlcplus-vnc-openbox
+  localhost/${CONTAINER_NAME}
 
 echo "Launching QLC+ container complete."
+echo "VNC  : tcp/${VNC_PORT}"
+echo "WebUI: http://${HOST_IP}:${QLC_PORT}"
+
+exit 0

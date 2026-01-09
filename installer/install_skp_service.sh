@@ -1,11 +1,9 @@
 #!/bin/bash
 
-# TODO: publish image for QLC+
-# TODO: podman installation, pull image for QLC+, and setup
-
 INSTALLER_DIR=$(dirname "$(realpath "$0")")
 INSTALLER_OPTIONAL_DIR=${INSTALLER_DIR}/buttons
 INSTALLER_UDEV_DIR=${INSTALLER_DIR}/udev
+INSTALLER_PODMAN_DIR=${INSTALLER_DIR}/podman
 INSTALLER_QLC_DIR=${INSTALLER_DIR}/qlc
 
 USAGE="Usage: sudo $0 [SKP lights.ini File] [Mapping Config File] [QLC+ Workspace File] [QLC+ Fixtures Directory]"
@@ -14,6 +12,7 @@ SKP_INSTALL_DIR=/opt/StageKitPied
 SKP_INPUT_DIR=${SKP_INSTALL_DIR}/input
 SKP_OPTIONAL_DIR=${SKP_INSTALL_DIR}/optional
 SKP_UDEV_DIR=${SKP_INSTALL_DIR}/udev
+SKP_PODMAN_DIR=${SKP_INSTALL_DIR}/podman
 SKP_QLC_DIR=${SKP_INSTALL_DIR}/qlc
 SKP_QLC_FIXTURES_DIR=${SKP_QLC_DIR}/fixtures
 SKP_SERVICE_NAME=stagekitpied
@@ -170,6 +169,7 @@ echo ""
 
 # Setup optional button programs.
 mkdir -p ${SKP_OPTIONAL_DIR}
+chown ${SUDO_USER}:${SUDO_USER} ${SKP_OPTIONAL_DIR}
 cp ${INSTALLER_OPTIONAL_DIR}/locate_usb.sh ${SKP_OPTIONAL_DIR}
 cp ${INSTALLER_OPTIONAL_DIR}/run_skp.sh ${SKP_OPTIONAL_DIR}
 cp ${INSTALLER_OPTIONAL_DIR}/kill_skp.sh ${SKP_OPTIONAL_DIR}
@@ -207,6 +207,9 @@ echo ""
 
 #####################################################
 
+echo "Installing udev rule to predictably symlink FT232R/ftdi USB devices."
+echo ""
+
 # Create symlinks for FT232R/ftdi chips so we can pass in a predictably-named DMX output device to the QLC+ container. 
 mkdir -p ${SKP_UDEV_DIR}
 UDEV_FT232RUSBRULE_FILE=zzzz-97-ft232rDeviceSymlinks.rules
@@ -214,10 +217,13 @@ cp ${INSTALLER_UDEV_DIR}/${UDEV_FT232RUSBRULE_FILE} ${UDEV_RULES_DIR}
 chmod 440 ${UDEV_RULES_DIR}/${UDEV_FT232RUSBRULE_FILE}
 udevadm control --reload
 
-echo "udev rule installed predictably symlink FT232R/ftdi USB devices."
+echo "udev rule installed to predictably symlink FT232R/ftdi USB devices."
 echo ""
 
 #####################################################
+
+echo "Installing udev rule to prevent anything but StageKitPied-DMXified from claiming Xbox Light Pods."
+echo ""
 
 # Setup udev to use perms to gate-keep the Xbox StageKit Light Pods from anything else because we are paranoid and only
 # want skp to access them.
@@ -236,6 +242,9 @@ echo ""
 
 #####################################################
 
+echo "Installing udev rule to prevent QLC+ from claiming FT232R serial adapter."
+echo ""
+
 # Setup udev to use perms to gate-keep the serial adapter from QLC+, treating it like a DMX adapter with an FT232R chip.
 mkdir -p ${SKP_UDEV_DIR}
 UDEV_SERIALUSBGUARDRULE_SCRIPT=serialUsbGuard.sh
@@ -248,6 +257,22 @@ chmod 440 ${UDEV_RULES_DIR}/${UDEV_SERIALUSBGUARDRULE_FILE}
 udevadm control --reload
 
 echo "udev rule installed to prevent QLC+ from claiming FT232R serial adapter."
+echo ""
+
+#####################################################
+
+echo "Installing and setting up Podman for QLC container."
+echo ""
+
+# Setup Podman and related scripts.
+mkdir -p ${SKP_PODMAN_DIR}
+chown ${SUDO_USER}:${SUDO_USER} ${SKP_PODMAN_DIR}
+cp ${INSTALLER_PODMAN_DIR}/run_podman.sh ${SKP_PODMAN_DIR}
+cp ${INSTALLER_PODMAN_DIR}/destroy_podman.sh ${SKP_PODMAN_DIR}
+
+${INSTALLER_PODMAN_DIR}/install_podman.sh
+
+echo "Podman installed and scripts installed."
 echo ""
 
 #####################################################
