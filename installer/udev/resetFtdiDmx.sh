@@ -1,4 +1,5 @@
 #!/bin/bash
+
 TARGET_SERIAL="A10JGB3H"
 
 # Try via ttyUSB device first
@@ -23,6 +24,9 @@ for dev in /sys/bus/usb/devices/*; do
     vendor=$(cat "$dev/idVendor")
     product=$(cat "$dev/idProduct")
     serial=$(cat "$dev/serial")
+
+    # The following vendor and product IDs are for the serial adapter (but also the same is used for my USB to DMX adapter):
+    # Future Technology Devices International, Ltd FT232 Serial (UART) IC
     if [[ "$vendor" == "0403" && "$product" == "6001" && "$serial" == "$TARGET_SERIAL" ]]; then
         echo "Resetting FTDI (USB) $serial at $dev"
         echo 0 | sudo tee "$dev/authorized" >/dev/null

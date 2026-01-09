@@ -12,7 +12,7 @@ echo "${DEVICE_PATH}: $(ls -l "${DEVICE_PATH}")" >> $LOGFILE
 
 # Log the ACL before setting it
 echo "${DEVICE_PATH}: ACL:" >> $LOGFILE
-echo "${DEVICE_PATH}: $(getfacl "${DEVICE_PATH}")" >> $LOGFILE
+echo "${DEVICE_PATH}: $(getfacl -p "${DEVICE_PATH}")" >> $LOGFILE
 
 # Restrict permissions
 chown root:root "${DEVICE_PATH}"
@@ -28,5 +28,5 @@ echo "${DEVICE_PATH}: $(ls -l "${DEVICE_PATH}")" >> $LOGFILE
 
 # Log the ACL after setting
 echo "${DEVICE_PATH}: ACL:" >> $LOGFILE
-echo "${DEVICE_PATH}: $(getfacl "${DEVICE_PATH}")" >> $LOGFILE
+echo "${DEVICE_PATH}: $(getfacl -p "${DEVICE_PATH}")" >> $LOGFILE
 

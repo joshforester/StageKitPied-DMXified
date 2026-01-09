@@ -15,6 +15,9 @@ USE_LED_DRUMKIT="true"
 # Set this to empty string if you do not use file buttons.
 USE_FILE_BUTTONS="true"
 
+# Reset USB to DMX adapter.
+$SKPD_PATH/udev/resetFtdiDmx.sh
+
 if [ -n "$USE_DMX_POWER_ON" ]; then
     # Run the command if USE_DMX_POWER_ON is not empty
     $SKPD_PATH/power_on_dmx_devices.sh
@@ -22,30 +25,30 @@ fi
 
 if [ -n "$USE_FILE_BUTTONS" ]; then
 	# Stop all button services to clear their state.
-	sudo systemctl stop active_touch_file_buttons
-	sudo systemctl stop switch_touch_file_buttons
+	systemctl stop active_touch_file_buttons
+	systemctl stop switch_touch_file_buttons
 
 	# Turn all buttons "off" by removing temp files.
 	button_file_numbers=(12 19 20 25)
 	for button_file_number in "${button_file_numbers[@]}"; do
-    	if [ -f "$SKPD_PATH/button$button_file_number.tmp" ]; then
-        	rm $SKPD_PATH/button$button_file_number.tmp 
-    	fi
+    		if [ -f "$SKPD_PATH/button$button_file_number.tmp" ]; then
+        		rm $SKPD_PATH/button$button_file_number.tmp 
+    		fi
 	done
 
 	# Start all button services after clearing their state.
-	sudo systemctl start active_touch_file_buttons
-	sudo systemctl start switch_touch_file_buttons
+	systemctl start active_touch_file_buttons
+	systemctl start switch_touch_file_buttons
 fi
 
 if [ -n "$USE_LED_DRUMKIT" ]; then
     # Run the command if USE_LED_DRUMKIT is not empty
-    sudo systemctl start leddrumkit 
+    systemctl start leddrumkit 
 fi
 
-sudo systemctl start qlcplus-podman
+systemctl start qlcplus-podman
 
-sudo $SKPD_PATH/skp_wrapper.sh
+$SKPD_PATH/skp_wrapper.sh
 
 # Loop until the service is active
 while true; do

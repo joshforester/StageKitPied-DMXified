@@ -1,2 +1,2 @@
-# Match the stage kit serial adapter by serial id
+# Match the stage kit serial adapter by serial ID (specific serial used here because my USB to DMX adapter has same product and vendor IDs)
 SUBSYSTEM=="usb-serial", ATTRS{serial}=="A5069RR4" ACTION=="add|bind|change|online", OWNER="root", GROUP="root", MODE="0600", TAG+="systemd" RUN:="/opt/StageKitPied/udev/serialUsbGuard.sh /dev/%k"

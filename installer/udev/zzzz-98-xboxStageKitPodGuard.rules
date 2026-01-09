@@ -1,3 +1,3 @@
-# Match the input device (such as /dev/input/js0)
+# Match the input device (such as /dev/input/js0); this is vendor and product IDs of "Logic3 PDP Home Stage Kit"
 SUBSYSTEM=="input", ATTRS{idVendor}=="0e6f", ATTRS{idProduct}=="0103", KERNEL=="event*|js*", ACTION=="add|bind|change|online", OWNER="root", GROUP="root", MODE="0600", TAG+="systemd", RUN:="/opt/StageKitPied/udev/xboxStageKitPodGuard.sh /dev/input/%k"
 
