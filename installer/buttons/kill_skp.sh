@@ -4,6 +4,9 @@
 # Script for stopping QLC+ and skp in that order. 
 #
 
+SKPD_DIR=/opt/StageKitPied
+SKPD_OPTIONAL_DIR=${SKPD_PATH}/optional
+
 # Set this to empty string if you do not automatically power off your DMX devices
 USE_DMX_POWER_OFF="true"
 
@@ -17,7 +20,7 @@ fi
 
 if [ -n "$USE_DMX_POWER_OFF" ]; then
     # Run the command if USE_DMX_POWER_OFF is not empty
-    /opt/StageKitPied/power_off_dmx_devices.sh
+    $SKPD_OPTIONAL_DIR/power_off_dmx_devices.sh
 fi
 
 

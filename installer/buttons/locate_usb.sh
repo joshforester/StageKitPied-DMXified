@@ -24,3 +24,5 @@ done
 echo ""
 echo "Showing Serial Adapter and any other potential conflicting adapter links (DMX Adapter can sometimes be shown here if using the same FTDI chip)"
 ls -l /dev/ftdi*
+
+exit 0

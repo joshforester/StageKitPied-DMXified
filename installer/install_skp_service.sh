@@ -2,14 +2,9 @@
 
 # TODO: publish image for QLC+
 # TODO: podman installation, pull image for QLC+, and setup
-# TODO: install buttons scripts
-# - locate_usb.sh
-# - kill_skp.sh
-# - run_skp.sh
-# - skp_wrapper.sh
-# - poweron/poweroff
 
 INSTALLER_DIR=$(dirname "$(realpath "$0")")
+INSTALLER_OPTIONAL_DIR=${INSTALLER_DIR}/buttons
 INSTALLER_UDEV_DIR=${INSTALLER_DIR}/udev
 INSTALLER_QLC_DIR=${INSTALLER_DIR}/qlc
 
@@ -17,11 +12,16 @@ USAGE="Usage: sudo $0 [SKP lights.ini File] [Mapping Config File] [QLC+ Workspac
 
 SKP_INSTALL_DIR=/opt/StageKitPied
 SKP_INPUT_DIR=${SKP_INSTALL_DIR}/input
+SKP_OPTIONAL_DIR=${SKP_INSTALL_DIR}/optional
 SKP_UDEV_DIR=${SKP_INSTALL_DIR}/udev
 SKP_QLC_DIR=${SKP_INSTALL_DIR}/qlc
 SKP_QLC_FIXTURES_DIR=${SKP_QLC_DIR}/fixtures
 SKP_SERVICE_NAME=stagekitpied
 QLCPLUS_PODMAN_SERVICE_NAME=qlcplus-podman
+SKP_RUN_BUTTON_SCRIPT_NAME=switch_run_script_button
+SKP_RUN_BUTTON_SERVICE_NAME=switch_run_script_skpButton
+SWITCH_TOUCH_BUTTON_SERVICE_NAME=switch_touch_file_buttons
+ACTIVE_TOUCH_BUTTON_SERVICE_NAME=active_touch_file_buttons
 UDEV_RULES_DIR=/etc/udev/rules.d
 SYSTEMD_SERVICE_DIR=/lib/systemd/system
 DEFAULT_SKP_LIGHTSINI_SOURCE_DIR=${INSTALLER_DIR}/../StageKitPied
@@ -157,6 +157,56 @@ echo ""
 
 #####################################################
 
+echo "Stopping existing optional button services ${SKP_RUN_BUTTON_SERVICE_NAME}, ${SWITCH_TOUCH_BUTTON_SERVICE_NAME}, ${ACTIVE_TOUCH_BUTTON_SERVICE_NAME}."
+echo ""
+systemctl stop ${SKP_RUN_BUTTON_SERVICE_NAME}
+systemctl stop ${SWITCH_TOUCH_BUTTON_SERVICE_NAME}
+systemctl stop ${ACTIVE_TOUCH_BUTTON_SERVICE_NAME}
+
+#####################################################
+
+echo "Installing optional button related scripts."
+echo ""
+
+# Setup optional button programs.
+mkdir -p ${SKP_OPTIONAL_DIR}
+cp ${INSTALLER_OPTIONAL_DIR}/locate_usb.sh ${SKP_OPTIONAL_DIR}
+cp ${INSTALLER_OPTIONAL_DIR}/run_skp.sh ${SKP_OPTIONAL_DIR}
+cp ${INSTALLER_OPTIONAL_DIR}/kill_skp.sh ${SKP_OPTIONAL_DIR}
+cp ${INSTALLER_OPTIONAL_DIR}/skp_wrapper.sh ${SKP_OPTIONAL_DIR}
+cp ${INSTALLER_OPTIONAL_DIR}/power_on_dmx_devices.sh ${SKP_OPTIONAL_DIR}
+cp ${INSTALLER_OPTIONAL_DIR}/power_off_dmx_devices.sh ${SKP_OPTIONAL_DIR}
+
+#####################################################
+
+echo "Installing button services."
+echo ""
+
+cp ${INSTALLER_OPTIONAL_DIR}/${SKP_RUN_BUTTON_SCRIPT_NAME}.py ${SKP_OPTIONAL_DIR}
+cp ${INSTALLER_OPTIONAL_DIR/${SWITCH_TOUCH_BUTTON_SERVICE_NAME}.py ${SKP_OPTIONAL_DIR}
+cp ${INSTALLER_OPTIONAL_DIR/${ACTIVE_TOUCH_BUTTON_SERVICE_NAME}.py ${SKP_OPTIONAL_DIR}
+
+# Setup the services.
+cp ${INSTALLER_OPTIONAL_DIR}/${SKP_RUN_BUTTON_SERVICE_NAME}.service ${SYSTEMD_SERVICE_DIR}
+systemctl daemon-reload
+
+echo "Optional systemd service for StageKitPied run button installed.  It will NOT be started at the end of this script."
+echo ""
+
+cp ${INSTALLER_OPTIONAL_DIR}/${SWITCH_TOUCH_BUTTON_SERVICE_NAME}.service ${SYSTEMD_SERVICE_DIR}
+systemctl daemon-reload
+
+echo "Optional systemd service for switch touch buttons installed.  It will NOT be started at the end of this script."
+echo ""
+
+cp ${INSTALLER_OPTIONAL_DIR}/${ACTIVE_TOUCH_BUTTON_SERVICE_NAME}.service ${SYSTEMD_SERVICE_DIR}
+systemctl daemon-reload
+
+echo "Optional systemd service for active touch buttons installed.  It will NOT be started at the end of this script."
+echo ""
+
+#####################################################
+
 # Create symlinks for FT232R/ftdi chips so we can pass in a predictably-named DMX output device to the QLC+ container. 
 mkdir -p ${SKP_UDEV_DIR}
 UDEV_FT232RUSBRULE_FILE=zzzz-97-ft232rDeviceSymlinks.rules
@@ -255,3 +305,7 @@ systemctl start ${QLCPLUS_PODMAN_SERVICE_NAME}
 
 echo "Starting ${SKP_SERVICE_NAME} service."
 systemctl start ${SKP_SERVICE_NAME}
+
+#####################################################
+
+exit 0

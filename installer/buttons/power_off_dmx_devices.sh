@@ -15,3 +15,5 @@ curl -s "$SMART_OUTLET_OFF_URL2" 2>&1
 curl -s "$SMART_OUTLET_OFF_URL3" 2>&1
 
 echo ""
+
+exit 0

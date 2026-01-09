@@ -4,7 +4,10 @@
 # Script for launching skp and QLC+ in the proper order. 
 #
 
-SKPD_PATH=/opt/StageKitPied
+SKPD_DIR=/opt/StageKitPied
+SKPD_INPUT_DIR=${SKPD_PATH}/input
+SKPD_OPTIONAL_DIR=${SKPD_PATH}/optional
+SKPD_UDEV_DIR=${SKPD_PATH}/udev
 
 # Set this to empty string if you do not automatically power on your DMX devices
 USE_DMX_POWER_ON="true"
@@ -16,11 +19,11 @@ USE_LED_DRUMKIT="true"
 USE_FILE_BUTTONS="true"
 
 # Reset USB to DMX adapter.
-$SKPD_PATH/udev/resetFtdiDmx.sh
+$SKPD_UDEV_DIR/resetFtdiDmx.sh
 
 if [ -n "$USE_DMX_POWER_ON" ]; then
     # Run the command if USE_DMX_POWER_ON is not empty
-    $SKPD_PATH/power_on_dmx_devices.sh
+    $SKPD_OPTIONAL_DIR/power_on_dmx_devices.sh
 fi
 
 if [ -n "$USE_FILE_BUTTONS" ]; then
@@ -31,8 +34,8 @@ if [ -n "$USE_FILE_BUTTONS" ]; then
 	# Turn all buttons "off" by removing temp files.
 	button_file_numbers=(12 19 20 25)
 	for button_file_number in "${button_file_numbers[@]}"; do
-    		if [ -f "$SKPD_PATH/button$button_file_number.tmp" ]; then
-        		rm $SKPD_PATH/button$button_file_number.tmp 
+    		if [ -f "$SKPD_INPUT_DIR/button$button_file_number.tmp" ]; then
+        		rm $SKPD_INPUT_DIR/button$button_file_number.tmp 
     		fi
 	done
 
@@ -48,7 +51,7 @@ fi
 
 systemctl start qlcplus-podman
 
-$SKPD_PATH/skp_wrapper.sh
+$SKPD_OPTIONAL_DIR/skp_wrapper.sh
 
 # Loop until the service is active
 while true; do
@@ -63,3 +66,4 @@ while true; do
     fi
 done
 
+exit 0
