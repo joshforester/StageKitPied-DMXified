@@ -43,10 +43,10 @@ COPY --from=builder /etc /etc
 RUN mkdir -p /root/.qlcplus/projects /root/.qlcplus/fixtures
 
 # Copy startup scripts
-COPY xstartup /root/.vnc/xstartup
+COPY installer/podman/xstartup /root/.vnc/xstartup
 RUN chmod +x /root/.vnc/xstartup
 
-COPY start-qlc.sh /start-qlc.sh
+COPY installer/podman/start-qlc.sh /start-qlc.sh
 RUN chmod +x /start-qlc.sh
 
 # Expose QLC+ WebSocket & VNC ports
