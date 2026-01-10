@@ -1,7 +1,7 @@
 [Unit]
 Description=Stage Kit Pied Xbox360 Stage Kit
-After=multi-user.target systemd-udev-settle.service dev-ttyUSB0.device dev-input-js0.device dev-input-js1.device dev-input-js2.device dev-input-js3.device dev-input-event0.device dev-input-event1.device dev-input-event2.device dev-input-event3.device
-Requires=systemd-udev-settle.service dev-ttyUSB0.device dev-input-js0.device dev-input-js1.device dev-input-js2.device dev-input-js3.device dev-input-event0.device dev-input-event1.device dev-input-event2.device dev-input-event3.device
+After=multi-user.target systemd-udev-settle.service dev-ttyUSB0.device
+Requires=systemd-udev-settle.service dev-ttyUSB0.device
 Before=graphical.target
 
 [Service]

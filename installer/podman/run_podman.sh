@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SKPD_DIR=/opt/StageKitPied
-SKPD_QLC_DIR=${SKPD_DIR}/qlc
+SKPD_QLC_DIR=/opt/StageKitPied/qlc
 SKPD_PODMAN_DIR=${SKPD_DIR}/podman
 
 USB_TO_DMX_ADAPTER_SERIAL=A10JGB3H
@@ -37,7 +37,7 @@ podman run -d \
   -v /dev/serial:/dev/serial \
   -v /dev/bus/usb:/dev/bus/usb \
   --log-level=debug \
-  localhost/${CONTAINER_NAME}
+  ghcr.io/joshforester/stagekitpied-dmxified/${CONTAINER_NAME}:latest
 
 echo "Launching QLC+ container complete."
 echo "VNC  : tcp/${VNC_PORT}"

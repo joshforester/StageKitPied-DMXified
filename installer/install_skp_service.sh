@@ -27,8 +27,9 @@ DEFAULT_SKP_LIGHTSINI_SOURCE_DIR=${INSTALLER_DIR}/../StageKitPied
 DEFAULT_SKP_LIGHTSINI_SOURCE_FILE=lights.ini
 DEFAULT_DMXIFIED_MAPPING_SOURCE_DIR=${INSTALLER_DIR}/../StageKitPied
 DEFAULT_DMXIFIED_MAPPING_SOURCE_FILE=dmxified_mapping.xml
-DEFAULT_QLCPLUS_WORKSPACE_SOURCE_DIR=${INSTALLER_DIR}
+DEFAULT_QLCPLUS_WORKSPACE_SOURCE_DIR=${INSTALLER_DIR}/qlc
 DEFAULT_QLCPLUS_WORKSPACE_SOURCE_FILE=qlcplusSkpDmx.qxw
+DEFAULT_QLCPLUS_FIXTURES_SOURCE_DIR=${DEFAULT_QLCPLUS_WORKSPACE_SOURCE_DIR}/fixtures
 
 # Check if the script is running as root, since service install requires it.
 if [ "$EUID" -ne 0 ]; then
@@ -140,8 +141,10 @@ cp ${INSTALLER_DIR}/../StageKitPied/leds5.ini ${SKP_INSTALL_DIR}
 cp ${DMXIFIED_MAPPING_SOURCE_DIR}/${DMXIFIED_MAPPING_SOURCE_FILE} ${SKP_INSTALL_DIR}
 
 chmod 770 ${SKP_INSTALL_DIR}/skp
-chmod 440 ${SKP_INSTALL_DIR}/*ini
-chmod 440 ${SKP_INSTALL_DIR}/${DMXIFIED_MAPPING_SOURCE_FILE}
+chown ${SUDO_USER}:root ${SKP_INSTALL_DIR}/*ini
+chmod 640 ${SKP_INSTALL_DIR}/*ini
+chown ${SUDO_USER}:root ${SKP_INSTALL_DIR}/${DMXIFIED_MAPPING_SOURCE_FILE}
+chmod 640 ${SKP_INSTALL_DIR}/${DMXIFIED_MAPPING_SOURCE_FILE}
 
 echo "skp installed to ${SKP_INSTALL_DIR} with:"
 echo "${SKP_LIGHTSINI_SOURCE_DIR}/${SKP_LIGHTSINI_SOURCE_FILE}"
@@ -149,7 +152,8 @@ echo "${DMXIFIED_MAPPING_SOURCE_DIR}/${DMXIFIED_MAPPING_SOURCE_FILE}"
 echo ""
 
 mkdir -p ${SKP_INPUT_DIR}
-chown ${SUDO_USER}:${SUDO_USER} ${SKP_INPUT_DIR}
+chown ${SUDO_USER}:root ${SKP_INPUT_DIR}
+chmod 775 ${SKP_INPUT_DIR}
 
 echo "Created ${SKP_INPUT_DIR} as a convenience for fileExistsInput elements in mapping file config."
 echo ""
@@ -169,13 +173,15 @@ echo ""
 
 # Setup optional button programs.
 mkdir -p ${SKP_OPTIONAL_DIR}
-chown ${SUDO_USER}:${SUDO_USER} ${SKP_OPTIONAL_DIR}
+chown ${SUDO_USER}:root ${SKP_OPTIONAL_DIR}
 cp ${INSTALLER_OPTIONAL_DIR}/locate_usb.sh ${SKP_OPTIONAL_DIR}
+chown ${SUDO_USER}:root ${SKP_OPTIONAL_DIR}/locate_usb.sh
 cp ${INSTALLER_OPTIONAL_DIR}/run_skp.sh ${SKP_OPTIONAL_DIR}
 cp ${INSTALLER_OPTIONAL_DIR}/kill_skp.sh ${SKP_OPTIONAL_DIR}
 cp ${INSTALLER_OPTIONAL_DIR}/skp_wrapper.sh ${SKP_OPTIONAL_DIR}
 cp ${INSTALLER_OPTIONAL_DIR}/power_on_dmx_devices.sh ${SKP_OPTIONAL_DIR}
 cp ${INSTALLER_OPTIONAL_DIR}/power_off_dmx_devices.sh ${SKP_OPTIONAL_DIR}
+chmod 550 ${SKP_OPTIONAL_DIR}/*.sh
 
 #####################################################
 
@@ -183,8 +189,9 @@ echo "Installing button services."
 echo ""
 
 cp ${INSTALLER_OPTIONAL_DIR}/${SKP_RUN_BUTTON_SCRIPT_NAME}.py ${SKP_OPTIONAL_DIR}
-cp ${INSTALLER_OPTIONAL_DIR/${SWITCH_TOUCH_BUTTON_SERVICE_NAME}.py ${SKP_OPTIONAL_DIR}
-cp ${INSTALLER_OPTIONAL_DIR/${ACTIVE_TOUCH_BUTTON_SERVICE_NAME}.py ${SKP_OPTIONAL_DIR}
+cp ${INSTALLER_OPTIONAL_DIR}/${SWITCH_TOUCH_BUTTON_SERVICE_NAME}.py ${SKP_OPTIONAL_DIR}
+cp ${INSTALLER_OPTIONAL_DIR}/${ACTIVE_TOUCH_BUTTON_SERVICE_NAME}.py ${SKP_OPTIONAL_DIR}
+chmod 550 ${SKP_OPTIONAL_DIR}/*.py
 
 # Setup the services.
 cp ${INSTALLER_OPTIONAL_DIR}/${SKP_RUN_BUTTON_SERVICE_NAME}.service ${SYSTEMD_SERVICE_DIR}
@@ -233,8 +240,8 @@ cp ${INSTALLER_UDEV_DIR}/${UDEV_XBOXSTAGEKITPODGUARDRULE_SCRIPT} ${SKP_UDEV_DIR}
 chmod 770 ${SKP_UDEV_DIR}/${UDEV_XBOXSTAGEKITPODGUARDRULE_SCRIPT}
 
 UDEV_XBOXSTAGEKITPODGUARDRULE_FILE=zzzz-98-xboxStageKitPodGuard.rules
-cp ${INSTALLER_UDEV_DIR}/${UDEV_XBOXSTAGEKITGUARDRULE_FILE} ${UDEV_RULES_DIR}
-chmod 440 ${UDEV_RULES_DIR}/${UDEV_XBOXSTAGEKITGUARDRULE_FILE}
+cp ${INSTALLER_UDEV_DIR}/${UDEV_XBOXSTAGEKITPODGUARDRULE_FILE} ${UDEV_RULES_DIR}
+chmod 440 ${UDEV_RULES_DIR}/${UDEV_XBOXSTAGEKITPODGUARDRULE_FILE}
 udevadm control --reload
 
 echo "udev rule installed to prevent anything but StageKitPied-DMXified from claiming Xbox Light Pods."
@@ -261,16 +268,34 @@ echo ""
 
 #####################################################
 
+echo "Installing script for resetting USB to DMX Adapter."
+echo ""
+
+RESET_FTDI_USB_TO_DMX_ADAPTER_SCRIPT=resetFtdiDmx.sh
+cp ${INSTALLER_UDEV_DIR}/${RESET_FTDI_USB_TO_DMX_ADAPTER_SCRIPT} ${SKP_UDEV_DIR}
+chown ${SUDO_USER}:root ${SKP_UDEV_DIR}/${RESET_FTDI_USB_TO_DMX_ADAPTER_SCRIPT}
+chmod 770 ${SKP_UDEV_DIR}/${RESET_FTDI_USB_TO_DMX_ADAPTER_SCRIPT}
+
+#####################################################
+
+echo "Stopping existing ${QLCPLUS_PODMAN_SERVICE_NAME} service."
+echo ""
+systemctl stop ${QLCPLUS_PODMAN_SERVICE_NAME}
+
+#####################################################
+
 echo "Installing and setting up Podman for QLC container."
 echo ""
 
 # Setup Podman and related scripts.
 mkdir -p ${SKP_PODMAN_DIR}
-chown ${SUDO_USER}:${SUDO_USER} ${SKP_PODMAN_DIR}
 cp ${INSTALLER_PODMAN_DIR}/run_podman.sh ${SKP_PODMAN_DIR}
 cp ${INSTALLER_PODMAN_DIR}/destroy_podman.sh ${SKP_PODMAN_DIR}
+chown -R ${SUDO_USER}:root ${SKP_PODMAN_DIR}
+chmod 555 ${SKP_PODMAN_DIR}/run_podman.sh
+chmod 555 ${SKP_PODMAN_DIR}/destroy_podman.sh
 
-${INSTALLER_PODMAN_DIR}/install_podman.sh
+sudo -u ${SUDO_USER} ${INSTALLER_PODMAN_DIR}/install_podman.sh
 
 echo "Podman installed and scripts installed."
 echo ""
@@ -280,11 +305,11 @@ echo ""
 # Setup the QLC workspace
 
 mkdir -p ${SKP_QLC_DIR}
-chown ${SUDO_USER}:${SUDO_USER} ${SKP_QLC_DIR}
+chown ${SUDO_USER}:root ${SKP_QLC_DIR}
 
 cp ${QLCPLUS_WORKSPACE_SOURCE_DIR}/${QLCPLUS_WORKSPACE_SOURCE_FILE} ${SKP_QLC_DIR}
-chown ${SUDO_USER}:${SUDO_USER} ${SKP_QLC_DIR}/${QLCPLUS_WORKSPACE_SOURCE_FILE}
-chmod 440 ${SKP_QLC_DIR}/${QLCPLUS_WORKSPACE_SOURCE_FILE}
+chown ${SUDO_USER}:root ${SKP_QLC_DIR}/${QLCPLUS_WORKSPACE_SOURCE_FILE}
+chmod 640 ${SKP_QLC_DIR}/${QLCPLUS_WORKSPACE_SOURCE_FILE}
 
 echo "QLC+ workspace installed using ${QLCPLUS_WORKSPACE_SOURCE_DIR}/${QLCPLUS_WORKSPACE_SOURCE_FILE} to ${SKP_QLC_DIR}."
 echo ""
@@ -293,12 +318,11 @@ echo ""
 
 # Setup the QLC+ fixtures
 
-mkdir -p ${SKP_QLC_DIR}
-chown ${SUDO_USER}:${SUDO_USER} ${SKP_QLC_DIR}
-
-cp -a ${QLCPLUS_FIXTURES_SOURCE_DIR} ${SKP_QLC_FIXTURES_DIR}
-chown -R ${SUDO_USER}:${SUDO_USER} ${SKP_QLC_FIXTURES_DIR}
-chmod -R 440 ${SKP_QLC_FIXTURES_DIR}
+mkdir -p ${SKP_QLC_FIXTURES_DIR}
+cp -a ${QLCPLUS_FIXTURES_SOURCE_DIR}/* ${SKP_QLC_FIXTURES_DIR}
+chown -R ${SUDO_USER}:root ${SKP_QLC_FIXTURES_DIR}
+chmod 750 ${SKP_QLC_FIXTURES_DIR}
+chmod 640 ${SKP_QLC_FIXTURES_DIR}/*
 
 echo "QLC+ fixtures installed using ${QLCPLUS_FIXTURES_SOURCE_DIR} to ${SKP_QLC_FIXTURES_DIR}."
 echo ""
