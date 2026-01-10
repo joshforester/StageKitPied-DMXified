@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SKPD_DIR=/opt/StageKitPied
-SKPD_QLC_DIR=/opt/StageKitPied
+SKPD_QLC_DIR=${SKPD_DIR}/qlc
 SKPD_PODMAN_DIR=${SKPD_DIR}/podman
 
 USB_TO_DMX_ADAPTER_SERIAL=A10JGB3H
