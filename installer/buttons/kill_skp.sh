@@ -5,7 +5,7 @@
 #
 
 SKPD_DIR=/opt/StageKitPied
-SKPD_OPTIONAL_DIR=${SKPD_PATH}/optional
+SKPD_OPTIONAL_DIR=${SKPD_DIR}/optional
 
 # Set this to empty string if you do not automatically power off your DMX devices
 USE_DMX_POWER_OFF="true"

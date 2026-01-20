@@ -5,9 +5,9 @@
 #
 
 SKPD_DIR=/opt/StageKitPied
-SKPD_INPUT_DIR=${SKPD_PATH}/input
-SKPD_OPTIONAL_DIR=${SKPD_PATH}/optional
-SKPD_UDEV_DIR=${SKPD_PATH}/udev
+SKPD_INPUT_DIR=${SKPD_DIR}/input
+SKPD_OPTIONAL_DIR=${SKPD_DIR}/optional
+SKPD_UDEV_DIR=${SKPD_DIR}/udev
 
 # Set this to empty string if you do not automatically power on your DMX devices
 USE_DMX_POWER_ON="true"
