@@ -53,7 +53,7 @@ def create_file_for_button(pin):
     file_path = os.path.join(directory, file_name)
     with open(file_path, 'w'):
         pass
-    print(f"Created {file_path}")
+    print(f"Created switch file {file_path}")
 
 # Function to remove the file corresponding to the button pressed
 def remove_file_for_button(pin):

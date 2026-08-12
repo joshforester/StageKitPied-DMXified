@@ -56,7 +56,7 @@ def create_file_for_button(button):
         # Create the file (touch it)
         with open(file_path, 'w'):
             pass
-        print(f"Created {file_path}")
+        print(f"Created active file {file_path}")
     except Exception as e:
         print(f"Error creating file for button: {e}")
 

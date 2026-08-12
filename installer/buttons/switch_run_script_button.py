@@ -58,10 +58,10 @@ while True:
 
     if press_count % 2 == 1:
         # Run the first script on odd presses
-        print("THE BUTTON WAS PRESSED (Odd press)")
+        print(f"Button for pin {gpio_pin:02d} was pressed (odd press).")
         subprocess.run([bash_script_odd], check=True)
     else:
         # Run the second script on even presses
-        print("THE BUTTON WAS PRESSED (Even press)")
+        print(f"Button for pin {gpio_pin:02d} was pressed (even press).")
         subprocess.run([bash_script_even], check=True)
 
